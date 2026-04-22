@@ -1,3 +1,6 @@
 Docker/data/
 Docker/.env
 smiley.txt*
+UI/appsettings.json
+appsettings.json*
+
