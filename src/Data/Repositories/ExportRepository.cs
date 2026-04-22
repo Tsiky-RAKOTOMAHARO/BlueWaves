@@ -11,5 +11,25 @@ namespace Data.Repositories{
         public ExportRepository(AppDbContext context){
             _context = context;
         }
+
+        public async Task<Export> GetExportByNumAsync (int Num){
+            
+        }
+
+        public async Task<IEnumerable<Export>> GetAllExport(){
+            
+        }
+
+        public async Task AddExport(Export export){
+            
+        }
+
+        public async Task UpdateExprot(Export export){
+            
+        }
+
+        public async Task DeleteExport(Export export){
+            
+        }
     }
 }

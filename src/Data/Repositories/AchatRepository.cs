@@ -13,5 +13,33 @@ namespace Data.Repositories{
         }
 
         //Les methodes d'achat
+        public async Task<Achat> GetAchatById(int Id){
+            
+            return await _context.Achat.FindAsync(Id);
+    
+        }
+
+        public async Task<IEnumerable<Achat>> GetAllAchat(){
+
+            return await _context.Achat.ToListAsync();
+
+        }
+
+        public async Task<IEnumerable<Achat>> GetAchatByNumeroCommande(){
+            
+        }
+
+        public async Task UpdateAchat(Achat achat){
+            
+            _context.Achat.Update(achat);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task DeleteAchat(Achat achat){
+            
+            _context.Achat.Remove(achat);
+            await _context.SaveChangesAsync();
+        }
     }
 }

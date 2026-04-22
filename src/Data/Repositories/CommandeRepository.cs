@@ -12,5 +12,33 @@ namespace Data.Repositories{
         public CommandeRepository(AppDbContext context){
             _context = context;
         }
+
+        public async Task<Commande> GetCommandeByNum(int NumCommande){
+            
+        }
+
+        public async Task<IEnumerable<Commande> > GetAllCommande(){
+            
+        }
+
+        public async Task<IEnumerabl<Commande> > GetCommandeByRefClient(){
+            
+        }
+
+        public async Task<IEnumerable<Commande> > GetCommandeByCodeExport(){
+            
+        }
+
+        public async Task AddCommande(Commande commande){
+            
+        }
+
+        public async Task UpdateCommande(Commande commande){
+            
+        }
+
+        public async Task DeleteCommande(Commande commande){
+            
+        }
     }
 }

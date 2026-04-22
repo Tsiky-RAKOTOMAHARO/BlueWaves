@@ -11,5 +11,25 @@ namespace Data.Repositories{
         public FournisseurRepository(AppDbContext context){
             _context = context;
         }
+
+        public async Task<Fournisseur> GetFournisseurByref (int RefFournisseur){
+            
+        }
+
+        public async Task<IEnumerable<Fournisseur> > GetAllFournisseur(){
+            
+        }
+
+        public async Task AddFournisseur(Fournisseur fournisseur){
+            
+        }
+
+        public async Task UpdateFournisseur(Fournisseur fournisseur){
+            
+        }
+
+        public async Task DeleteFournisseur(Fournisseur fournisseur){
+            
+        }
     }
 }
