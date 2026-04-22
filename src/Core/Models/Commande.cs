@@ -16,7 +16,7 @@ namespace Core.Models{
         [ForeignKey(nameof(RefClient))]
         public virtual Client Client {get; set;} = null!;
 
-        [ForeignKey(nameof(CodeExport))]
+       [ForeignKey(nameof(CodeExport))]
         public virtual Export Export {get; set;} = null!;
 
     }
