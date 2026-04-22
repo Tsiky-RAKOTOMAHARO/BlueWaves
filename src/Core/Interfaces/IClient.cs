@@ -1,17 +1,18 @@
 using Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IClientRepository{
         Task<Client> GetClientByRef (int Ref);
 
-        Task<IEnumrable> GetAllClient();
+        Task<IEnumerable<Client>> GetAllClient();
 
         Task AddClient(Client client);
 
-        void UpdateClient(Client client);
+        Task UpdateClient(Client client);
 
-        void DeleteClient(Client client);
+        Task DeleteClient(Client client);
 
         // Autre methode specifique 
     }

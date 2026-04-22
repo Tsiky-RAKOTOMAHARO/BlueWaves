@@ -1,18 +1,19 @@
 using Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IProduitRepository{
         Task<Produit> GetProduitByCode (int CodeProduit);
 
-        Task<IEnumrable> GetAllProduit();
+        Task<IEnumerable<Produit>> GetAllProduit();
 
-        Task<IEnumrable> GetProduitByNumStock();
+        Task<IEnumerable<Produit>> GetProduitByNumStock();
 
         Task AddProduit(Produit produit);
 
-        void UpdateProduit(Produit produit);
+        Task UpdateProduit(Produit produit);
 
-        void DeleteProduit(Produit produit);
+        Task DeleteProduit(Produit produit);
     }
 }

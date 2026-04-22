@@ -1,18 +1,19 @@
 using Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IApprovisionnementRepository{
         Task<Approvisionnement> GetApprovisionnementById(int IdApp);
 
-        Task<IEnumrable> GetAllApprovisionnement();
+        Task<IEnumerable<Approvisionnement>> GetAllApprovisionnement();
 
-        Task<IEnumrable> GetApprovionnementRefFournisseur();
+        Task<IEnumerable<Approvisionnement>> GetApprovisionnementRefFournisseur();
 
         Task AddApprosionnement(Approvisionnement approvisionnement);
 
-        void UpdateApprovisionnement(Approvisionnement approvisionnement);
+        Task UpdateApprovisionnement(Approvisionnement approvisionnement);
 
-        void DeleteApprovisionnement(Approvisionnement approvisionnement);
+        Task DeleteApprovisionnement(Approvisionnement approvisionnement);
     }
 }

@@ -1,17 +1,18 @@
 using Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IExportRepository{
         Task<Export> GetExportByNumAsync (int Num);
 
-        Task<IEnumrable> GetAllExport();
+        Task<IEnumerable<Export>> GetAllExport();
 
         Task AddExport(Export export);
 
-        void UpdateExprot(Export export);
+        Task UpdateExprot(Export export);
 
-        void DeleteExport(Export export);
+        Task DeleteExport(Export export);
 
         // autre methode 
     }

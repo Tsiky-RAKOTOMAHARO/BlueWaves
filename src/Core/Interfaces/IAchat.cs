@@ -1,17 +1,18 @@
 using Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IAchatRepository{
         Task<Achat> GetAchatById(int Id);
 
-        Task<IEnumrable> GetAllAchat();
+        Task<IEnumerable<Achat>> GetAllAchat();
 
-        Task<IEnumrable> GetAchatByNumeroCommande();
+        Task<IEnumerable<Achat>> GetAchatByNumeroCommande();
 
-        void UpdateAchat(Achat achat);
+        Task UpdateAchat(Achat achat);
 
-        void DeleteAchat(Achat achat);
+        Task DeleteAchat(Achat achat);
         
     }
 }

@@ -1,20 +1,21 @@
 using Core.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface ICommandeRepository{
         Task<Commande> GetCommandeByNum(int NumCommande);
 
-        Task<IEnumrable> GetAllCommande();
+        Task<IEnumerable<Commande> > GetAllCommande();
 
-        Task<IEnumrable> GetCommandeByRefClient();
+        Task<IEnumerabl<Commande> > GetCommandeByRefClient();
 
-        Task<IEnumrable> GetCommandeByCodeExport();
+        Task<IEnumerable<Commande> > GetCommandeByCodeExport();
 
         Task AddCommande(Commande commande);
 
-        void UpdateCommande(Commande commande);
+        Task UpdateCommande(Commande commande);
 
-        void DeleteCommande(Commande commande);
+        Task DeleteCommande(Commande commande);
     }
 }
