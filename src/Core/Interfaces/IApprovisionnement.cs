@@ -8,7 +8,7 @@ namespace Core.Interfaces{
 
         Task<IEnumerable<Approvisionnement>> GetAllApprovisionnement();
 
-        Task<IEnumerable<Approvisionnement>> GetApprovisionnementRefFournisseur();
+        Task<IEnumerable<Approvisionnement>> GetApprovisionnementByRefFournisseur(int RefFournisseur);
 
         Task AddApprovisionnement(Approvisionnement approvisionnement);
 

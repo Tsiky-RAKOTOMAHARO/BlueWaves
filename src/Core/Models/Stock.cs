@@ -11,6 +11,6 @@ namespace Core.Models{
         [StringLength(25)]
         public string Type {get; set;}
 
-        public virtual Icollection<Produit> Produid {get; set;} = new List<Produit>();
+        public virtual ICollection<Produit> Produid {get; set;} = new List<Produit>();
     }
 }

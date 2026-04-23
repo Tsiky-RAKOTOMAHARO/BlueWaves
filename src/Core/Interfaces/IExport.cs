@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IExportRepository{
-        Task<Export> GetExportByNumAsync (int Num);
+        Task<Export> GetExportByNum (int Num);
 
         Task<IEnumerable<Export>> GetAllExport();
 
         Task AddExport(Export export);
 
-        Task UpdateExprot(Export export);
+        Task UpdateExport(Export export);
 
         Task DeleteExport(Export export);
 

@@ -11,28 +11,27 @@ namespace Data.Repositories{
             _context = context;
         }
 
-        public async Task<Produit> GetProduitByCode (int CodeProduit){
-            
-        }
+        public async Task<Produit?> GetProduitByCode(int codeProduit) => await _context.Produit.FindAsync(codeProduit);
 
-        public async Task<IEnumerable<Produit>> GetAllProduit(){
-            
-        }
+        public async Task<IEnumerable<Produit>> GetAllProduit() => await _context.Produit.ToListAsync();
 
-        public async Task<IEnumerable<Produit>> GetProduitByNumStock(){
-            
-        }
+        public async Task<IEnumerable<Produit>> GetProduitByNumStock(int numStock) => await _context.Produit
+                .Where(p => p.NumeroStock == numStock)
+                .ToListAsync();
 
         public async Task AddProduit(Produit produit){
-            
+            await _context.Produit.AddAsync(produit);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateProduit(Produit produit){
-            
+            _context.Produit.Update(produit);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteProduit(Produit produit){
-            
+            _context.Produit.Remove(produit);
+            await _context.SaveChangesAsync();
         }
     }
 }

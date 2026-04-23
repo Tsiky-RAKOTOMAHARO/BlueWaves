@@ -8,9 +8,9 @@ namespace Core.Interfaces{
 
         Task<IEnumerable<Commande> > GetAllCommande();
 
-        Task<IEnumerabl<Commande> > GetCommandeByRefClient();
+        Task<IEnumerable<Commande> > GetCommandeByRefClient(int refClient);
 
-        Task<IEnumerable<Commande> > GetCommandeByCodeExport();
+        Task<IEnumerable<Commande> > GetCommandeByCodeExport(int codeExport);
 
         Task AddCommande(Commande commande);
 

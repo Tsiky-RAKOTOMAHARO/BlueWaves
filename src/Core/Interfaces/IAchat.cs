@@ -8,7 +8,7 @@ namespace Core.Interfaces{
 
         Task<IEnumerable<Achat>> GetAllAchat();
 
-        Task<IEnumerable<Achat>> GetAchatByNumeroCommande();
+        Task<IEnumerable<Achat>> GetAchatByNumeroCommande(int numCommande);
 
         Task UpdateAchat(Achat achat);
 

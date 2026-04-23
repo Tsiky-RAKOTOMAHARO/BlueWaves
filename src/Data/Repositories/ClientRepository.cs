@@ -12,35 +12,25 @@ namespace Data.Repositories{
             _context = context;
         }
 
-        
-        public async Task<Client?> GetClientByRefAsync(int clientRef)
-        {
-            return await _context.Client.FindAsync(clientRef);
+        public async Task<Client> GetClientByRef (int Ref){
+            return await _context.Client.FindAsync(Ref);
         }
+        public async Task<IEnumerable<Client>> GetAllClient() => await _context.Client.ToListAsync();
 
-        
-        public async Task<IEnumerable<Client>> GetAllClientsAsync()
-        {
-            return await _context.Client.ToListAsync();
-        }
 
-        
-        public async Task AddClientAsync(Client client)
-        {
+        public async Task AddClient(Client client){
             await _context.Client.AddAsync(client);
             await _context.SaveChangesAsync(); 
         }
 
 
-        public async Task UpdateClientAsync(Client client)
-        {
+        public async Task UpdateClient(Client client){
             _context.Client.Update(client);
             await _context.SaveChangesAsync();
         }
 
 
-        public async Task DeleteClientAsync(Client client)
-        {
+        public async Task DeleteClient(Client client){
             _context.Client.Remove(client);
             await _context.SaveChangesAsync();
         }

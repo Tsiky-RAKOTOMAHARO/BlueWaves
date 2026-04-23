@@ -8,7 +8,7 @@ namespace Core.Interfaces{
 
         Task<IEnumerable<Produit>> GetAllProduit();
 
-        Task<IEnumerable<Produit>> GetProduitByNumStock();
+        Task<IEnumerable<Produit>> GetProduitByNumStock(int numStock);
 
         Task AddProduit(Produit produit);
 
