@@ -1,9 +1,171 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="UI.Views.StockInventoryView">
-    <StackPanel Margin="20">
-        <TextBlock Text="Inventaire du Stock" FontSize="20" FontWeight="Bold"/>
-        <Separator Margin="0,10"/>
-        <TextBlock Text="Visualisation des produits en entrepôt."/>
-    </StackPanel>
+             x:Class="UI.Views.StockInventoryView"
+             Tag="Gestion des Stocks"
+             Background="#F1F5F9">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+        </Style>
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20,16"/>
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel Margin="24">
+
+        <!-- HEADER -->
+        <StackPanel DockPanel.Dock="Top" Spacing="2" Margin="0,0,0,20">
+            <TextBlock Text="Gestion des Stocks"
+                       FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+            <TextBlock Text="État des entrepôts et valorisation"
+                       FontSize="12" Foreground="#94A3B8"/>
+        </StackPanel>
+
+        <!-- KPI ROW -->
+        <Grid DockPanel.Dock="Top"
+              ColumnDefinitions="*,*,*,*"
+              ColumnSpacing="12"
+              Margin="0,0,0,20">
+
+            <Border Grid.Column="0" Classes="card">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Valeur totale" Classes="label"/>
+                    <TextBlock Text="452 500 Ar" Classes="value"/>
+                    <TextBlock Text="+3% ce mois" FontSize="11" Foreground="#10B981"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Classes="card">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Références actives" Classes="label"/>
+                    <TextBlock Text="38" Classes="value"/>
+                    <TextBlock Text="produits en stock" FontSize="11" Foreground="#94A3B8"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Classes="card">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Alertes stock bas" Classes="label"/>
+                    <TextBlock Text="5" Classes="value" Foreground="#F59E0B"/>
+                    <TextBlock Text="à réapprovisionner" FontSize="11" Foreground="#94A3B8"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="3" Classes="card">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Dernière entrée" Classes="label"/>
+                    <TextBlock Text="Auj." Classes="value" Foreground="#3B82F6"/>
+                    <TextBlock Text="REC-2025-0042" FontSize="11" Foreground="#94A3B8"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- OCCUPATION DES ENTREPÔTS -->
+        <Border DockPanel.Dock="Top" Classes="card" Margin="0,0,0,20">
+            <StackPanel Spacing="16">
+                <TextBlock Text="Occupation des entrepôts"
+                           FontSize="13" FontWeight="Bold" Foreground="#0F172A"/>
+
+                <!-- Chambre Froide 1 -->
+                <Grid ColumnDefinitions="160,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Chambre Froide 1"
+                               FontSize="13" Foreground="#334155" VerticalAlignment="Center"/>
+                    <ProgressBar Grid.Row="0" Grid.Column="1"
+                                 Value="75" Minimum="0" Maximum="100"
+                                 Height="8" CornerRadius="4"
+                                 Foreground="#10B981" Background="#F1F5F9"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2"
+                               Text="75%" FontSize="12" FontWeight="SemiBold"
+                               Foreground="#10B981" Margin="12,0,0,0"/>
+                </Grid>
+
+                <!-- Chambre Froide 2 -->
+                <Grid ColumnDefinitions="160,*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Chambre Froide 2"
+                               FontSize="13" Foreground="#334155" VerticalAlignment="Center"/>
+                    <ProgressBar Grid.Column="1"
+                                 Value="40" Minimum="0" Maximum="100"
+                                 Height="8" CornerRadius="4"
+                                 Foreground="#3B82F6" Background="#F1F5F9"/>
+                    <TextBlock Grid.Column="2"
+                               Text="40%" FontSize="12" FontWeight="SemiBold"
+                               Foreground="#3B82F6" Margin="12,0,0,0"/>
+                </Grid>
+
+                <!-- Entrepôt Principal -->
+                <Grid ColumnDefinitions="160,*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Entrepôt Principal"
+                               FontSize="13" Foreground="#334155" VerticalAlignment="Center"/>
+                    <ProgressBar Grid.Column="1"
+                                 Value="91" Minimum="0" Maximum="100"
+                                 Height="8" CornerRadius="4"
+                                 Foreground="#F59E0B" Background="#F1F5F9"/>
+                    <TextBlock Grid.Column="2"
+                               Text="91%" FontSize="12" FontWeight="SemiBold"
+                               Foreground="#F59E0B" Margin="12,0,0,0"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- LISTE STOCK -->
+        <Border Classes="card">
+            <DockPanel>
+                <!-- Toolbar -->
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="Inventaire" FontSize="13" FontWeight="Bold"
+                               Foreground="#0F172A" VerticalAlignment="Center"/>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+                        <TextBox Watermark="🔍  Rechercher…"
+                                 Width="220"
+                                 Background="#F8FAFC"
+                                 BorderBrush="#E2E8F0" BorderThickness="1"
+                                 CornerRadius="8" Padding="10,6" FontSize="12"/>
+                        <Button Content="Filtrer ▾"
+                                Background="Transparent" Foreground="#64748B"
+                                BorderBrush="#E2E8F0" BorderThickness="1"
+                                CornerRadius="8" Padding="12,6" FontSize="12"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <DataGrid BorderThickness="0"
+                          Background="Transparent"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          RowHeight="44"
+                          FontSize="13"
+                          IsReadOnly="True"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Référence"    Width="130"/>
+                        <DataGridTextColumn Header="Désignation"  Width="*"/>
+                        <DataGridTextColumn Header="Dépôt"        Width="150"/>
+                        <DataGridTextColumn Header="Qté"          Width="80"/>
+                        <DataGridTextColumn Header="Unité"        Width="70"/>
+                        <DataGridTextColumn Header="P.U. (Ar)"    Width="110"/>
+                        <DataGridTextColumn Header="Valeur (Ar)"  Width="120"/>
+                        <DataGridTextColumn Header="Statut"       Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
 </UserControl>

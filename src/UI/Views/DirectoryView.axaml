@@ -1,9 +1,159 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="UI.Views.DirectoryView">
-    <StackPanel Margin="20">
-        <TextBlock Text="Annuaire des Contacts" FontSize="20" FontWeight="Bold"/>
-        <Separator Margin="0,10"/>
-        <TextBlock Text="Liste des clients et fournisseurs enregistrés."/>
-    </StackPanel>
+             x:Class="UI.Views.DirectoryView"
+             Tag="Annuaire"
+             Background="#F8FAFC">
+
+    <UserControl.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground" Value="#1E293B"/>
+        </Style>
+
+        <Style Selector="Border.Card">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.Card:pointerover">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="RenderTransform" Value="scale(1.02)"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, *" Margin="20">
+        
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
+            <StackPanel Orientation="Vertical" Spacing="4">
+                <TextBlock Text="Annuaire des Contacts" FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
+            </StackPanel>
+
+            <Button Grid.Column="1" 
+                    Background="#10B981" 
+                    Foreground="White" 
+                    Padding="20,10" 
+                    CornerRadius="6"
+                    FontWeight="SemiBold"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource ContactIcon}" Width="14" Height="14"/>
+                    <TextBlock Text="Ajouter un contact" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <Button.Styles>
+                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#059669"/>
+                    </Style>
+                </Button.Styles>
+
+                <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedRight">
+                        <Border Width="320" Padding="15" Background="White" CornerRadius="8">
+                            <StackPanel Spacing="15">
+                                <TextBlock Text="Nouveau Contact" FontWeight="Bold" FontSize="16" Foreground="#1E293B"/>
+                                
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Raison Sociale / Nom" Classes="label"/>
+                                    <TextBox Watermark="ex: Seafood Global Inc."/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Type" Classes="label"/>
+                                    <ComboBox HorizontalAlignment="Stretch" SelectedIndex="0">
+                                        <ComboBoxItem>Client</ComboBoxItem>
+                                        <ComboBoxItem>Fournisseur</ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Localisation" Classes="label"/>
+                                    <TextBox Watermark="Ville, Pays"/>
+                                </StackPanel>
+
+                                <Button Content="Enregistrer" 
+                                        Background="#10B981" 
+                                        Foreground="White" 
+                                        FontWeight="Bold"
+                                        CornerRadius="6"
+                                        HorizontalAlignment="Stretch" 
+                                        HorizontalContentAlignment="Center"
+                                        Margin="0,5,0,0"
+                                        Cursor="Hand"/>
+                            </StackPanel>
+                        </Border>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <TabControl Grid.Row="1" Background="Transparent" Margin="0,-8,0,0">
+            
+            <TabItem Header="Base Clients">
+                <ScrollViewer Padding="4,16" VerticalScrollBarVisibility="Auto">
+                    <WrapPanel HorizontalAlignment="Left">
+                        
+                        <Border Classes="Card" Width="280" Padding="20">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Seafood Global Inc." FontSize="15" FontWeight="SemiBold" Foreground="#1E293B"/>
+                                <TextBlock Text="Tokyo, Japon" FontSize="12" Foreground="#64748B"/>
+                                <Separator Margin="0,12" Background="#E2E8F0" Height="1"/>
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="Dernière commande" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="1" Background="#F0FDF4" CornerRadius="4" Padding="6,2">
+                                        <TextBlock Text="Il y a 12j" FontSize="11" FontWeight="Bold" Foreground="#16A34A"/>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        
+                    </WrapPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Base Fournisseurs">
+                <ScrollViewer Padding="4,16" VerticalScrollBarVisibility="Auto">
+                    <WrapPanel HorizontalAlignment="Left">
+                        
+                        <Border Classes="Card" Width="280" Padding="20">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Aquaculture Malagasy" FontSize="15" FontWeight="SemiBold" Foreground="#1E293B"/>
+                                <TextBlock Text="Mahajanga, MG" FontSize="12" Foreground="#64748B"/>
+                                <Separator Margin="0,12" Background="#E2E8F0" Height="1"/>
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="Statut" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="1" Background="#EFF6FF" CornerRadius="4" Padding="6,2">
+                                        <TextBlock Text="Actif" FontSize="11" FontWeight="Bold" Foreground="#3B82F6"/>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                    </WrapPanel>
+                </ScrollViewer>
+            </TabItem>
+            
+        </TabControl>
+    </Grid>
 </UserControl>

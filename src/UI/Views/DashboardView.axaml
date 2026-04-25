@@ -1,9 +1,89 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="UI.Views.DashboardView">
-    <StackPanel Margin="20">
-        <TextBlock Text="Annuaire des Contacts" FontSize="20" FontWeight="Bold"/>
-        <Separator Margin="0,10"/>
-        <TextBlock Text="DashBoard."/>
-    </StackPanel>
+             x:Class="UI.Views.DashboardView"
+             Tag="Tableau de bord"
+             Background="#F8FAFC">
+
+    <UserControl.Styles>
+        <Style Selector="Border.KPICard">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.KPICard:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.02)"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, *" Margin="20">
+        
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,25">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Tableau de Bord" FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
+                <TextBlock Text="Aperçu global des activités maritimes et stocks" Foreground="#64748B" FontSize="13"/>
+            </StackPanel>
+            
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *, *" Margin="0,0,0,25">
+            <Border Grid.Column="0" Classes="KPICard" Margin="0,0,15,0" BorderBrush="#10B981" BorderThickness="4,1,1,1">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Text="Exports en cours" Foreground="#64748B" FontSize="13" FontWeight="Medium"/>
+                        <PathIcon Grid.Column="1" Data="{StaticResource ShipIcon}" Width="16" Foreground="#10B981"/>
+                    </Grid>
+                    <TextBlock Text="12" FontSize="32" FontWeight="Bold" Foreground="#1E293B" Margin="0,10"/>
+                    <TextBlock Text="▲ +2 depuis hier" Foreground="#10B981" FontSize="12" FontWeight="Medium"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Classes="KPICard" Margin="0,0,15,0" BorderBrush="#3B82F6" BorderThickness="4,1,1,1">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Text="Commandes d'achat" Foreground="#64748B" FontSize="13" FontWeight="Medium"/>
+                        <PathIcon Grid.Column="1" Data="{StaticResource ShoppingCartIcon}" Width="16" Foreground="#3B82F6"/>
+                    </Grid>
+                    <TextBlock Text="5" FontSize="32" FontWeight="Bold" Foreground="#1E293B" Margin="0,10"/>
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <Ellipse Width="8" Height="8" Fill="#3B82F6"/>
+                        <TextBlock Text="3 en attente de livraison" Foreground="#64748B" FontSize="12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Classes="KPICard" BorderBrush="#EF4444" BorderThickness="4,1,1,1">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Text="Alertes Stock" Foreground="#64748B" FontSize="13" FontWeight="Medium"/>
+                        <PathIcon Grid.Column="1" Data="{StaticResource WarningIcon}" Width="16" Foreground="#EF4444"/>
+                    </Grid>
+                    <TextBlock Text="3" FontSize="32" FontWeight="Bold" Foreground="#1E293B" Margin="0,10"/>
+                    <TextBlock Text="⚠ Réapprovisionnement critique" Foreground="#EF4444" FontSize="12" FontWeight="Medium"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="White" CornerRadius="12" Padding="25" BorderBrush="#E2E8F0" BorderThickness="1">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Flux de marchandises (7 derniers jours)" FontSize="16" FontWeight="SemiBold" Foreground="#1E293B" Margin="0,0,0,10"/>
+                <TextBlock DockPanel.Dock="Top" Text="Volume d'export par rapport aux entrées" FontSize="13" Foreground="#94A3B8" Margin="0,0,0,25"/>
+                
+                <Panel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+                        <PathIcon Data="{StaticResource ChartIcon}" Width="40" Height="40" Foreground="#F1F5F9"/>
+                        <TextBlock Text="Chargement des données statistiques..." Foreground="#94A3B8" FontSize="14"/>
+                    </StackPanel>
+                </Panel>
+            </DockPanel>
+        </Border>
+    </Grid>
 </UserControl>

@@ -1,9 +1,470 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="UI.Views.PurchaseOrderView">
-    <StackPanel Margin="20">
-        <TextBlock Text="Bons de Commande" FontSize="20" FontWeight="Bold"/>
-        <Separator Margin="0,10"/>
-        <TextBlock Text="Gestion des achats et des commandes clients."/>
-    </StackPanel>
+             x:Class="UI.Views.PurchaseOrderView"
+             Tag="Achats &amp; Appro"
+             Background="#F1F5F9">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style Selector="Border.kpi">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="18,14"/>
+        </Style>
+        <Style Selector="Border.badge-green">
+            <Setter Property="Background" Value="#DCFCE7"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="10,3"/>
+        </Style>
+        <Style Selector="Border.badge-orange">
+            <Setter Property="Background" Value="#FEF3C7"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="10,3"/>
+        </Style>
+        <Style Selector="Border.badge-blue">
+            <Setter Property="Background" Value="#DBEAFE"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="10,3"/>
+        </Style>
+        <Style Selector="Border.badge-gray">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="10,3"/>
+        </Style>
+        <Style Selector="Border.order-card">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="18,14"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Border.order-card:pointerover">
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Background" Value="#FAFBFC"/>
+        </Style>
+        <Style Selector="Button.btn-primary-green">
+            <Setter Property="Background" Value="#10B981"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-primary-blue">
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-ghost">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-icon">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground" Value="#1E293B"/>
+        </Style>
+        <Style Selector="TextBox.search">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Width" Value="260"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- TOPBAR -->
+        <Border Grid.Row="0" Background="White" Padding="28,14"
+                BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
+            <StackPanel Spacing="2">
+                <TextBlock Text="Gestion Commerciale"
+                           FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                <TextBlock Text="Suivi des achats et commandes export"
+                           FontSize="12" Foreground="#94A3B8"/>
+            </StackPanel>
+        </Border>
+
+        <TabControl Grid.Row="1" Background="Transparent">
+
+           
+            
+            <TabItem Header="Approvisionnement">
+                <DockPanel Margin="24,20,24,24">
+
+                    <!-- TOOLBAR -->
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,18">
+                        <Button DockPanel.Dock="Right"
+                                Content="＋  Nouvelle réception"
+                                Classes="btn-primary-green"
+                                Click="OnNouvelleReceptionClick"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBox x:Name="SearchAppro"
+                                     Classes="search"
+                                     Watermark="🔍  Rechercher…"
+                                     TextChanged="OnApproSearchChanged"/>
+                            <Button Classes="btn-ghost" Content="Filtrer ▾"
+                                    Click="OnApproFiltrerClick"/>
+                            <Button Classes="btn-ghost" Content="Exporter"
+                                    Click="OnApproExporterClick"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- KPIs -->
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,*,*,*" ColumnSpacing="12"
+                          Margin="0,0,0,20">
+                        <Border Grid.Column="0" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Ce mois" Classes="label"/>
+                                <TextBlock x:Name="KpiReceptions"
+                                           Text="18" FontSize="26" FontWeight="Bold" Foreground="#0F172A"/>
+                                <TextBlock Text="réceptions" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="En attente" Classes="label"/>
+                                <TextBlock x:Name="KpiEnAttente"
+                                           Text="4" FontSize="26" FontWeight="Bold" Foreground="#F59E0B"/>
+                                <TextBlock Text="à valider" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Valeur totale" Classes="label"/>
+                                <TextBlock x:Name="KpiValeur"
+                                           Text="12,4 M" FontSize="26" FontWeight="Bold" Foreground="#10B981"/>
+                                <TextBlock Text="Ariary" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="3" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Fournisseurs" Classes="label"/>
+                                <TextBlock x:Name="KpiFournisseurs"
+                                           Text="6" FontSize="26" FontWeight="Bold" Foreground="#3B82F6"/>
+                                <TextBlock Text="actifs" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                   
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="ApproList" Spacing="0">
+
+                            <Border Classes="order-card" PointerPressed="OnApproCardClick" Tag="REC-2025-0042">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                                    <Border Grid.Column="0" Width="4" CornerRadius="4" Background="#10B981" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="REC-2025-0042" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                        <TextBlock FontSize="12" Foreground="#64748B">
+                                            <Run Text="Pêcheries du Nord"/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="Entrepôt Principal"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Date" Classes="label"/>
+                                        <TextBlock Text="18 juin 2025" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Articles" Classes="label"/>
+                                        <TextBlock Text="7 lignes" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Right" MinWidth="110">
+                                        <TextBlock Text="Montant" Classes="label"/>
+                                        <TextBlock Text="2 340 000 Ar" FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="20,0,0,0">
+                                        <Border Classes="badge-green">
+                                            <TextBlock Text="✓ Validé" FontSize="11" FontWeight="SemiBold" Foreground="#16A34A"/>
+                                        </Border>
+                                        <Button Classes="btn-icon" Content="⋯" Click="OnApproActionsClick" Tag="REC-2025-0042"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="order-card" PointerPressed="OnApproCardClick" Tag="REC-2025-0041">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                                    <Border Grid.Column="0" Width="4" CornerRadius="4" Background="#F59E0B" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="REC-2025-0041" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                        <TextBlock FontSize="12" Foreground="#64748B">
+                                            <Run Text="Aquaculture Malagasy"/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="Chambre Froide A"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Date" Classes="label"/>
+                                        <TextBlock Text="16 juin 2025" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Articles" Classes="label"/>
+                                        <TextBlock Text="3 lignes" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Right" MinWidth="110">
+                                        <TextBlock Text="Montant" Classes="label"/>
+                                        <TextBlock Text="870 000 Ar" FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="20,0,0,0">
+                                        <Border Classes="badge-orange">
+                                            <TextBlock Text="⏳ En attente" FontSize="11" FontWeight="SemiBold" Foreground="#D97706"/>
+                                        </Border>
+                                        <Button Classes="btn-icon" Content="⋯" Click="OnApproActionsClick" Tag="REC-2025-0041"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="order-card" PointerPressed="OnApproCardClick" Tag="REC-2025-0040">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                                    <Border Grid.Column="0" Width="4" CornerRadius="4" Background="#CBD5E1" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="REC-2025-0040" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                        <TextBlock FontSize="12" Foreground="#64748B">
+                                            <Run Text="Pêcheries du Nord"/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="Entrepôt Principal"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Date" Classes="label"/>
+                                        <TextBlock Text="10 juin 2025" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Articles" Classes="label"/>
+                                        <TextBlock Text="12 lignes" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Right" MinWidth="110">
+                                        <TextBlock Text="Montant" Classes="label"/>
+                                        <TextBlock Text="5 120 000 Ar" FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="20,0,0,0">
+                                        <Border Classes="badge-gray">
+                                            <TextBlock Text="Brouillon" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                        </Border>
+                                        <Button Classes="btn-icon" Content="⋯" Click="OnApproActionsClick" Tag="REC-2025-0040"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+           
+            <TabItem Header="Commandes Export">
+                <DockPanel Margin="24,20,24,24">
+
+                    <!-- TOOLBAR -->
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,18">
+                        <Button DockPanel.Dock="Right"
+                                Content="＋  Nouvelle commande"
+                                Classes="btn-primary-blue"
+                                Click="OnNouvelleCommandeClick"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBox x:Name="SearchExport"
+                                     Classes="search"
+                                     Watermark="🔍  Rechercher…"
+                                     TextChanged="OnExportSearchChanged"/>
+                            <Button Classes="btn-ghost" Content="Filtrer ▾"
+                                    Click="OnExportFiltrerClick"/>
+                            <Button Classes="btn-ghost" Content="Exporter"
+                                    Click="OnExportExporterClick"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- KPIs -->
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,*,*,*" ColumnSpacing="12"
+                          Margin="0,0,0,20">
+                        <Border Grid.Column="0" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Ce mois" Classes="label"/>
+                                <TextBlock x:Name="KpiCommandes"
+                                           Text="9" FontSize="26" FontWeight="Bold" Foreground="#0F172A"/>
+                                <TextBlock Text="commandes" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="En transit" Classes="label"/>
+                                <TextBlock x:Name="KpiTransit"
+                                           Text="3" FontSize="26" FontWeight="Bold" Foreground="#3B82F6"/>
+                                <TextBlock Text="expéditions" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Poids total" Classes="label"/>
+                                <TextBlock x:Name="KpiPoids"
+                                           Text="42 T" FontSize="26" FontWeight="Bold" Foreground="#10B981"/>
+                                <TextBlock Text="exportées" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="3" Classes="kpi">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="CA Export" Classes="label"/>
+                                <TextBlock x:Name="KpiCa"
+                                           Text="86 k" FontSize="26" FontWeight="Bold" Foreground="#6366F1"/>
+                                <TextBlock Text="USD" FontSize="12" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- EXPORT LIST -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="ExportList" Spacing="0">
+
+                            <Border Classes="order-card" PointerPressed="OnExportCardClick" Tag="EXP-2025-0019">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto">
+                                    <Border Grid.Column="0" Width="4" CornerRadius="4" Background="#3B82F6" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="EXP-2025-0019" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                        <TextBlock FontSize="12" Foreground="#64748B">
+                                            <Run Text="Seafood Global Inc."/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="Tokyo, Japon"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Incoterm" Classes="label"/>
+                                        <TextBlock Text="FOB" FontSize="13" FontWeight="SemiBold" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Poids" Classes="label"/>
+                                        <TextBlock Text="14 800 kg" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Expédition" Classes="label"/>
+                                        <TextBlock Text="20 juin 2025" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Right" MinWidth="110">
+                                        <TextBlock Text="Montant" Classes="label"/>
+                                        <TextBlock Text="28 400 USD" FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="20,0,0,0">
+                                        <Border Classes="badge-blue">
+                                            <TextBlock Text="🚢 En transit" FontSize="11" FontWeight="SemiBold" Foreground="#2563EB"/>
+                                        </Border>
+                                        <Button Classes="btn-icon" Content="⋯" Click="OnExportActionsClick" Tag="EXP-2025-0019"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="order-card" PointerPressed="OnExportCardClick" Tag="EXP-2025-0018">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto">
+                                    <Border Grid.Column="0" Width="4" CornerRadius="4" Background="#10B981" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="EXP-2025-0018" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                        <TextBlock FontSize="12" Foreground="#64748B">
+                                            <Run Text="Oceanic EU Ltd."/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="Marseille, France"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Incoterm" Classes="label"/>
+                                        <TextBlock Text="CIF" FontSize="13" FontWeight="SemiBold" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Poids" Classes="label"/>
+                                        <TextBlock Text="9 200 kg" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Expédition" Classes="label"/>
+                                        <TextBlock Text="05 juin 2025" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Right" MinWidth="110">
+                                        <TextBlock Text="Montant" Classes="label"/>
+                                        <TextBlock Text="19 750 USD" FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="20,0,0,0">
+                                        <Border Classes="badge-green">
+                                            <TextBlock Text="✓ Livré" FontSize="11" FontWeight="SemiBold" Foreground="#16A34A"/>
+                                        </Border>
+                                        <Button Classes="btn-icon" Content="⋯" Click="OnExportActionsClick" Tag="EXP-2025-0018"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="order-card" PointerPressed="OnExportCardClick" Tag="EXP-2025-0017">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto">
+                                    <Border Grid.Column="0" Width="4" CornerRadius="4" Background="#F59E0B" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="EXP-2025-0017" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                        <TextBlock FontSize="12" Foreground="#64748B">
+                                            <Run Text="Seafood Global Inc."/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="Dubai, EAU"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Incoterm" Classes="label"/>
+                                        <TextBlock Text="FOB" FontSize="13" FontWeight="SemiBold" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Poids" Classes="label"/>
+                                        <TextBlock Text="18 000 kg" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Center">
+                                        <TextBlock Text="Expédition" Classes="label"/>
+                                        <TextBlock Text="28 juin 2025" FontSize="13" Foreground="#334155"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="20,0" HorizontalAlignment="Right" MinWidth="110">
+                                        <TextBlock Text="Montant" Classes="label"/>
+                                        <TextBlock Text="37 800 USD" FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="20,0,0,0">
+                                        <Border Classes="badge-orange">
+                                            <TextBlock Text="⏳ Préparation" FontSize="11" FontWeight="SemiBold" Foreground="#D97706"/>
+                                        </Border>
+                                        <Button Classes="btn-icon" Content="⋯" Click="OnExportActionsClick" Tag="EXP-2025-0017"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
 </UserControl>
