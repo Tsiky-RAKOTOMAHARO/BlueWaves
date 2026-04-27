@@ -43,4 +43,11 @@ public partial class ExportViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+
+    public async Task<Export> AddExportAsync(Export export)
+    {
+        await _repository.AddExport(export);
+        await LoadDataAsync();
+        return export;
+    }
 }

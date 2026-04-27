@@ -1,0 +1,229 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:Core.Models;assembly=Core"
+             x:Class="UI.Views.ProduitListView"
+             Tag="Gestion des Produits"
+             Background="#F8FAFC">
+
+    <Grid RowDefinitions="Auto, *" Margin="20">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Catalogue des Produits" FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
+                <TextBlock Text="Liste des produits enregistrés en stock" Foreground="#64748B" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Width="250">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <PathIcon Data="{StaticResource SearchIcon}" Width="14" Margin="12,0" Foreground="#94A3B8"/>
+                        <TextBox Grid.Column="1" Watermark="Rechercher un produit..."
+                                 BorderThickness="0" Background="Transparent"
+                                 VerticalContentAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <Button Name="AjouterButton"
+                        Content="+ Ajouter un produit"
+                        Background="#10B981" Foreground="White"
+                        Padding="20,10" CornerRadius="6" FontWeight="SemiBold" Cursor="Hand">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#059669"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Contenu principal : liste + panneau latéral -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
+
+            <!-- DataGrid -->
+            <Border Grid.Column="0" Background="White" CornerRadius="12"
+                    BorderBrush="#E2E8F0" BorderThickness="1"
+                    BoxShadow="0 4 20 0 #08000000" ClipToBounds="True">
+                <DataGrid Name="ProductGrid"
+                          CanUserResizeColumns="True"
+                          GridLinesVisibility="Horizontal"
+                          IsReadOnly="True">
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#F1F5F9"/>
+                            <Setter Property="Foreground" Value="#475569"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Height" Value="45"/>
+                            <Setter Property="Padding" Value="15,0"/>
+                        </Style>
+                    </DataGrid.Styles>
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Code Produit" Width="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Produit">
+                                    <TextBlock Text="{Binding CodeProduit}"
+                                               VerticalAlignment="Center" Margin="15,0"
+                                               Foreground="#64748B" FontSize="12" FontWeight="Medium"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Nom du Produit" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Produit">
+                                    <TextBlock Text="{Binding NomProduit}"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Medium" Foreground="#1E293B"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="N° Stock" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Produit">
+                                    <TextBlock Text="{Binding NumeroStock}"
+                                               VerticalAlignment="Center" Margin="15,0"
+                                               Foreground="#64748B"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Quantité" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Produit">
+                                    <TextBlock Text="{Binding Quantite}"
+                                               VerticalAlignment="Center" Margin="15,0"
+                                               FontWeight="Bold" Foreground="#1E293B"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Date de Réception" Width="160">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Produit">
+                                    <TextBlock Text="{Binding Date_reception, StringFormat='{}{0:dd/MM/yyyy}'}"
+                                               VerticalAlignment="Center" Margin="15,0"
+                                               Foreground="#64748B" FontSize="12"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Panneau latéral -->
+            <Border Name="PanneauLateral"
+                    Grid.Column="1"
+                    IsVisible="False"
+                    Width="320"
+                    Margin="16,0,0,0"
+                    Background="White"
+                    CornerRadius="12"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    BoxShadow="0 4 20 0 #08000000">
+                <StackPanel Margin="24" Spacing="16">
+
+                    <!-- En-tête panneau -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Nouveau Produit" FontSize="16"
+                                       FontWeight="Bold" Foreground="#1E293B"/>
+                            <TextBlock Text="Remplissez les informations" 
+                                       Foreground="#64748B" FontSize="12"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Name="FermerPanneauButton"
+                                Content="✕" Background="Transparent"
+                                Foreground="#94A3B8" FontSize="16"
+                                Padding="4" Cursor="Hand"/>
+                    </Grid>
+
+                    <Border Height="1" Background="#E2E8F0"/>
+
+                    <!-- Nom du produit -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Nom du produit" FontWeight="SemiBold"
+                                   Foreground="#374151" FontSize="13"/>
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0"
+                                BorderThickness="1" CornerRadius="6">
+                            <TextBox Name="NomProduitInput"
+                                     Watermark="Ex: Crevettes Tigrées"
+                                     BorderThickness="0" Background="Transparent"
+                                     Padding="12,10"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Numéro de stock -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Numéro de stock" FontWeight="SemiBold"
+                                   Foreground="#374151" FontSize="13"/>
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0"
+                                BorderThickness="1" CornerRadius="6">
+                            <TextBox Name="NumeroStockInput"
+                                     Watermark="Ex: 1"
+                                     BorderThickness="0" Background="Transparent"
+                                     Padding="12,10"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Quantité -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Quantité" FontWeight="SemiBold"
+                                   Foreground="#374151" FontSize="13"/>
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0"
+                                BorderThickness="1" CornerRadius="6">
+                            <TextBox Name="QuantiteInput"
+                                     Watermark="Ex: 500"
+                                     BorderThickness="0" Background="Transparent"
+                                     Padding="12,10"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Date de réception -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Date de réception" FontWeight="SemiBold"
+                                   Foreground="#374151" FontSize="13"/>
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0"
+                                BorderThickness="1" CornerRadius="6">
+                            <CalendarDatePicker Name="DateReceptionInput"
+                                                Watermark="Sélectionner une date"
+                                                BorderThickness="0" Background="Transparent"
+                                                Padding="8,6" HorizontalAlignment="Stretch"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Message erreur -->
+                    <TextBlock Name="ErreurMessage" Text=""
+                               Foreground="#EF4444" FontSize="12"
+                               IsVisible="False" TextWrapping="Wrap"/>
+
+                    <!-- Boutons -->
+                    <Grid ColumnDefinitions="*, *" Margin="0,8,0,0">
+                        <Button Grid.Column="0" Name="AnnulerButton"
+                                Content="Annuler"
+                                Background="#F1F5F9" Foreground="#475569"
+                                Padding="0,10" HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                CornerRadius="6" Margin="0,0,8,0"/>
+
+                        <Button Grid.Column="1" Name="EnregistrerButton"
+                                Content="Enregistrer"
+                                Background="#10B981" Foreground="White"
+                                Padding="0,10" HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                CornerRadius="6" FontWeight="SemiBold">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#059669"/>
+                                </Style>
+                            </Button.Styles>
+                        </Button>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Grid>
+</UserControl>

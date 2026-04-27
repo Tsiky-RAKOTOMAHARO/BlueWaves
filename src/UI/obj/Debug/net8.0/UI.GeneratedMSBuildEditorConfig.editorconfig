@@ -4,6 +4,8 @@ build_property.AvaloniaNameGeneratorBehavior = InitializeComponent
 build_property.AvaloniaNameGeneratorDefaultFieldModifier = internal
 build_property.AvaloniaNameGeneratorFilterByPath = *
 build_property.AvaloniaNameGeneratorFilterByNamespace = *
+build_property.AvaloniaNameGeneratorViewFileNamingStrategy = NamespaceAndClassName
+build_property.AvaloniaNameGeneratorAttachDevTools = true
 build_property.MvvmToolkitEnableINotifyPropertyChangingSupport = true
 build_property._MvvmToolkitIsUsingWindowsRuntimePack = false
 build_property.CsWinRTComponent = 
@@ -34,7 +36,7 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [/home/smiley/HERACLES/Project/BlueWaves/src/UI/Views/DirectoryView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[/home/smiley/HERACLES/Project/BlueWaves/src/UI/Views/ExportListView.axaml]
+[/home/smiley/HERACLES/Project/BlueWaves/src/UI/Views/ProduitListView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/home/smiley/HERACLES/Project/BlueWaves/src/UI/Views/PurchaseOrderView.axaml]

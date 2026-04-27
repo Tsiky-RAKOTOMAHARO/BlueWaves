@@ -1,9 +1,149 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UI.MainWindow"
-        Title="MainWindow">
-  BLUEWAVES LESS BRAINA AAAAH
+        Title="BlueWaves"
+        Width="1200" Height="800"
+        Background="#F1F5F9"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid ColumnDefinitions="240, *">
+
+        <Border Grid.Column="0" Background="#1E293B">
+            <Grid RowDefinitions="56, *, 64">
+
+                <Border Grid.Row="0" Background="#0F172A" Padding="18,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+                        <Border Width="28" Height="28" CornerRadius="8" Background="#10B981">
+                            <PathIcon Data="{StaticResource BoatIcon}" Foreground="White"
+                                      Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="BlueWaves" Foreground="White"
+                                   FontSize="16" FontWeight="Medium" LetterSpacing="0.5"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" Margin="0" VerticalScrollBarVisibility="Hidden">
+                    <StackPanel Margin="0,12,0,12" Spacing="1">
+
+                        <Button Name="BtnDashboard" Click="NavClick" Classes="nav active" Tag="Dashboard">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource GridIcon}" Foreground="White" Width="15" Height="25"/>
+                                <TextBlock Text="Tableau de bord"/>
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Text="OPÉRATIONS" FontSize="10" FontWeight="Bold" Classes="nav-section-label"/>
+
+                        <Button Click="NavClick" Classes="nav" Tag="Purchase">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource CartIcon}" Foreground="White" Width="15" Height="25"/>
+                                <TextBlock Text="Achats &amp; Appro"/>
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Text="RESSOURCES" FontSize="10" FontWeight="Bold" Classes="nav-section-label"/>
+
+                        <Button Click="NavClick" Classes="nav" Tag="Produit">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource GlobeIcon}" Foreground="White" Width="15" Height="25"/>
+                                <TextBlock Text="Produits"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Click="NavClick" Classes="nav" Tag="Stock">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource CartIcon}" Foreground="White" Width="15" Height="25"/>
+                                <TextBlock Text="Gestion des Stocks"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Click="NavClick" Classes="nav" Tag="Directory">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Data="{StaticResource ContactIcon}" Foreground="White" Width="15" Height="25"/>
+                                <TextBlock Text="Annuaire (CRM)"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Border Grid.Row="2" Background="#0F172A" Padding="16,0">
+                    <Grid ColumnDefinitions="Auto, *, Auto" VerticalAlignment="Center">
+                        <Border Width="32" Height="32" CornerRadius="16" Background="#10B981">
+                            <TextBlock Text="A" Foreground="White"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       FontSize="11" FontWeight="Medium"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Text="ADMIN" Foreground="White" FontSize="14" FontWeight="Medium"/>
+                            <TextBlock Text="Admin Logistique" Foreground="#64748B" FontSize="11"/>
+                        </StackPanel>
+                        <Button Grid.Column="2" Classes="icon-btn">
+                            <PathIcon Data="{StaticResource GearIcon}" Width="15" Height="15"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+
+        <ContentControl Grid.Column="1" Name="MainContentPresenter" Padding="10"/>
+        
+    </Grid>
+
+    <Window.Styles>
+        <Style Selector="Button.nav">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="BorderThickness" Value="3,0,0,0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.nav /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="rgba(255,255,255,0.05)"/>
+            <Setter Property="Foreground" Value="#CBD5E1"/>
+        </Style>
+        <Style Selector="Button.nav.active">
+            <Setter Property="Background" Value="#334155"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#10B981"/>
+        </Style>
+        <Style Selector="Button.nav.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="#334155"/>
+        </Style>
+
+        <Style Selector="TextBlock.nav-section-label">
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="20,16,0,4"/>
+            <Setter Property="LetterSpacing" Value="1"/>
+        </Style>
+
+        <Style Selector="Button.icon-btn">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Styles>
 </Window>

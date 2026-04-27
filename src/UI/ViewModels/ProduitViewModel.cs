@@ -26,7 +26,11 @@ public partial class ProduitViewModel : ViewModelBase
         _repository = repository;
     }
 
-    public async Task LoadDataAsync()
+    public ProduitViewModel()
+    {
+    }
+
+    public async Task LoadProduit()
     {
         if (IsLoading) return;
 

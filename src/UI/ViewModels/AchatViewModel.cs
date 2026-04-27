@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using Core.Interfaces;
-using Core.Models; 
+using Core.Models;
 
 namespace UI.ViewModels;
 
@@ -47,5 +47,14 @@ public partial class AchatViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    internal async Task LoadAchats()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void FilterAchats(string query){
+        throw new NotImplementedException();
     }
 }

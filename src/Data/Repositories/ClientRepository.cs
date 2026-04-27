@@ -12,8 +12,8 @@ namespace Data.Repositories{
             _context = context;
         }
 
-        public async Task<Client> GetClientByRef (int Ref){
-            return await _context.Client.FindAsync(Ref);
+        public async Task<Client> GetClientByRef(int Ref){
+            return await _context.Client.FindAsync(Ref) ?? throw new KeyNotFoundException();
         }
         public async Task<IEnumerable<Client>> GetAllClient() => await _context.Client.ToListAsync();
 

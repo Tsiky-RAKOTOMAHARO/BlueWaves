@@ -11,6 +11,8 @@ namespace Core.Models{
         [Required]
         [StringLength(150)]
         public string NomProduit {get; set;}
+        
+        [Column("QuantiteProduit")] 
         public int Quantite {get; set;}
         public DateTime Date_reception {get; set;}
         public bool Statut {get; set;}

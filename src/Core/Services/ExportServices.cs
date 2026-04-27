@@ -11,7 +11,7 @@ namespace Core.Services{
             _exportRepository = exportRepository;
         }
 
-        public async Task<Export?> GetExportByNum(int num){
+        public async Task<Export> GetExportByNum(int num){
             return await _exportRepository.GetExportByNum(num);
         }
 

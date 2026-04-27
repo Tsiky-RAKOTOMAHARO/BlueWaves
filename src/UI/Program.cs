@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Threading.Tasks; // Nécessaire pour Task
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,20 +9,18 @@ using Microsoft.EntityFrameworkCore;
 using Data.Context;
 using Data.Repositories;
 using Core.Interfaces;
+using Core.Models;
 using UI.ViewModels;
-using System.IO;
 
 namespace UI;
 
 class Program
 {
-    // Propriété statique pour accéder aux services partout dans l'UI
     public static IHost? ServiceHost { get; private set; }
 
     [STAThread]
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-       
         ServiceHost = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>
             {
@@ -30,11 +30,12 @@ class Program
             .ConfigureServices((context, services) =>
             {
                 var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
-                
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+                var serverVersion = new MySqlServerVersion(new Version(8, 0, 35)); 
 
-                
+                services.AddDbContext<AppDbContext>(options =>
+                    options.UseMySql(connectionString, serverVersion));
+
+                // Repositories
                 services.AddScoped<IAchatRepository, AchatRepository>();
                 services.AddScoped<IApprovisionnementRepository, ApprovisionnementRepository>();
                 services.AddScoped<IClientRepository, ClientRepository>();
@@ -42,9 +43,9 @@ class Program
                 services.AddScoped<IExportRepository, ExportRepository>();
                 services.AddScoped<IFournisseurRepository, FournisseurRepository>();
                 services.AddScoped<IProduitRepository, ProduitRepository>();
-                services.AddScoped<IStockRepository, StockRepository>();
+                services.AddScoped<IStockRepository, StockRepository>(); // Corrigé ici
 
-                // Enregistrement des ViewModels
+                // ViewModels
                 services.AddTransient<AchatViewModel>();
                 services.AddTransient<ApprovisionnementViewModel>();
                 services.AddTransient<ClientViewModel>();
@@ -53,13 +54,13 @@ class Program
                 services.AddTransient<FournisseurViewModel>();
                 services.AddTransient<ProduitViewModel>();
                 services.AddTransient<StockViewModel>();
+
+                services.AddScoped<Core.Services.ProduitServices>(); 
             })
             .Build();
 
-        
-        ServiceHost.Start();
+        await ServiceHost.StartAsync();
 
-        
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
@@ -67,5 +68,6 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace();
+            .LogToTrace()
+            .UseSkia();
 }

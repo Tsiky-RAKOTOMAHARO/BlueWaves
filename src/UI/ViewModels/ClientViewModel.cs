@@ -1,48 +1,63 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using Core.Interfaces;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Core.Models;
+using Core.Interfaces;
 
-namespace UI.ViewModels;
-
-public partial class ClientViewModel : ViewModelBase
+namespace UI.ViewModels
 {
-    private readonly IClientRepository _repository;
+    public class ClientViewModel : INotifyPropertyChanged{
+        private readonly IClientRepository _clientService;
+        private ObservableCollection<Client> _clients = new ObservableCollection<Client>();
+        private Client? _selectedClient;
 
-    public ObservableCollection<Client> Clients { get; } = new();
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-    [ObservableProperty]
-    private bool _isLoading;
-
-    [ObservableProperty] private int _refClient;
-    [ObservableProperty] private string? _nomClient;
-    [ObservableProperty] private string? _prenomClient;
-    [ObservableProperty] private string? _telephone;
-
-    public ClientViewModel(IClientRepository repository)
-    {
-        _repository = repository;
-    }
-
-    public async Task LoadDataAsync()
-    {
-        if (IsLoading) return;
-
-        try
-        {
-            IsLoading = true;
-            Clients.Clear();
-
-            var data = await _repository.GetAllClient();
-            
-            foreach (var item in data)
-            {
-                Clients.Add(item);
+        public ObservableCollection<Client> Clients{
+            get => _clients;
+            set{
+                _clients = value;
+                OnPropertyChanged();
             }
         }
-        finally
+
+        public Client? SelectedClient
         {
-            IsLoading = false;
+            get => _selectedClient;
+            set{
+                _selectedClient = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ClientViewModel(IClientRepository clientService){
+            _clientService = clientService;
+            // Ne pas charger automatiquement dans le constructeur - laisser la vue gérer cela
+        }
+
+        public async Task LoadClients(){
+            var data = await _clientService.GetAllClient();
+            Clients = new ObservableCollection<Client>(data);
+        }
+
+        public async Task SaveClient(Client client)
+        {
+            if (client.RefClient == 0){
+                await _clientService.AddClient(client);
+            }
+            else{
+                await _clientService.UpdateClient(client);
+            }
+            await LoadClients();
+        }
+
+        public async Task RemoveClient(Client client){
+            await _clientService.DeleteClient(client);
+            Clients.Remove(client);
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string? name = null){
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

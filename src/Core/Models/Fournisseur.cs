@@ -10,7 +10,7 @@ namespace Core.Models{
         public string NomFournisseur {get; set;}
 
         [StringLength(150)]
-        public string PrenomsFournisseur {get; set;}
+        public string PrenomFournisseur {get; set;}
 
         [Required]
         [StringLength(25)]

@@ -11,7 +11,7 @@ namespace Core.Services{
             _commandeRepository = commandeRepository;
         }
 
-        public async Task<Commande?> GetCommandeByNum(int num){
+        public async Task<Commande> GetCommandeByNum(int num){
             return await _commandeRepository.GetCommandeByNum(num);
         }
 

@@ -1,7 +1,8 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Core.Interfaces;
 using Core.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace UI.ViewModels;
 
@@ -10,14 +11,13 @@ public partial class ApprovisionnementViewModel : ViewModelBase
     private readonly IApprovisionnementRepository _repository;
 
     public ObservableCollection<Approvisionnement> Approvisionnements { get; } = new();
+    public ObservableCollection<Approvisionnement> FilteredApprovisionnements { get; } = new();
 
     [ObservableProperty]
     private bool _isLoading;
 
-    [ObservableProperty] private int _idApp;
-    [ObservableProperty] private int _refFournisseur;
-    [ObservableProperty] private int _codeProduit;
-    [ObservableProperty] private string? _certificat;
+    [ObservableProperty]
+    private string? _searchQuery;
 
     public ApprovisionnementViewModel(IApprovisionnementRepository repository)
     {
@@ -28,21 +28,48 @@ public partial class ApprovisionnementViewModel : ViewModelBase
     {
         if (IsLoading) return;
 
-        try
-        {
-            IsLoading = true;
-            Approvisionnements.Clear();
+        IsLoading = true;
 
-            var data = await _repository.GetAllApprovisionnement();
-            
-            foreach (var item in data)
-            {
-                Approvisionnements.Add(item);
-            }
-        }
-        finally
+        Approvisionnements.Clear();
+        FilteredApprovisionnements.Clear();
+
+        var data = await _repository.GetAllApprovisionnement();
+
+        foreach (var item in data)
         {
-            IsLoading = false;
+            Approvisionnements.Add(item);
+            FilteredApprovisionnements.Add(item);
         }
+
+        IsLoading = false;
+    }
+
+    partial void OnSearchQueryChanged(string? value)
+    {
+        FilterAppro(value ?? "");
+    }
+
+
+    // Features
+    public void FilterAppro(string query)
+    {
+        FilteredApprovisionnements.Clear();
+
+        var results = string.IsNullOrWhiteSpace(query)
+            ? Approvisionnements
+            : Approvisionnements.Where(a =>
+                a.Certificat != null && a.Certificat.Contains(query, StringComparison.OrdinalIgnoreCase)
+            );
+
+        foreach (var item in results)
+        {
+            FilteredApprovisionnements.Add(item);
+        }
+    }
+
+    public async Task AddApprovisionnementAsync(Approvisionnement approvisionnement)
+    {
+        await _repository.AddApprovisionnement(approvisionnement);
+        await LoadDataAsync();
     }
 }

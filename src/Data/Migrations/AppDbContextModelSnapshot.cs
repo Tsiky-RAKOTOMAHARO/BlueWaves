@@ -16,7 +16,7 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Core.Models.Achat", b =>
@@ -40,7 +40,7 @@ namespace Data.Migrations
 
                     b.HasIndex("NumeroCommande");
 
-                    b.ToTable("Achat");
+                    b.ToTable("ACHAT", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Approvisionnement", b =>
@@ -66,7 +66,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RefFournisseur");
 
-                    b.ToTable("Approvisionnement");
+                    b.ToTable("APPROVISIONNEMENT", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Client", b =>
@@ -92,7 +92,7 @@ namespace Data.Migrations
 
                     b.HasKey("RefClient");
 
-                    b.ToTable("Client");
+                    b.ToTable("CLIENT", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Commande", b =>
@@ -121,7 +121,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RefClient");
 
-                    b.ToTable("Commande");
+                    b.ToTable("COMMANDE", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Export", b =>
@@ -135,7 +135,7 @@ namespace Data.Migrations
 
                     b.HasKey("NumeroExport");
 
-                    b.ToTable("Export");
+                    b.ToTable("EXPORT", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Fournisseur", b =>
@@ -149,7 +149,7 @@ namespace Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<string>("PrenomsFournisseur")
+                    b.Property<string>("PrenomFournisseur")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
@@ -161,7 +161,7 @@ namespace Data.Migrations
 
                     b.HasKey("RefFournisseur");
 
-                    b.ToTable("Fournisseur");
+                    b.ToTable("FOURNISSEUR", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Produit", b =>
@@ -191,7 +191,7 @@ namespace Data.Migrations
 
                     b.HasIndex("NumeroStock");
 
-                    b.ToTable("Produit");
+                    b.ToTable("PRODUIT", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Stock", b =>
@@ -207,7 +207,7 @@ namespace Data.Migrations
 
                     b.HasKey("NumeroStock");
 
-                    b.ToTable("Stock");
+                    b.ToTable("STOCK", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Achat", b =>

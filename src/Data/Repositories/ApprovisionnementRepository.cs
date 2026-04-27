@@ -16,7 +16,10 @@ namespace Data.Repositories
         public async Task<Approvisionnement?> GetApprovisionnementById(int idApp) => await _context.Approvisionnement.FindAsync(idApp);
 
 
-        public async Task<IEnumerable<Approvisionnement>> GetAllApprovisionnement() => await _context.Approvisionnement.ToListAsync();
+        public async Task<IEnumerable<Approvisionnement>> GetAllApprovisionnement() => await _context.Approvisionnement
+                .Include(a => a.Fournisseur)
+                .Include(a => a.Produit)
+                .ToListAsync();
 
 
         public async Task<IEnumerable<Approvisionnement>> GetApprovisionnementByRefFournisseur(int RefFournisseur) => await _context.Approvisionnement
