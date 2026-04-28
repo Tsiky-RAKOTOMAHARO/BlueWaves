@@ -1,96 +1,76 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using Core.Interfaces;
 using Core.Models;
+using Core.Services;
 
 namespace UI.ViewModels;
 
 public partial class FournisseurViewModel : ViewModelBase
 {
-    private readonly IFournisseurRepository _repository;
+    private readonly FournisseurServices _fournisseurService;
 
     public ObservableCollection<Fournisseur> Fournisseurs { get; } = new();
 
-    [ObservableProperty]
-    private bool _isLoading;
+    [ObservableProperty] private bool    _isLoading;
+    [ObservableProperty] private string  _nomFournisseur       = string.Empty;
+    [ObservableProperty] private string  _prenomFournisseur    = string.Empty;
+    [ObservableProperty] private string  _telephoneFournisseur = string.Empty;
+    [ObservableProperty] private string  _errorMessage         = string.Empty;
 
-    [ObservableProperty] private int _refFournisseur;
-    [ObservableProperty] private string? _nomFournisseur;
-    [ObservableProperty] private string? _prenomFournisseur;
-    [ObservableProperty] private string? _telephoneFournisseur;
-    [ObservableProperty] private int _selectedTypeIndex = 0;
-
-    public FournisseurViewModel(IFournisseurRepository repository)
+    public FournisseurViewModel(FournisseurServices fournisseurService)
     {
-        _repository = repository;
+        _fournisseurService = fournisseurService;
     }
 
     public async Task LoadFournisseur()
     {
         if (IsLoading) return;
-
         try
         {
             IsLoading = true;
             Fournisseurs.Clear();
-
-            var data = await _repository.GetAllFournisseur();
-            
+            var data = await _fournisseurService.GetAllFournisseur();
             foreach (var item in data)
-            {
                 Fournisseurs.Add(item);
-            }
         }
-        finally
-        {
-            IsLoading = false;
-        }
+        finally { IsLoading = false; }
     }
 
     [RelayCommand]
-    public async Task SaveFournisseur(Fournisseur newFournisseur)
+    public async Task SaveFournisseur()
     {
-        if (string.IsNullOrWhiteSpace(NomFournisseur) || string.IsNullOrWhiteSpace(TelephoneFournisseur))
-        {
-            return;
-        }
-
-        var fournisseur = new Fournisseur
-        {
-            NomFournisseur = NomFournisseur,
-            PrenomFournisseur = PrenomFournisseur ?? string.Empty,
-            TelephoneFournisseur = TelephoneFournisseur
-        };
-
         try
         {
-            if (RefFournisseur == 0)
-            {
-                await _repository.AddFournisseur(fournisseur);
-            }
-            else
-            {
-                fournisseur.RefFournisseur = RefFournisseur;
-                await _repository.UpdateFournisseur(fournisseur);
-            }
-
-            // Réinitialiser les champs
-            ClearForm();
+            ErrorMessage = string.Empty;
+            await _fournisseurService.AddFournisseur(NomFournisseur, PrenomFournisseur, TelephoneFournisseur);
             await LoadFournisseur();
+            ResetForm();
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erreur lors de la sauvegarde: {ex.Message}");
+            ErrorMessage = ex.Message;
         }
     }
 
-    public void ClearForm()
+    public async Task DeleteFournisseur(Fournisseur fournisseur)
     {
-        RefFournisseur = 0;
-        NomFournisseur = null;
-        PrenomFournisseur = null;
-        TelephoneFournisseur = null;
-        SelectedTypeIndex = 0;
+        try
+        {
+            await _fournisseurService.DeleteFournisseur(fournisseur);
+            Fournisseurs.Remove(fournisseur);
+        }
+        catch (ArgumentNullException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    public void ResetForm()
+    {
+        NomFournisseur       = string.Empty;
+        PrenomFournisseur    = string.Empty;
+        TelephoneFournisseur = string.Empty;
+        ErrorMessage         = string.Empty;
     }
 }

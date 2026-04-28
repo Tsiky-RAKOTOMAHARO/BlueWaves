@@ -10,6 +10,7 @@ using Data.Context;
 using Data.Repositories;
 using Core.Interfaces;
 using Core.Models;
+using Core.Services;
 using UI.ViewModels;
 
 namespace UI;
@@ -35,6 +36,7 @@ class Program
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseMySql(connectionString, serverVersion));
 
+
                 // Repositories
                 services.AddScoped<IAchatRepository, AchatRepository>();
                 services.AddScoped<IApprovisionnementRepository, ApprovisionnementRepository>();
@@ -44,6 +46,10 @@ class Program
                 services.AddScoped<IFournisseurRepository, FournisseurRepository>();
                 services.AddScoped<IProduitRepository, ProduitRepository>();
                 services.AddScoped<IStockRepository, StockRepository>(); // Corrigé ici
+
+                // Services
+                services.AddScoped<ClientServices>();    
+                services.AddScoped<FournisseurServices>();    
 
                 // ViewModels
                 services.AddTransient<AchatViewModel>();

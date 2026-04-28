@@ -6,108 +6,6 @@
              Tag="Achats &amp; Appro"
              Background="#F8FAFC">
 
-    <UserControl.Styles>
-
-        <Style Selector="TabItem">
-            <Setter Property="FontSize"     Value="15"/>
-            <Setter Property="FontWeight"   Value="SemiBold"/>
-            <Setter Property="Padding"      Value="20,10"/>
-            <Setter Property="Foreground"   Value="#64748B"/>
-        </Style>
-        <Style Selector="TabItem:selected">
-            <Setter Property="Foreground"   Value="#1E293B"/>
-        </Style>
-
-        <Style Selector="TextBlock.label">
-            <Setter Property="FontSize"     Value="12"/>
-            <Setter Property="FontWeight"   Value="Medium"/>
-            <Setter Property="Foreground"   Value="#64748B"/>
-            <Setter Property="Margin"       Value="0,0,0,4"/>
-        </Style>
-
-        <Style Selector="TextBlock.form-section">
-            <Setter Property="FontSize"     Value="11"/>
-            <Setter Property="FontWeight"   Value="Bold"/>
-            <Setter Property="Foreground"   Value="#94A3B8"/>
-            <Setter Property="Margin"       Value="0,15,0,10"/>
-        </Style>
-
-        <Style Selector="Border.order-card">
-            <Setter Property="Background"       Value="White"/>
-            <Setter Property="CornerRadius"     Value="12"/>
-            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
-            <Setter Property="BorderThickness"  Value="1"/>
-            <Setter Property="Padding"          Value="20,16"/>
-            <Setter Property="Margin"           Value="0,0,0,10"/>
-            <Setter Property="Cursor"           Value="Hand"/>
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition              Property="Background"    Duration="0:0:0.15"/>
-                    <BrushTransition              Property="BorderBrush"   Duration="0:0:0.15"/>
-                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
-                </Transitions>
-            </Setter>
-        </Style>
-        <Style Selector="Border.order-card:pointerover">
-            <Setter Property="Background"       Value="#F1F5F9"/>
-            <Setter Property="BorderBrush"      Value="#CBD5E1"/>
-            <Setter Property="RenderTransform"  Value="scale(1.01)"/>
-        </Style>
-
-      
-        <Style Selector="Border.kpi">
-            <Setter Property="Background"       Value="White"/>
-            <Setter Property="CornerRadius"     Value="12"/>
-            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
-            <Setter Property="BorderThickness"  Value="1"/>
-            <Setter Property="Padding"          Value="20,16"/>
-        </Style>
-
-        <Style Selector="TextBox.form-input, ComboBox.form-input, NumericUpDown.form-input, DatePicker.form-input">
-            <Setter Property="Background"       Value="#F8FAFC"/>
-            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
-            <Setter Property="CornerRadius"     Value="8"/>
-            <Setter Property="FontSize"         Value="13"/>
-        </Style>
-
-        <Style Selector="Button.btn-primary">
-            <Setter Property="Foreground"   Value="White"/>
-            <Setter Property="FontWeight"   Value="SemiBold"/>
-            <Setter Property="FontSize"     Value="13"/>
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Padding"      Value="20,10"/>
-            <Setter Property="Cursor"       Value="Hand"/>
-        </Style>
-        <Style Selector="Button.btn-primary-green">
-            <Setter Property="Background"   Value="#10B981"/>
-        </Style>
-        <Style Selector="Button.btn-primary-blue">
-            <Setter Property="Background"   Value="#3B82F6"/>
-        </Style>
-
-        <!-- FIX: btn-icon style was used but never defined -->
-        <Style Selector="Button.btn-icon">
-            <Setter Property="Background"       Value="Transparent"/>
-            <Setter Property="BorderThickness"  Value="0"/>
-            <Setter Property="Padding"          Value="8,4"/>
-            <Setter Property="FontSize"         Value="18"/>
-            <Setter Property="Foreground"       Value="#94A3B8"/>
-            <Setter Property="Cursor"           Value="Hand"/>
-        </Style>
-        <Style Selector="Button.btn-icon:pointerover">
-            <Setter Property="Foreground"       Value="#1E293B"/>
-        </Style>
-
-  
-        <Style Selector="Border.search-shell">
-            <Setter Property="Background"       Value="White"/>
-            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
-            <Setter Property="BorderThickness"  Value="1"/>
-            <Setter Property="CornerRadius"     Value="8"/>
-        </Style>
-
-    </UserControl.Styles>
-
 
     <Grid RowDefinitions="Auto,*" Margin="20">
 
@@ -131,12 +29,10 @@
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
                         <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                             <Grid ColumnDefinitions="Auto,*">
-                                <PathIcon Grid.Column="0"
-                                          Data="{StaticResource SearchIcon}"
-                                          Width="14" Margin="12,0" Foreground="#94A3B8"/>
+            
                                 <TextBox Grid.Column="1"
                                          x:Name="SearchAppro"
-                                         Watermark="Rechercher un certificat..."
+                                         Watermark="Rechercher un Fournisseur..."
                                          BorderThickness="0"
                                          Background="Transparent"
                                          VerticalContentAlignment="Center"
@@ -151,9 +47,6 @@
                                 Click="OnNouvelleReceptionClick"/>
                     </Grid>
 
-                    <!-- Content: list + slide-in form -->
-                    <!-- FIX: removed spurious Grid.Row="1" from form panel;
-                         parent grid has no RowDefinitions, only ColumnDefinitions -->
                     <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
 
                         <!-- Left: KPI + list -->
@@ -167,7 +60,7 @@
                                     <StackPanel>
                                         <TextBlock Text="RÉCEPTIONS (MOIS)" Classes="label"/>
                                         <TextBlock x:Name="KpiReceptions"
-                                                   Text="24"
+                                                   Text="-"
                                                    FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
                                     </StackPanel>
                                 </Border>
@@ -175,7 +68,7 @@
                                     <StackPanel>
                                         <TextBlock Text="VALEUR TOTALE" Classes="label"/>
                                         <TextBlock x:Name="KpiValeur"
-                                                   Text="12 450 000"
+                                                   Text="-"
                                                    FontSize="28" FontWeight="Black" Foreground="#10B981"/>
                                         <TextBlock Text="Ariary MGA" FontSize="11" Foreground="#94A3B8"/>
                                     </StackPanel>
@@ -184,7 +77,7 @@
                                     <StackPanel>
                                         <TextBlock Text="FOURNISSEURS" Classes="label"/>
                                         <TextBlock x:Name="KpiFournisseurs"
-                                                   Text="12"
+                                                   Text="-"
                                                    FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
                                     </StackPanel>
                                 </Border>
@@ -198,38 +91,58 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate DataType="coreModels:Approvisionnement">
                                                 <Border Classes="order-card" PointerPressed="OnApproCardClick">
-                                                    <Grid ColumnDefinitions="4,*,130,130,Auto">
+                                                    <Grid ColumnDefinitions="4,*,*,*,Auto">
 
                                                         <!-- Color accent -->
                                                         <Border Grid.Column="0"
                                                                 Background="#10B981" CornerRadius="2"/>
 
+                                                        <!-- Id -->
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="ID" Classes="label"/>
+                                                            <TextBlock Text="{Binding Certificat}" FontSize="13" Foreground="Green"/>
+                                                        </StackPanel>
+
                                                         <!-- Fournisseur -->
-                                                        <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">
+                                                        <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding Fournisseur.NomFournisseur}"
-                                                                       FontWeight="Bold" FontSize="14"/>
-                                                            <!-- FIX: #{0} → use {}{0} prefix to avoid XAML parser ambiguity -->
-                                                            <TextBlock Text="{Binding RefFournisseur, StringFormat='{}Fournisseur #{0}'}"
-                                                                       FontSize="12" Foreground="#64748B"/>
+                                                                       FontWeight="Bold" FontSize="14" Foreground="Black"/>
+                                                           
+                                                            <TextBlock Text="{Binding RefFournisseur, StringFormat='{} F-{0}'}"
+                                                                       FontSize="12" Foreground="Blue"/>
                                                         </StackPanel>
 
-                                                        <!-- Référence -->
-                                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                            <TextBlock Text="Référence" Classes="label"/>
-                                                            <TextBlock Text="{Binding Certificat}" FontSize="13"/>
-                                                        </StackPanel>
 
-                                                        <!-- Date + Produit -->
+                                                        <!-- Ref -->
                                                         <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                                            <TextBlock Text="Référence" Classes="label"/>
+                                                            <TextBlock Text="{Binding Certificat}" FontSize="13" Foreground="Black"/>
+                                                        </StackPanel>
+
+                                                        <!-- Date  -->
+                                                        <StackPanel Grid.Column="4" VerticalAlignment="Center">
                                                             <TextBlock Text="Date réception" Classes="label"/>
                                                             <TextBlock Text="{Binding Produit.Date_reception, StringFormat='{}{0:dd/MM/yyyy}'}"
-                                                                       FontSize="13"/>
-                                                            <TextBlock Text="{Binding Produit.NomProduit}"
-                                                                       FontSize="12" Foreground="#64748B"/>
+                                                                       FontSize="13" Foreground="Black"/>
                                                         </StackPanel>
 
+
+                                                        <!-- Produit -->
+                                                        <!-- <StackPanel Grid.Column="5" VerticalAlignment="Center"> -->
+                                                            <!-- <TextBlock Text="Produit" Classes="label"/> -->
+                                                            <!-- <TextBlock Text="{Binding Produit.NomProduit}" -->
+                                                                       <!-- FontSize="12" Foreground="Black"/> -->
+                                                        <!-- </StackPanel> -->
+<!--  -->
+                                                        <!-- Quantite -->
+                                                        <!-- <StackPanel Grid.Column="6" VerticalAlignment="Center"> -->
+                                                            <!-- <TextBlock Text="Quantité" Classes="label"/> -->
+                                                            <!-- <TextBlock Text="{Binding Produit.NomProduit}" -->
+                                                                       <!-- FontSize="12" Foreground="Black"/> -->
+                                                        <!-- </StackPanel> -->
+<!--  -->
                                                         <!-- Actions -->
-                                                        <Button Grid.Column="4"
+                                                        <Button Grid.Column="7"
                                                                 Classes="btn-icon"
                                                                 Content="⋮"
                                                                 Margin="15,0,0,0"
@@ -259,8 +172,6 @@
                             </ScrollViewer>
                         </DockPanel>
 
-                        <!-- Right: slide-in form panel -->
-                        <!-- FIX: Grid.Row="1" removed — parent has no row definitions -->
                         <Border Grid.Column="1"
                                 x:Name="ApproFormPanel"
                                 IsVisible="False"
@@ -283,10 +194,9 @@
                                         <!-- x:Name added so code-behind can update title for new vs edit -->
                                         <TextBlock x:Name="ApproFormTitle"
                                                    Text="Détails Réception"
-                                                   FontSize="18" FontWeight="Bold"/>
+                                                   FontSize="18" FontWeight="Bold" Foreground="Blue"/>
                                     </DockPanel>
 
-                                    <!-- FIX: Separator doesn't support Background in Avalonia; use Border -->
                                     <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
 
                                     <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
@@ -307,7 +217,7 @@
                                     </StackPanel>
 
                                     <StackPanel Spacing="5">
-                                        <TextBlock Text="Code produit" Classes="label"/>
+                                        <TextBlock Text="Produit" Classes="label"/>
                                         <ComboBox x:Name="ApproCodeProduitCombo"
                                                   Classes="form-input"
                                                   HorizontalAlignment="Stretch"
@@ -334,6 +244,8 @@
             </TabItem>
 
       
+
+            <!-- Base commande -->
             <TabItem Header="Commandes Export">
                 <Grid RowDefinitions="Auto,*">
 
@@ -341,9 +253,7 @@
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
                         <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                             <Grid ColumnDefinitions="Auto,*">
-                                <PathIcon Grid.Column="0"
-                                          Data="{StaticResource SearchIcon}"
-                                          Width="14" Margin="12,0" Foreground="#94A3B8"/>
+                
                                 <TextBox Grid.Column="1"
                                          x:Name="SearchCommande"
                                          Watermark="Rechercher destination ou N°..."
@@ -356,7 +266,7 @@
                         <Border Grid.Column="1" Background="Transparent"/>
                         <Button Grid.Column="2"
                                 Content="＋ Nouvelle commande"
-                                Classes="btn-primary btn-primary-blue"
+                                Classes="btn-primary btn-primary-green"
                                 Click="OnNouvelleCommandeClick"/>
                     </Grid>
 
@@ -485,13 +395,13 @@
                                                 Content="✕"
                                                 Classes="btn-icon"
                                                 Click="OnCommandeFormClose"/>
-                                        <!-- x:Name added so code-behind can toggle "Nouvelle" / "Détails" -->
+                                      
                                         <TextBlock x:Name="CommandeFormTitle"
                                                    Text="Nouvelle Commande"
-                                                   FontSize="18" FontWeight="Bold"/>
+                                                   FontSize="18" FontWeight="Bold" Foreground="Blue"/>
                                     </DockPanel>
 
-                                    <!-- FIX: Border instead of Separator for reliable Background -->
+                                   
                                     <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
 
                                     <StackPanel Spacing="5">
@@ -514,12 +424,6 @@
                                                   DisplayMemberBinding="{Binding NomClient}"/>
                                     </StackPanel>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Numéro export" Classes="label"/>
-                                        <TextBlock Text="Généré automatiquement lors de l'enregistrement"
-                                                   FontSize="12" Foreground="#94A3B8"/>
-                                    </StackPanel>
-
                                     <!-- Error message -->
                                     <TextBlock x:Name="CommandeErrorText"
                                                Foreground="#DC2626"
@@ -527,7 +431,7 @@
                                                TextWrapping="Wrap"/>
 
                                     <Button Content="Enregistrer la commande"
-                                            Classes="btn-primary btn-primary-blue"
+                                            Classes="btn-primary btn-primary-green"
                                             HorizontalAlignment="Stretch"
                                             Margin="0,20,0,0"
                                             Click="OnCommandeSave"/>
@@ -541,4 +445,106 @@
 
         </TabControl>
     </Grid>
+
+    <UserControl.Styles>
+
+        <Style Selector="TabItem">
+            <Setter Property="FontSize"     Value="15"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+            <Setter Property="Padding"      Value="20,10"/>
+            <Setter Property="Foreground"   Value="#64748B"/>
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground"   Value="#1E293B"/>
+        </Style>
+
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize"     Value="12"/>
+            <Setter Property="FontWeight"   Value="Medium"/>
+            <Setter Property="Foreground"   Value="#64748B"/>
+            <Setter Property="Margin"       Value="0,0,0,4"/>
+        </Style>
+
+        <Style Selector="TextBlock.form-section">
+            <Setter Property="FontSize"     Value="11"/>
+            <Setter Property="FontWeight"   Value="Bold"/>
+            <Setter Property="Foreground"   Value="#94A3B8"/>
+            <Setter Property="Margin"       Value="0,15,0,10"/>
+        </Style>
+
+        <Style Selector="Border.order-card">
+            <Setter Property="Background"       Value="White"/>
+            <Setter Property="CornerRadius"     Value="12"/>
+            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="Padding"          Value="20,16"/>
+            <Setter Property="Margin"           Value="0,0,0,10"/>
+            <Setter Property="Cursor"           Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition              Property="Background"    Duration="0:0:0.15"/>
+                    <BrushTransition              Property="BorderBrush"   Duration="0:0:0.15"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.order-card:pointerover">
+            <Setter Property="Background"       Value="#F1F5F9"/>
+            <Setter Property="BorderBrush"      Value="#CBD5E1"/>
+            <Setter Property="RenderTransform"  Value="scale(1.01)"/>
+        </Style>
+
+      
+        <Style Selector="Border.kpi">
+            <Setter Property="Background"       Value="White"/>
+            <Setter Property="CornerRadius"     Value="12"/>
+            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="Padding"          Value="20,16"/>
+        </Style>
+
+        <Style Selector="TextBox.form-input, ComboBox.form-input, NumericUpDown.form-input, DatePicker.form-input">
+            <Setter Property="Background"       Value="#F8FAFC"/>
+            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
+            <Setter Property="CornerRadius"     Value="8"/>
+            <Setter Property="FontSize"         Value="13"/>
+        </Style>
+
+        <Style Selector="Button.btn-primary">
+            <Setter Property="Foreground"   Value="White"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+            <Setter Property="FontSize"     Value="13"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding"      Value="20,10"/>
+            <Setter Property="Cursor"       Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-primary-green">
+            <Setter Property="Background"   Value="#10B981"/>
+        </Style>
+        <Style Selector="Button.btn-primary-blue">
+            <Setter Property="Background"   Value="#3B82F6"/>
+        </Style>
+
+        <!-- FIX: btn-icon style was used but never defined -->
+        <Style Selector="Button.btn-icon">
+            <Setter Property="Background"       Value="Transparent"/>
+            <Setter Property="BorderThickness"  Value="0"/>
+            <Setter Property="Padding"          Value="8,4"/>
+            <Setter Property="FontSize"         Value="18"/>
+            <Setter Property="Foreground"       Value="#94A3B8"/>
+            <Setter Property="Cursor"           Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-icon:pointerover">
+            <Setter Property="Foreground"       Value="#1E293B"/>
+        </Style>
+
+  
+        <Style Selector="Border.search-shell">
+            <Setter Property="Background"       Value="White"/>
+            <Setter Property="BorderBrush"      Value="#E2E8F0"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="CornerRadius"     Value="8"/>
+        </Style>
+
+    </UserControl.Styles>
 </UserControl>

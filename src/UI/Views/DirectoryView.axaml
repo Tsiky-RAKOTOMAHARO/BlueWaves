@@ -7,172 +7,574 @@
              Tag="Annuaire"
              Background="#F8FAFC">
 
+    
+    <Grid RowDefinitions="Auto,*" Margin="20">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Annuaire des Contacts"
+                           FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
+                <TextBlock Text="Gestion centralisée des partenaires BlueWaves"
+                           FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Tab control-->
+        <TabControl Grid.Row="1" Background="Transparent" Margin="0,-8,0,0">
+
+            <!-- Base Client -->
+            <TabItem Header="Base Clients">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Toolbar -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
+                        <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBox Grid.Column="1"
+                                         x:Name="SearchClient"
+                                         Watermark="Rechercher un client..."
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         VerticalContentAlignment="Center"
+                                         TextChanged="OnClientSearchChanged"/>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" Background="Transparent"/>
+                        <Button Grid.Column="2"
+                                x:Name="OpenClientPanelButton"
+                                Click="OpenClientPanel_Click"
+                                Classes="btn-primary btn-primary-green">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Data="{StaticResource ContactIcon}" Width="14" Height="14"/>
+                                <TextBlock Text="Ajouter un client" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Content: list + form panel -->
+                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+
+                        <DockPanel Grid.Column="0">
+
+                            <!-- KPI row -->
+                            <Grid DockPanel.Dock="Top"
+                                  ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  Margin="0,0,0,24">
+                                <Border Grid.Column="0" Classes="kpi">
+                                    <StackPanel>
+                                        <TextBlock Text="TOTAL CLIENTS" Classes="label"/>
+                                        <TextBlock x:Name="KpiTotalClients"
+                                                   Text="—"
+                                                   FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" Classes="kpi">
+                                    <StackPanel>
+                                        <TextBlock Text="ACTIFS CE MOIS" Classes="label"/>
+                                        <TextBlock x:Name="KpiClientsActifs"
+                                                   Text="—"
+                                                   FontSize="28" FontWeight="Black" Foreground="#10B981"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Classes="kpi">
+                                    <StackPanel>
+                                        <TextBlock Text="NOUVELLES FICHES" Classes="label"/>
+                                        <TextBlock x:Name="KpiNouveauxClients"
+                                                   Text="—"
+                                                   FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- List -->
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <ItemsControl x:Name="ClientList"
+                                                  ItemsSource="{Binding ClientVM.Clients}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="m:Client">
+                                                <Border Classes="contact-card">
+                                                    <Grid ColumnDefinitions="2,*,*,*,Auto">
+
+                                                        <Border Grid.Column="0"
+                                                                Background="#10B981" CornerRadius="2"/>
+
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="ID" Classes="label"/>
+                                                            <Border Background="#F0FDF4" CornerRadius="4"
+                                                                    Padding="6,2" HorizontalAlignment="Left">
+                                                                <TextBlock Text="{Binding RefClient, StringFormat='{}C-{0}'}"
+                                                                           FontSize="11" FontWeight="Bold" Foreground="#16A34A"/>
+                                                            </Border>
+                                                        </StackPanel>
+
+                                                        <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding NomClient}"
+                                                                       FontWeight="Bold" FontSize="14" Foreground="Black"/>
+                                                            <TextBlock Text="{Binding PrenomClient}"
+                                                                       FontSize="12" Foreground="#64748B"/>
+                                                        </StackPanel>
+
+                                                        <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                                            <TextBlock Text="Téléphone" Classes="label"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <PathIcon Data="{StaticResource PhoneIcon}"
+                                                                          Width="11" Foreground="#94A3B8"/>
+                                                                <TextBlock Text="{Binding Telephone}" FontSize="13" Foreground="#64748B"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+
+                                                        <Button Grid.Column="4"
+                                                                Classes="btn-icon"
+                                                                Content="⋮"
+                                                                Margin="15,0,0,0"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Border x:Name="ClientEmptyState"
+                                            IsVisible="False"
+                                            Padding="40"
+                                            HorizontalAlignment="Center">
+                                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                                            <TextBlock Text="Aucun client trouvé"
+                                                       FontSize="15" FontWeight="SemiBold"
+                                                       Foreground="#64748B" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Modifiez votre recherche ou ajoutez un nouveau client."
+                                                       FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </DockPanel>
+
+                        <!-- Slide-in form — Client -->
+                        <Border Grid.Column="1"
+                                x:Name="ClientFormPanel"
+                                IsVisible="False"
+                                Width="320"
+                                Margin="16,0,0,0"
+                                Background="White"
+                                BorderBrush="#E2E8F0"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="24">
+                            <ScrollViewer>
+                                <StackPanel Spacing="15">
+
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right"
+                                                Content="✕"
+                                                Classes="btn-icon"
+                                                Click="CloseClientPanel_Click"/>
+                                        <TextBlock Text="Nouveau Client"
+                                                   FontSize="18" FontWeight="Bold" Foreground="Blue"/>
+                                    </DockPanel>
+
+                                    <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+
+                                    <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
+
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="Nom / Raison Sociale" Classes="label"/>
+                                        <TextBox x:Name="NomTextBox" Text="{Binding ClientVM.NomClient}"
+                                                 Classes="form-input"
+                                                 Watermark="ex: Seafood Global Inc."/>
+                                        
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="Prénom" Classes="label"/>
+                                        <TextBox x:Name="PrenomTextBox" 
+                                                 Classes="form-input"
+                                                 Watermark="ex: Rabe"
+                                                 Text="{Binding ClientVM.PrenomClient}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="Téléphone" Classes="label"/>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBox Grid.Column="1"
+                                                     x:Name="TelephoneTextBox"
+                                                     Watermark="+261 34 00 000 00"
+                                                     Background="#F8FAFC"
+                                                     BorderBrush="#E2E8F0"
+                                                     CornerRadius="0,8,8,0"
+                                                     BorderThickness="1,1,1,1"
+                                                     FontSize="13"
+                                                     Text="{Binding ClientVM.TelephoneClient}"/>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <TextBlock x:Name="ClientErrorText" 
+                                               Foreground="#DC2626"
+                                               IsVisible="False" 
+                                               TextWrapping="Wrap"
+                                               Text="{Binding ClientVM.ErrorMessage}"/>
+
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
+                                        <Button Grid.Column="0"
+                                                Click="CloseClientPanel_Click"
+                                                Content="Annuler"
+                                                Background="#F1F5F9"
+                                                Foreground="#64748B"
+                                                FontWeight="SemiBold"
+                                                CornerRadius="6"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Padding="0,10"/>
+                                        <Button Grid.Column="1"
+                                                x:Name="SaveClientButton"
+                                                Click="SaveContact_Click"
+                                                Classes="btn-primary btn-primary-green"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Padding="0,10">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Data="M17,3A2,2 0 0,1 19,5V21L12,18L5,21V5C5,3.89 5.9,3 7,3H17M11,14L17.25,7.76L15.84,6.34L11,11.18L8.41,8.59L7,10L11,14Z"
+                                                          Width="13" Height="13"/>
+                                                <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- Base Fournisseur -->
+            <TabItem Header="Base Fournisseurs">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Toolbar -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
+                        <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBox Grid.Column="1"
+                                         x:Name="SearchFournisseur"
+                                         Watermark="Rechercher un fournisseur..."
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         VerticalContentAlignment="Center"
+                                         TextChanged="OnFournisseurSearchChanged"/>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" Background="Transparent"/>
+                        <Button Grid.Column="2"
+                                x:Name="OpenFournisseurPanelButton"
+                                Click="OpenFournisseurPanel_Click"
+                                Classes="btn-primary btn-primary-green">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Data="{StaticResource ContactIcon}" Width="14" Height="14"/>
+                                <TextBlock Text="Ajouter un fournisseur" VerticalAlignment="Center" Foreground="white"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Content: list + form panel -->
+                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+
+                        <DockPanel Grid.Column="0">
+
+                            <!-- KPI row -->
+                            <Grid DockPanel.Dock="Top"
+                                  ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  Margin="0,0,0,24">
+                                <Border Grid.Column="0" Classes="kpi">
+                                    <StackPanel>
+                                        <TextBlock Text="TOTAL FOURNISSEURS" Classes="label"/>
+                                        <TextBlock x:Name="KpiTotalFournisseurs"
+                                                   Text="—"
+                                                   FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" Classes="kpi">
+                                    <StackPanel>
+                                        <TextBlock Text="ACTIFS CE MOIS" Classes="label"/>
+                                        <TextBlock x:Name="KpiFournisseursActifs"
+                                                   Text="—"
+                                                   FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Classes="kpi">
+                                    <StackPanel>
+                                        <TextBlock Text="NOUVELLES FICHES" Classes="label"/>
+                                        <TextBlock x:Name="KpiNouveauxFournisseurs"
+                                                   Text="—"
+                                                   FontSize="28" FontWeight="Black" Foreground="#F59E0B"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- List -->
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <ItemsControl x:Name="FournisseurList"
+                                                  ItemsSource="{Binding FournisseurVM.Fournisseurs}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="m:Fournisseur">
+                                                <Border Classes="contact-card">
+                                                    <Grid ColumnDefinitions="2,*,*,*,Auto">
+
+                                                        <Border Grid.Column="0"
+                                                                Background="#3B82F6" CornerRadius="2"/>
+
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="ID" Classes="label"/>
+                                                            <Border Background="#EFF6FF" CornerRadius="4"
+                                                                    Padding="6,2" HorizontalAlignment="Left">
+                                                                <TextBlock Text="{Binding RefFournisseur, StringFormat='{}F-{0}'}"
+                                                                           FontSize="11" FontWeight="Bold" Foreground="#3B82F6"/>
+                                                            </Border>
+                                                        </StackPanel>
+
+                                                        <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding NomFournisseur}"
+                                                                       FontWeight="Bold" FontSize="14" Foreground="Black"/>
+                                                            <TextBlock Text="{Binding PrenomFournisseur}"
+                                                                       FontSize="12" Foreground="#64748B"/>
+                                                        </StackPanel>
+
+                                                        <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                                            <TextBlock Text="Téléphone" Classes="label"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                <PathIcon Data="{StaticResource PhoneIcon}"
+                                                                          Width="11" Foreground="#94A3B8"/>
+                                                                <TextBlock Text="{Binding TelephoneFournisseur}" FontSize="13" Foreground="Black"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+
+                                                        <Button Grid.Column="4"
+                                                                Classes="btn-icon"
+                                                                Content="⋮"
+                                                                Margin="15,0,0,0"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Border x:Name="FournisseurEmptyState"
+                                            IsVisible="False"
+                                            Padding="40"
+                                            HorizontalAlignment="Center">
+                                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                                            <TextBlock Text="Aucun fournisseur trouvé"
+                                                       FontSize="15" FontWeight="SemiBold"
+                                                       Foreground="#64748B" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Modifiez votre recherche ou ajoutez un nouveau fournisseur."
+                                                       FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </DockPanel>
+
+                        <!-- Slide-in form — Fournisseur -->
+                        <Border Grid.Column="1"
+                                x:Name="FournisseurFormPanel"
+                                IsVisible="False"
+                                Width="320"
+                                Margin="16,0,0,0"
+                                Background="White"
+                                BorderBrush="#E2E8F0"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="24">
+                            
+                                <StackPanel Spacing="15">
+
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right"
+                                                Content="✕"
+                                                Classes="btn-icon"
+                                                Click="CloseFournisseurPanel_Click"/>
+                                        <TextBlock Text="Nouveau Fournisseur"
+                                                   FontSize="18" FontWeight="Bold"
+                                                   Foreground="Blue"/>
+                                    </DockPanel>
+
+                                    <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+
+                                    <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
+
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="Nom / Raison Sociale" Classes="label"/>
+                                        <TextBox x:Name="NomFournisseurTextBox"
+                                                 Classes="form-input"
+                                                 Watermark="ex: Ocean Export Ltd."
+                                                 Text="{Binding FournisseurVM.NomFournisseur}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="Prénom" Classes="label"/>
+                                        <TextBox x:Name="PrenomFournisseurTextBox"
+                                                 Classes="form-input"
+                                                 Watermark="ex: Rakoto"
+                                                 Text="{Binding FournisseurVM.PrenomFournisseur}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="Téléphone" Classes="label"/>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBox Grid.Column="1"
+                                                     x:Name="TelephoneFournisseurTextBox"
+                                                     Watermark="+261 34 00 000 00"
+                                                     Background="#F8FAFC"
+                                                     BorderBrush="#E2E8F0"
+                                                     CornerRadius="0,8,8,0"
+                                                     BorderThickness="1,1,1,1"
+                                                     FontSize="13"
+                                                     Text="{Binding FournisseurVM.TelephoneFournisseur}"/>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <TextBlock x:Name="FournisseurErrorText"
+                                               Foreground="#DC2626"
+                                               IsVisible="False"
+                                               TextWrapping="Wrap"/>
+
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
+                                        <Button Grid.Column="0"
+                                                Click="CloseFournisseurPanel_Click"
+                                                Content="Annuler"
+                                                Background="#F1F5F9"
+                                                Foreground="#64748B"
+                                                FontWeight="SemiBold"
+                                                CornerRadius="6"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Padding="0,10"/>
+                                        <Button Grid.Column="1"
+                                                x:Name="SaveFournisseurButton"
+                                                Click="SaveFournisseur_Click"
+                                                Classes="btn-primary btn-primary-green"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Padding="0,10">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Data="M17,3A2,2 0 0,1 19,5V21L12,18L5,21V5C5,3.89 5.9,3 7,3H17M11,14L17.25,7.76L15.84,6.34L11,11.18L8.41,8.59L7,10L11,14Z"
+                                                          Width="13" Height="13"/>
+                                                <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+
+                                </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+
     <UserControl.Styles>
+
         <Style Selector="TabItem">
-            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontSize"   Value="15"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Padding"    Value="20,10"/>
             <Setter Property="Foreground" Value="#64748B"/>
         </Style>
         <Style Selector="TabItem:selected">
             <Setter Property="Foreground" Value="#1E293B"/>
         </Style>
 
-        <Style Selector="Border.Card">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize"   Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Margin"     Value="0,0,0,4"/>
+        </Style>
+
+        <Style Selector="TextBlock.form-section">
+            <Setter Property="FontSize"   Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Margin"     Value="0,15,0,10"/>
+        </Style>
+
+        <!-- Contact card -->
+        <Style Selector="Border.contact-card">
+            <Setter Property="Background"      Value="White"/>
+            <Setter Property="CornerRadius"    Value="12"/>
+            <Setter Property="BorderBrush"     Value="#E2E8F0"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Padding"         Value="20,16"/>
+            <Setter Property="Margin"          Value="0,0,0,10"/>
+            <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="Transitions">
                 <Transitions>
-                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
-                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
-                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BrushTransition               Property="Background"      Duration="0:0:0.15"/>
+                    <BrushTransition               Property="BorderBrush"     Duration="0:0:0.15"/>
+                    <TransformOperationsTransition Property="RenderTransform"  Duration="0:0:0.15"/>
                 </Transitions>
             </Setter>
         </Style>
-        <Style Selector="Border.Card:pointerover">
-            <Setter Property="Background" Value="#F1F5F9"/>
-            <Setter Property="BorderBrush" Value="#CBD5E1"/>
-            <Setter Property="RenderTransform" Value="scale(1.02)"/>
-            <Setter Property="Cursor" Value="Hand"/>
+        <Style Selector="Border.contact-card:pointerover">
+            <Setter Property="Background"     Value="#F1F5F9"/>
+            <Setter Property="BorderBrush"    Value="#CBD5E1"/>
+            <Setter Property="RenderTransform" Value="scale(1.01)"/>
         </Style>
-        
-        <Style Selector="TextBlock.label">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="Foreground" Value="#64748B"/>
+
+        <!-- KPI -->
+        <Style Selector="Border.kpi">
+            <Setter Property="Background"      Value="White"/>
+            <Setter Property="CornerRadius"    Value="12"/>
+            <Setter Property="BorderBrush"     Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="20,16"/>
         </Style>
+
+        <!-- Form inputs -->
+        <Style Selector="TextBox.form-input, ComboBox.form-input">
+            <Setter Property="Background"  Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="FontSize"    Value="13"/>
+        </Style>
+
+        <!-- Buttons -->
+        <Style Selector="Button.btn-primary">
+            <Setter Property="Foreground"   Value="White"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+            <Setter Property="FontSize"     Value="13"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding"      Value="20,10"/>
+            <Setter Property="Cursor"       Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-primary-green">
+            <Setter Property="Background"   Value="#10B981"/>
+        </Style>
+
+        <Style Selector="Button.btn-icon">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding"         Value="8,4"/>
+            <Setter Property="FontSize"        Value="18"/>
+            <Setter Property="Foreground"      Value="#94A3B8"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-icon:pointerover">
+            <Setter Property="Foreground" Value="#1E293B"/>
+        </Style>
+
+        <!-- Search shell -->
+        <Style Selector="Border.search-shell">
+            <Setter Property="Background"      Value="White"/>
+            <Setter Property="BorderBrush"     Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius"    Value="8"/>
+        </Style>
+
     </UserControl.Styles>
-
-    <Grid RowDefinitions="Auto, *" Margin="20">
-        
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
-            <StackPanel Spacing="4">
-                <TextBlock Text="Annuaire des Contacts" FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
-                <TextBlock Text="Gestion centralisée des partenaires BlueWaves" FontSize="13" Foreground="#94A3B8"/>
-            </StackPanel>
-
-            <Button Grid.Column="1" Background="#10B981" Foreground="White" Padding="20,10" CornerRadius="6">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <PathIcon Data="{StaticResource ContactIcon}" Width="14" Height="14"/>
-                    <TextBlock Text="Ajouter un contact" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                </StackPanel>
-                
-                <Button.Flyout>
-                    <Flyout Placement="BottomEdgeAlignedRight">
-                        <Border Width="320" Margin="0" Padding="5" Background="White" CornerRadius="8">
-                            <StackPanel Spacing="15">
-                                <TextBlock Text="Nouveau Contact" FontWeight="Bold" FontSize="16" Foreground="#1E293B"/>
-                                
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Type" Classes="label"/>
-                                    <ComboBox x:Name="TypeComboBox" HorizontalAlignment="Stretch" SelectedIndex="0">
-                                        <ComboBoxItem>Client</ComboBoxItem>
-                                        <ComboBoxItem>Fournisseur</ComboBoxItem>
-                                    </ComboBox>
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Nom / Raison Sociale" Classes="label"/>
-                                    <TextBox x:Name="NomTextBox" Watermark="ex: Seafood Global Inc."/>
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Prenoms / Raison Sociale" Classes="label"/>
-                                    <TextBox x:Name="PrenomTextBox" Watermark="ex: Rabe"/>
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Telephone " Classes="label"/>
-                                    <TextBox x:Name="TelephoneTextBox" Watermark="ex: +261374339183"/>
-                                </StackPanel>
-
-                                <Button x:Name="SaveContactButton"
-                                        Click="SaveContact_Click"
-                                        Content="Enregistrer"
-                                        Background="#10B981"
-                                        Foreground="White"
-                                        FontWeight="Bold"
-                                        CornerRadius="6"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
-        </Grid>
-
-        <TabControl Grid.Row="1" Background="Transparent" Margin="0,-8,0,0">
-            
-            <TabItem Header="Base Clients">
-                <ScrollViewer Padding="4,16" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding ClientVM.Clients}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel HorizontalAlignment="Left"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="m:Client">
-                                <Border Classes="Card" Width="280" Padding="20">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Text="{Binding NomClient}" FontSize="15" FontWeight="Bold" Foreground="#1E293B"/>
-                                        <TextBlock Text="{Binding PrenomClient}" FontSize="13" Foreground="#64748B"/>
-                                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-                                            <PathIcon Data="{StaticResource PhoneIcon}" Width="12" Height="12" Foreground="#94A3B8"/>
-                                            <TextBlock Text="{Binding Telephone}" FontSize="12" Foreground="#64748B"/>
-                                        </StackPanel>
-                                        <Separator Margin="0,12" Background="#E2E8F0" Height="1"/>
-                                        <Grid ColumnDefinitions="*, Auto">
-                                            <TextBlock Text="ID Système" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
-                                            <Border Grid.Column="1" Background="#F0FDF4" CornerRadius="4" Padding="6,2">
-                                                <TextBlock Text="{Binding RefClient, StringFormat='C-{0}'}" FontSize="11" FontWeight="Bold" Foreground="#16A34A"/>
-                                            </Border>
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </TabItem>
-
-            <TabItem Header="Base Fournisseurs">
-                <ScrollViewer Padding="4,16" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding FournisseurVM.Fournisseurs}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel HorizontalAlignment="Left"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="m:Fournisseur">
-                                <Border Classes="Card" Width="280" Padding="20">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Text="{Binding NomFournisseur}" FontSize="15" FontWeight="Bold" Foreground="#1E293B"/>
-                                        <TextBlock Text="{Binding PrenomFournisseur}" FontSize="13" Foreground="#64748B"/>
-                                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-                                            <PathIcon Data="{StaticResource PhoneIcon}" Width="12" Height="12" Foreground="#94A3B8"/>
-                                            <TextBlock Text="{Binding TelephoneFournisseur}" FontSize="12" Foreground="#64748B"/>
-                                        </StackPanel>
-                                        <Separator Margin="0,12" Background="#E2E8F0" Height="1"/>
-                                        <Grid ColumnDefinitions="*, Auto">
-                                            <TextBlock Text="ID Système" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
-                                            <Border Grid.Column="1" Background="#EFF6FF" CornerRadius="4" Padding="6,2">
-                                                <TextBlock Text="{Binding RefFournisseur, StringFormat='REF-{0}'}" FontSize="11" FontWeight="Bold" Foreground="#3B82F6"/>
-                                            </Border>
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </TabItem>
-            
-        </TabControl>
-    </Grid>
 </UserControl>
