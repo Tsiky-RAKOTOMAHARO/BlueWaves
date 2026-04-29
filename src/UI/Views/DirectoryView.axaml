@@ -65,7 +65,7 @@
                                     <StackPanel>
                                         <TextBlock Text="TOTAL CLIENTS" Classes="label"/>
                                         <TextBlock x:Name="KpiTotalClients"
-                                                   Text="—"
+                                                   Text="{Binding ClientVm.Clients.Count, Mode=TwoWay}"
                                                    FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
                                     </StackPanel>
                                 </Border>

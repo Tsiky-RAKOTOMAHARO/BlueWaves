@@ -52,6 +52,7 @@ class Program
                 services.AddSingleton<FournisseurServices>();    
                 services.AddSingleton<ProduitServices>();
                 services.AddSingleton<StockServices>();
+                // services.AddSingleton<CommandeServices();
 
                 // ViewModels
                 services.AddTransient<AchatViewModel>();
