@@ -314,7 +314,7 @@ public partial class PurchaseOrderView : UserControl
 
             if (_produitViewModel != null && _produitViewModel.Produits.Count == 0)
             {
-                await _produitViewModel.LoadProduit();
+                await _produitViewModel.LoadProduits();
             }
         }
         catch (Exception ex)

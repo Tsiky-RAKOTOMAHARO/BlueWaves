@@ -28,7 +28,7 @@
                 <Grid RowDefinitions="Auto,*">
 
                     <!-- Toolbar -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto"  Margin="0,0,0,20">
                         <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                             <Grid ColumnDefinitions="Auto,*">
                                 <TextBox Grid.Column="1"
@@ -59,7 +59,7 @@
 
                             <!-- KPI row -->
                             <Grid DockPanel.Dock="Top"
-                                  ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  ColumnDefinitions="*,*,*" 
                                   Margin="0,0,0,24">
                                 <Border Grid.Column="0" Classes="kpi">
                                     <StackPanel>
@@ -180,9 +180,10 @@
 
                                     <StackPanel Spacing="5">
                                         <TextBlock Text="Nom / Raison Sociale" Classes="label"/>
-                                        <TextBox x:Name="NomTextBox" Text="{Binding ClientVM.NomClient}"
+                                        <TextBox x:Name="NomTextBox" 
                                                  Classes="form-input"
-                                                 Watermark="ex: Seafood Global Inc."/>
+                                                 Watermark="ex: Seafood Global Inc."
+                                                 Text="{Binding ClientVM.NomClient, Mode=TwoWay}"/>
                                         
                                     </StackPanel>
 
@@ -191,7 +192,7 @@
                                         <TextBox x:Name="PrenomTextBox" 
                                                  Classes="form-input"
                                                  Watermark="ex: Rabe"
-                                                 Text="{Binding ClientVM.PrenomClient}"/>
+                                                 Text="{Binding ClientVM.PrenomClient, Mode=TwoWay}"/>
                                     </StackPanel>
 
                                     <StackPanel Spacing="5">
@@ -205,7 +206,7 @@
                                                      CornerRadius="0,8,8,0"
                                                      BorderThickness="1,1,1,1"
                                                      FontSize="13"
-                                                     Text="{Binding ClientVM.TelephoneClient}"/>
+                                                     Text="{Binding ClientVM.Telephone,Mode=TwoWay}"/>
                                         </Grid>
                                     </StackPanel>
 
@@ -215,7 +216,7 @@
                                                TextWrapping="Wrap"
                                                Text="{Binding ClientVM.ErrorMessage}"/>
 
-                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
+                                    <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
                                         <Button Grid.Column="0"
                                                 Click="CloseClientPanel_Click"
                                                 Content="Annuler"
@@ -254,7 +255,7 @@
                 <Grid RowDefinitions="Auto,*">
 
                     <!-- Toolbar -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto"  Margin="0,0,0,20">
                         <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                             <Grid ColumnDefinitions="Auto,*">
                                 <TextBox Grid.Column="1"
@@ -285,7 +286,7 @@
 
                             <!-- KPI row -->
                             <Grid DockPanel.Dock="Top"
-                                  ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  ColumnDefinitions="*,*,*" 
                                   Margin="0,0,0,24">
                                 <Border Grid.Column="0" Classes="kpi">
                                     <StackPanel>
@@ -441,7 +442,7 @@
                                                IsVisible="False"
                                                TextWrapping="Wrap"/>
 
-                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
+                                    <Grid ColumnDefinitions="*,*"  Margin="0,10,0,0">
                                         <Button Grid.Column="0"
                                                 Click="CloseFournisseurPanel_Click"
                                                 Content="Annuler"

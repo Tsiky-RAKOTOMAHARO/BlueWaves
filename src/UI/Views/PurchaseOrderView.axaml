@@ -26,7 +26,7 @@
                 <Grid RowDefinitions="Auto,*">
 
                     <!-- Toolbar -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto"  Margin="0,0,0,20">
                         <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                             <Grid ColumnDefinitions="Auto,*">
             
@@ -54,7 +54,7 @@
 
                             <!-- KPI row -->
                             <Grid DockPanel.Dock="Top"
-                                  ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  ColumnDefinitions="*,*,*" 
                                   Margin="0,0,0,24">
                                 <Border Grid.Column="0" Classes="kpi">
                                     <StackPanel>
@@ -250,7 +250,7 @@
                 <Grid RowDefinitions="Auto,*">
 
                     <!-- Toolbar -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="0,0,0,20">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto"  Margin="0,0,0,20">
                         <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                             <Grid ColumnDefinitions="Auto,*">
                 
@@ -276,7 +276,7 @@
 
                             <!-- KPI row -->
                             <Grid DockPanel.Dock="Top"
-                                  ColumnDefinitions="*,*,*" ColumnSpacing="16"
+                                  ColumnDefinitions="*,*,*" 
                                   Margin="0,0,0,24">
                                 <Border Grid.Column="0" Classes="kpi">
                                     <StackPanel>

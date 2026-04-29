@@ -38,18 +38,20 @@ class Program
 
 
                 // Repositories
-                services.AddScoped<IAchatRepository, AchatRepository>();
-                services.AddScoped<IApprovisionnementRepository, ApprovisionnementRepository>();
-                services.AddScoped<IClientRepository, ClientRepository>();
-                services.AddScoped<ICommandeRepository, CommandeRepository>();
-                services.AddScoped<IExportRepository, ExportRepository>();
-                services.AddScoped<IFournisseurRepository, FournisseurRepository>();
-                services.AddScoped<IProduitRepository, ProduitRepository>();
-                services.AddScoped<IStockRepository, StockRepository>(); // Corrigé ici
+                services.AddSingleton<IAchatRepository, AchatRepository>();
+                services.AddSingleton<IApprovisionnementRepository, ApprovisionnementRepository>();
+                services.AddSingleton<IClientRepository, ClientRepository>();
+                services.AddSingleton<ICommandeRepository, CommandeRepository>();
+                services.AddSingleton<IExportRepository, ExportRepository>();
+                services.AddSingleton<IFournisseurRepository, FournisseurRepository>();
+                services.AddSingleton<IProduitRepository, ProduitRepository>();
+                services.AddSingleton<IStockRepository, StockRepository>();// Corrigé ici
 
                 // Services
-                services.AddScoped<ClientServices>();    
-                services.AddScoped<FournisseurServices>();    
+                services.AddSingleton<ClientServices>();    
+                services.AddSingleton<FournisseurServices>();    
+                services.AddSingleton<ProduitServices>();
+                services.AddSingleton<StockServices>();
 
                 // ViewModels
                 services.AddTransient<AchatViewModel>();
@@ -61,7 +63,7 @@ class Program
                 services.AddTransient<ProduitViewModel>();
                 services.AddTransient<StockViewModel>();
 
-                services.AddScoped<Core.Services.ProduitServices>(); 
+                
             })
             .Build();
 

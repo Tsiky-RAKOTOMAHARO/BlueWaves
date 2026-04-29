@@ -1,171 +1,267 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:Core.Models;assembly=Core"
              x:Class="UI.Views.StockInventoryView"
-             Tag="Gestion des Stocks"
-             Background="#F1F5F9">
+             x:CompileBindings="False"
+             Background="#F8FAFC">
 
     <UserControl.Styles>
         <Style Selector="TextBlock.label">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
-        <Style Selector="TextBlock.value">
-            <Setter Property="FontSize" Value="22"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#0F172A"/>
-        </Style>
-        <Style Selector="Border.card">
+        <Style Selector="Border.kpi">
             <Setter Property="Background" Value="White"/>
-            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="BorderBrush" Value="#E2E8F0"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="20,16"/>
         </Style>
+        <Style Selector="Border.contact-card">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20,16"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.contact-card:pointerover">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+        </Style>
+        <Style Selector="Border.selected-card">
+            <Setter Property="Background" Value="#F0FDF4"/>
+            <Setter Property="BorderBrush" Value="#10B981"/>
+        </Style>
+        <Style Selector="TextBox.form-input">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style Selector="Button.btn-primary">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-primary-green">
+            <Setter Property="Background" Value="#10B981"/>
+        </Style>
+        <Style Selector="Button.btn-icon">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
     </UserControl.Styles>
 
-    <DockPanel Margin="24">
+    <Grid RowDefinitions="Auto,*" Margin="20">
 
-        <!-- HEADER -->
-        <StackPanel DockPanel.Dock="Top" Spacing="2" Margin="0,0,0,20">
-            <TextBlock Text="Gestion des Stocks"
-                       FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
-            <TextBlock Text="État des entrepôts et valorisation"
-                       FontSize="12" Foreground="#94A3B8"/>
-        </StackPanel>
-
-        <!-- KPI ROW -->
-        <Grid DockPanel.Dock="Top"
-              ColumnDefinitions="*,*,*,*"
-              ColumnSpacing="12"
-              Margin="0,0,0,20">
-
-            <Border Grid.Column="0" Classes="card">
-                <StackPanel Spacing="6">
-                    <TextBlock Text="Valeur totale" Classes="label"/>
-                    <TextBlock Text="452 500 Ar" Classes="value"/>
-                    <TextBlock Text="+3% ce mois" FontSize="11" Foreground="#10B981"/>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="1" Classes="card">
-                <StackPanel Spacing="6">
-                    <TextBlock Text="Références actives" Classes="label"/>
-                    <TextBlock Text="38" Classes="value"/>
-                    <TextBlock Text="produits en stock" FontSize="11" Foreground="#94A3B8"/>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="2" Classes="card">
-                <StackPanel Spacing="6">
-                    <TextBlock Text="Alertes stock bas" Classes="label"/>
-                    <TextBlock Text="5" Classes="value" Foreground="#F59E0B"/>
-                    <TextBlock Text="à réapprovisionner" FontSize="11" Foreground="#94A3B8"/>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="3" Classes="card">
-                <StackPanel Spacing="6">
-                    <TextBlock Text="Dernière entrée" Classes="label"/>
-                    <TextBlock Text="Auj." Classes="value" Foreground="#3B82F6"/>
-                    <TextBlock Text="REC-2025-0042" FontSize="11" Foreground="#94A3B8"/>
-                </StackPanel>
-            </Border>
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Gestion des Stocks"
+                           FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
+                <TextBlock Text="État des entrepôts et produits associés"
+                           FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Click="OuvrirPanneau_Click"
+                    Classes="btn-primary btn-primary-green">
+                <TextBlock Text="+ Nouveau Stock" VerticalAlignment="Center"/>
+            </Button>
         </Grid>
 
-        <!-- OCCUPATION DES ENTREPÔTS -->
-        <Border DockPanel.Dock="Top" Classes="card" Margin="0,0,0,20">
-            <StackPanel Spacing="16">
-                <TextBlock Text="Occupation des entrepôts"
-                           FontSize="13" FontWeight="Bold" Foreground="#0F172A"/>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
 
-                <!-- Chambre Froide 1 -->
-                <Grid ColumnDefinitions="160,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
-                    <TextBlock Grid.Row="0" Grid.Column="0"
-                               Text="Chambre Froide 1"
-                               FontSize="13" Foreground="#334155" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Row="0" Grid.Column="1"
-                                 Value="75" Minimum="0" Maximum="100"
-                                 Height="8" CornerRadius="4"
-                                 Foreground="#10B981" Background="#F1F5F9"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2"
-                               Text="75%" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#10B981" Margin="12,0,0,0"/>
+            <DockPanel Grid.Column="0">
+
+                <!-- KPI -->
+                <Grid DockPanel.Dock="Top"
+                      ColumnDefinitions="*,16,*"
+                      Margin="0,0,0,24">
+                    <Border Grid.Column="0" Classes="kpi">
+                        <StackPanel>
+                            <TextBlock Text="TOTAL STOCKS" Classes="label"/>
+                            <TextBlock Text="{Binding Stocks.Count}"
+                                       FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Classes="kpi">
+                        <StackPanel>
+                            <TextBlock Text="PRODUITS DANS CE STOCK" Classes="label"/>
+                            <TextBlock Text="{Binding ProduitsduStock.Count}"
+                                       FontSize="28" FontWeight="Black" Foreground="#10B981"/>
+                        </StackPanel>
+                    </Border>
                 </Grid>
 
-                <!-- Chambre Froide 2 -->
-                <Grid ColumnDefinitions="160,*,Auto">
-                    <TextBlock Grid.Column="0"
-                               Text="Chambre Froide 2"
-                               FontSize="13" Foreground="#334155" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Column="1"
-                                 Value="40" Minimum="0" Maximum="100"
-                                 Height="8" CornerRadius="4"
-                                 Foreground="#3B82F6" Background="#F1F5F9"/>
-                    <TextBlock Grid.Column="2"
-                               Text="40%" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#3B82F6" Margin="12,0,0,0"/>
-                </Grid>
-
-                <!-- Entrepôt Principal -->
-                <Grid ColumnDefinitions="160,*,Auto">
-                    <TextBlock Grid.Column="0"
-                               Text="Entrepôt Principal"
-                               FontSize="13" Foreground="#334155" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Column="1"
-                                 Value="91" Minimum="0" Maximum="100"
-                                 Height="8" CornerRadius="4"
-                                 Foreground="#F59E0B" Background="#F1F5F9"/>
-                    <TextBlock Grid.Column="2"
-                               Text="91%" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#F59E0B" Margin="12,0,0,0"/>
-                </Grid>
-            </StackPanel>
-        </Border>
-
-        <!-- LISTE STOCK -->
-        <Border Classes="card">
-            <DockPanel>
-                <!-- Toolbar -->
-                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                    <TextBlock DockPanel.Dock="Left"
-                               Text="Inventaire" FontSize="13" FontWeight="Bold"
-                               Foreground="#0F172A" VerticalAlignment="Center"/>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
-                        <TextBox Watermark="🔍  Rechercher…"
-                                 Width="220"
-                                 Background="#F8FAFC"
-                                 BorderBrush="#E2E8F0" BorderThickness="1"
-                                 CornerRadius="8" Padding="10,6" FontSize="12"/>
-                        <Button Content="Filtrer ▾"
-                                Background="Transparent" Foreground="#64748B"
-                                BorderBrush="#E2E8F0" BorderThickness="1"
-                                CornerRadius="8" Padding="12,6" FontSize="12"/>
-                    </StackPanel>
-                </DockPanel>
-
-                <DataGrid BorderThickness="0"
-                          Background="Transparent"
-                          GridLinesVisibility="Horizontal"
-                          HeadersVisibility="Column"
-                          RowHeight="44"
-                          FontSize="13"
-                          IsReadOnly="True"
-                          CanUserReorderColumns="False"
-                          CanUserResizeColumns="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Référence"    Width="130"/>
-                        <DataGridTextColumn Header="Désignation"  Width="*"/>
-                        <DataGridTextColumn Header="Dépôt"        Width="150"/>
-                        <DataGridTextColumn Header="Qté"          Width="80"/>
-                        <DataGridTextColumn Header="Unité"        Width="70"/>
-                        <DataGridTextColumn Header="P.U. (Ar)"    Width="110"/>
-                        <DataGridTextColumn Header="Valeur (Ar)"  Width="120"/>
-                        <DataGridTextColumn Header="Statut"       Width="100"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <!-- Liste stocks -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Stocks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:Stock">
+                                <Border Classes="contact-card"
+                                        PointerPressed="OnStockSelected_Click">
+                                    <Grid ColumnDefinitions="2,*,*">
+                                        <Border Grid.Column="0" Background="#10B981" CornerRadius="2"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="N° STOCK" Classes="label"/>
+                                            <Border Background="#F0FDF4" CornerRadius="4"
+                                                    Padding="6,2" HorizontalAlignment="Left">
+                                                <TextBlock Text="{Binding NumeroStock, StringFormat='{}S-{0}'}"
+                                                           FontSize="11" FontWeight="Bold" Foreground="#16A34A"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding NomStock}"
+                                                       FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </DockPanel>
-        </Border>
 
-    </DockPanel>
+            <!-- Panneau ajout -->
+            <Border Grid.Column="1"
+                    x:Name="PanneauLateral"
+                    IsVisible="False"
+                    Width="320"
+                    Margin="16,0,0,0"
+                    Background="White"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="24">
+                <StackPanel Spacing="15">
+
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right"
+                                Content="✕"
+                                Classes="btn-icon"
+                                Click="FermerPanneau_Click"/>
+                        <TextBlock Text="Nouveau Stock"
+                                   FontSize="18" FontWeight="Bold" Foreground="Blue"/>
+                    </DockPanel>
+
+                    <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Désignation du stock" Classes="label"/>
+                        <TextBox Classes="form-input"
+                                 Watermark="ex: Entrepôt Nord, Chambre Froide..."
+                                 Text="{Binding NomStock, Mode=TwoWay}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#DC2626"
+                               IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               TextWrapping="Wrap"/>
+
+                    <Grid ColumnDefinitions="*,10,*" Margin="0,10,0,0">
+                        <Button Grid.Column="0"
+                                Click="FermerPanneau_Click"
+                                Content="Annuler"
+                                Background="#F1F5F9"
+                                Foreground="#64748B"
+                                FontWeight="SemiBold"
+                                CornerRadius="6"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Padding="0,10"/>
+                        <Button Grid.Column="2"
+                                Click="SaveStock_Click"
+                                Classes="btn-primary btn-primary-green"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Padding="0,10">
+                            <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
+                        </Button>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Panneau détail produits -->
+            <Border Grid.Column="1"
+                    x:Name="PanneauDetail"
+                    IsVisible="False"
+                    Width="320"
+                    Margin="16,0,0,0"
+                    Background="White"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="24">
+                <StackPanel Spacing="15">
+
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right"
+                                Content="✕"
+                                Classes="btn-icon"
+                                Click="FermerDetail_Click"/>
+                        <TextBlock Text="Produits du stock"
+                                   FontSize="18" FontWeight="Bold" Foreground="#1E293B"/>
+                    </DockPanel>
+
+                    <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+
+                    <TextBlock Text="{Binding SelectedStock.NomStock}"
+                               FontSize="14" FontWeight="SemiBold" Foreground="#10B981"/>
+
+                    <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ProduitsduStock}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:Produit">
+                                    <Border Background="#F8FAFC"
+                                            CornerRadius="8"
+                                            BorderBrush="#E2E8F0"
+                                            BorderThickness="1"
+                                            Padding="12,10"
+                                            Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding NomProduit}"
+                                                           FontWeight="SemiBold" FontSize="13" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding Quantite, StringFormat='{}Qté : {0}'}"
+                                                           FontSize="12" Foreground="#64748B"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#F0FDF4" CornerRadius="4"
+                                                    Padding="6,2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding CodeProduit, StringFormat='{}P-{0}'}"
+                                                           FontSize="11" FontWeight="Bold" Foreground="#16A34A"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <TextBlock Text="Aucun produit dans ce stock"
+                               FontSize="13" Foreground="#94A3B8"
+                               HorizontalAlignment="Center"
+                               IsVisible="{Binding AucunProduit}"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Grid>
 </UserControl>
