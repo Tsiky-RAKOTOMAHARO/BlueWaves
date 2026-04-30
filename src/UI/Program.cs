@@ -47,12 +47,14 @@ class Program
             services.AddTransient<IFournisseurRepository, FournisseurRepository>();
             services.AddTransient<IProduitRepository, ProduitRepository>();
             services.AddTransient<IStockRepository, StockRepository>();
+            services.AddTransient<IStockProduitRepository, StockProduitRepository>();
 
             // Services 
             services.AddTransient<ClientServices>();
             services.AddTransient<FournisseurServices>();
             services.AddTransient<ProduitServices>();
             services.AddTransient<StockServices>();
+            services.AddTransient<StockProduitServices>();
             services.AddTransient<CommandeServices>();
             services.AddTransient<ApprovisionnementServices>();
 
@@ -63,6 +65,7 @@ class Program
             services.AddSingleton<FournisseurViewModel>();
             services.AddSingleton<ProduitViewModel>();
             services.AddSingleton<StockViewModel>();
+            services.AddSingleton<StockProduitViewModel>();
             services.AddSingleton<ExportViewModel>();
             services.AddSingleton<AchatViewModel>();
 

@@ -2,13 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:coreModels="clr-namespace:Core.Models;assembly=Core"
              x:Class="UI.Views.PurchaseOrderView"
+             xmlns:vm="clr-namespace:UI.ViewModels"
              x:CompileBindings="False"
              Tag="Achats &amp; Appro"
              Background="#F8FAFC">
 
     <Grid RowDefinitions="Auto,*" Margin="20">
 
-        <!-- Header -->
+        <!-- HEADER -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
             <StackPanel Spacing="4">
                 <TextBlock Text="Gestion Commerciale"
@@ -18,11 +19,10 @@
             </StackPanel>
         </Grid>
 
-        <!-- Tab control -->
+        <!-- TAB CONTROL -->
         <TabControl Grid.Row="1" Background="Transparent" Margin="0,-8,0,0">
 
-
-             <TabItem Header="Approvisionnement">
+            <TabItem Header="Approvisionnement">
         <Grid RowDefinitions="Auto,*">
 
             <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
@@ -31,8 +31,7 @@
                              Watermark="Rechercher un Fournisseur..."
                              BorderThickness="0"
                              Background="Transparent"
-                             VerticalContentAlignment="Center"
-                             TextChanged="OnApproSearchChanged"/>
+                             VerticalContentAlignment="Center"/>
                 </Border>
                 <Border Grid.Column="1" Background="Transparent"/>
                 <Button Grid.Column="2"
@@ -197,177 +196,182 @@
         </Grid>
     </TabItem>
 
-            
-            <TabItem Header="Commandes Export">
-                <Grid RowDefinitions="Auto,*">
+           <TabItem Header="Commandes Export">
+    <Grid RowDefinitions="Auto,*">
 
-                    <!-- Toolbar -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
-                        <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
-                            <TextBox x:Name="SearchCommande"
-                                     Watermark="Rechercher destination ou N°..."
-                                     BorderThickness="0"
-                                     Background="Transparent"
-                                     VerticalContentAlignment="Center"
-                                     TextChanged="OnCommandeSearchChanged"/>
-                        </Border>
-                        <Border Grid.Column="1" Background="Transparent"/>
-                        <Button Grid.Column="2"
-                                Content="＋ Nouvelle commande"
-                                Classes="btn-primary btn-primary-green"
-                                Click="OnNouvelleCommandeClick"/>
-                    </Grid>
+        <!-- TOOLBAR (Même style que Appro) -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
+            <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
+                <TextBox x:Name="SearchCommande"
+                         Watermark="Rechercher destination ou N°..."
+                         BorderThickness="0"
+                         Background="Transparent"
+                         VerticalContentAlignment="Center"
+                         Text="{Binding CommandeVM.SearchQuery, Mode=TwoWay}"/>
+            </Border>
+            <Border Grid.Column="1" Background="Transparent"/>
+            <Button Grid.Column="2"
+                    Content="＋ Nouvelle commande"
+                    Classes="btn-primary btn-primary-green"
+                    Click="OnNouvelleCommandeClick"/>
+        </Grid>
 
-                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+        <!-- CONTENU PRINCIPAL -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
 
-                        <DockPanel Grid.Column="0">
+            <DockPanel Grid.Column="0">
+                <!-- KPI SECTION (Ajouté pour la cohérence) -->
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="*,*,*" Margin="0,0,0,24">
+                    <Border Grid.Column="0" Classes="kpi">
+                        <StackPanel>
+                            <TextBlock Text="TOTAL COMMANDES" Classes="label"/>
+                            <TextBlock Text="{Binding CommandeVM.Commandes.Count}"
+                                       FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Classes="kpi" Margin="12,0">
+                        <StackPanel>
+                            <TextBlock Text="DESTINATIONS" Classes="label"/>
+                            <TextBlock Text="—"
+                                       FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Classes="kpi">
+                        <StackPanel>
+                            <TextBlock Text="STATUT EXPORT" Classes="label"/>
+                            <TextBlock Text="EN COURS"
+                                       FontSize="20" FontWeight="Bold" Foreground="#F59E0B" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-                            <!-- KPI row -->
-                            <Grid DockPanel.Dock="Top"
-                                  ColumnDefinitions="*,*,*"
-                                  Margin="0,0,0,24">
-                                <Border Grid.Column="0" Classes="kpi">
-                                    <StackPanel>
-                                        <TextBlock Text="TOTAL COMMANDES" Classes="label"/>
-                                        <TextBlock Text="{Binding CommandeVM.Commandes.Count}"
-                                                   FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
-                                    </StackPanel>
+                <!-- LISTE DES COMMANDES -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding CommandeVM.FilteredCommandes}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="coreModels:Commande">
+                                <Border Classes="order-card" PointerPressed="OnCommandeCardClick">
+                                    <Grid ColumnDefinitions="4,*,*,*,*,Auto">
+                                        
+                                        <!-- Barre d'accent (Bleue pour l'export pour différencier de l'appro vert) -->
+                                        <Border Grid.Column="0" Background="#3B82F6" CornerRadius="2"/>
+
+                                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="DESTINATION" Classes="label"/>
+                                            <TextBlock Text="{Binding Destination}"
+                                                       FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="RÉF. CLIENT" Classes="label"/>
+                                            <TextBlock Text="{Binding RefClient}"
+                                                       FontSize="13" Foreground="#64748B"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                            <TextBlock Text="CODE EXPORT" Classes="label"/>
+                                            <TextBlock Text="{Binding CodeExport}"
+                                                       FontSize="13" Foreground="#3B82F6" FontWeight="SemiBold"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                            <TextBlock Text="DATE" Classes="label"/>
+                                            <TextBlock Text="{Binding DateCommande, StringFormat='{}{0:dd/MM/yyyy}'}"
+                                                       FontSize="13" Foreground="#64748B"/>
+                                        </StackPanel>
+
+                                        <Button Grid.Column="5"
+                                                Classes="btn-icon"
+                                                Content="⋮"
+                                                Click="OnCommandeActionsClick">
+                                            <Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Modifier"/>
+                                                    <MenuItem Header="Supprimer" Click="OnCommandeDeleteClick"/>
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                        </Button>
+                                    </Grid>
                                 </Border>
-                                <Border Grid.Column="1" Classes="kpi">
-                                    <StackPanel>
-                                        <TextBlock Text="DESTINATIONS" Classes="label"/>
-                                        <TextBlock Text="—"
-                                                   FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
-                                    </StackPanel>
-                                </Border>
-                                <Border Grid.Column="2" Classes="kpi">
-                                    <StackPanel>
-                                        <TextBlock Text="CLIENTS" Classes="label"/>
-                                        <TextBlock Text="—"
-                                                   FontSize="28" FontWeight="Black" Foreground="#F59E0B"/>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
 
-                            <!-- Liste -->
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                <ItemsControl ItemsSource="{Binding CommandeVM.FilteredCommandes}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="coreModels:Commande">
-                                            <Border Classes="order-card" PointerPressed="OnCommandeCardClick">
-                                                <Grid ColumnDefinitions="4,*,150,130,120,Auto">
-
-                                                    <Border Grid.Column="0"
-                                                            Background="#3B82F6" CornerRadius="2"/>
-
-                                                    <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Destination}"
-                                                                   FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                                        <TextBlock Text="{Binding NumeroCommande, StringFormat='{}Commande #{0}'}"
-                                                                   FontSize="12" Foreground="#64748B"/>
-                                                    </StackPanel>
-
-                                                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                        <TextBlock Text="DATE" Classes="label"/>
-                                                        <TextBlock Text="{Binding DateCommande, StringFormat='{}{0:dd/MM/yyyy}'}"
-                                                                   FontSize="13" Foreground="#64748B"/>
-                                                    </StackPanel>
-
-                                                    <StackPanel Grid.Column="3" VerticalAlignment="Center">
-                                                        <TextBlock Text="RÉF. CLIENT" Classes="label"/>
-                                                        <TextBlock Text="{Binding RefClient}"
-                                                                   FontSize="13" Foreground="#64748B"/>
-                                                    </StackPanel>
-
-                                                    <StackPanel Grid.Column="4" VerticalAlignment="Center">
-                                                        <TextBlock Text="N° EXPORT" Classes="label"/>
-                                                        <TextBlock Text="{Binding CodeExport}"
-                                                                   FontSize="13" Foreground="#64748B"/>
-                                                    </StackPanel>
-
-                                                    <Button Grid.Column="5"
-                                                            Classes="btn-icon"
-                                                            Content="⋮"
-                                                            Margin="15,0,0,0"
-                                                            Click="OnCommandeActionsClick"/>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
+            <!-- PANEL FORMULAIRE (Refait comme Appro) -->
+            <Border Grid.Column="1"
+                    x:Name="CommandeFormPanel"
+                    IsVisible="False"
+                    Width="380"
+                    Margin="16,0,0,0"
+                    Background="White"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="24">
+                <ScrollViewer>
+                    <StackPanel Spacing="15">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right"
+                                    Content="✕"
+                                    Classes="btn-icon"
+                                    Click="OnCommandeAnnulerClick"/>
+                            <TextBlock Text="Nouvelle Commande"
+                                       FontSize="18" FontWeight="Bold" Foreground="#3B82F6"/>
                         </DockPanel>
 
-                        <!-- Panneau ajout Commande -->
-                        <Border Grid.Column="1"
-                                x:Name="CommandeFormPanel"
-                                IsVisible="False"
-                                Width="380"
-                                Margin="16,0,0,0"
-                                Background="White"
-                                BorderBrush="#E2E8F0"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="24">
-                            <ScrollViewer>
-                                <StackPanel Spacing="15">
+                        <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
 
-                                    <DockPanel>
-                                        <Button DockPanel.Dock="Right"
-                                                Content="✕"
-                                                Classes="btn-icon"
-                                                Click="OnCommandeFormClose"/>
-                                        <TextBlock Text="Nouvelle Commande"
-                                                   FontSize="18" FontWeight="Bold" Foreground="Blue"/>
-                                    </DockPanel>
+                        <TextBlock Text="DÉTAILS DE L'EXPÉDITION" Classes="form-section"/>
 
-                                    <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Destination" Classes="label"/>
+                            <TextBox x:Name="CommandeDestination"
+                                     Classes="form-input"
+                                     Watermark="Pays ou Ville de destination"
+                                     Text="{Binding CommandeVM.Destination, Mode=TwoWay}"/>
+                        </StackPanel>
 
-                                    <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Date de Commande" Classes="label"/>
+                            <DatePicker x:Name="CommandeDate"
+                                        Classes="form-input"
+                                        HorizontalAlignment="Stretch"
+                                        SelectedDate="{Binding CommandeVM.DateCommande}"/>
+                        </StackPanel>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Destination" Classes="label"/>
-                                        <TextBox x:Name="CommandeDestination"
-                                                 Classes="form-input"
-                                                 Watermark="Pays / Port de destination"
-                                                 Text="{Binding CommandeVM.Destination, Mode=TwoWay}"/>
-                                    </StackPanel>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Client" Classes="label"/>
+                            <ComboBox x:Name="CommandeRefClientCombo"
+                                      Classes="form-input"
+                                      HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding ClientVM.Clients}"
+                                      DisplayMemberBinding="{Binding NomClient}"/>
+                        </StackPanel>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Date commande" Classes="label"/>
-                                        <DatePicker x:Name="CommandeDate" Classes="form-input"/>
-                                    </StackPanel>
+                        <TextBlock x:Name="CommandeErrorText"
+                                   Foreground="#DC2626"
+                                   FontSize="12"
+                                   IsVisible="False"
+                                   TextWrapping="Wrap"/>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Référence client" Classes="label"/>
-                                        <ComboBox x:Name="CommandeRefClientCombo"
-                                                  Classes="form-input"
-                                                  HorizontalAlignment="Stretch"
-                                                  DisplayMemberBinding="{Binding NomClient}"/>
-                                    </StackPanel>
-
-                                    <TextBlock x:Name="CommandeErrorText"
-                                               Foreground="#DC2626"
-                                               IsVisible="False"
-                                               TextWrapping="Wrap"/>
-
-                                    <Button Content="Enregistrer la commande"
-                                            Classes="btn-primary btn-primary-green"
-                                            HorizontalAlignment="Stretch"
-                                            Margin="0,10,0,0"
-                                            Click="OnCommandeSave"/>
-
-                                </StackPanel>
-                            </ScrollViewer>
-                        </Border>
-
-                    </Grid>
-                </Grid>
-            </TabItem>
-
+                        <Button Content="Enregistrer la commande"
+                                Classes="btn-primary btn-primary-green"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,10,0,0"
+                                Click="OnCommandeSave"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</TabItem>
         </TabControl>
+
     </Grid>
 
+  
     <UserControl.Styles>
         <Style Selector="TabItem">
             <Setter Property="FontSize" Value="15"/>

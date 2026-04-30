@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/smiley/HERACLES/Project/BlueWaves/src/Core/Core.csproj",
         "projectName": "Core",
         "projectPath": "/home/smiley/HERACLES/Project/BlueWaves/src/Core/Core.csproj",
-        "packagesPath": "/home/smiley/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/751caa97a5c819b935985f34cc782a09/nuget",
         "outputPath": "/home/smiley/HERACLES/Project/BlueWaves/src/Core/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -74,7 +74,7 @@
         "projectUniqueName": "/home/smiley/HERACLES/Project/BlueWaves/src/Data/Data.csproj",
         "projectName": "Data",
         "projectPath": "/home/smiley/HERACLES/Project/BlueWaves/src/Data/Data.csproj",
-        "packagesPath": "/home/smiley/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/751caa97a5c819b935985f34cc782a09/nuget",
         "outputPath": "/home/smiley/HERACLES/Project/BlueWaves/src/Data/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -164,7 +164,7 @@
         "projectUniqueName": "/home/smiley/HERACLES/Project/BlueWaves/src/UI/UI.csproj",
         "projectName": "UI",
         "projectPath": "/home/smiley/HERACLES/Project/BlueWaves/src/UI/UI.csproj",
-        "packagesPath": "/home/smiley/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/751caa97a5c819b935985f34cc782a09/nuget",
         "outputPath": "/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [

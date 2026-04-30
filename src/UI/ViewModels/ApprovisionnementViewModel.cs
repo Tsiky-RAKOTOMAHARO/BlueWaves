@@ -118,11 +118,11 @@ public partial class ApprovisionnementViewModel : ViewModelBase
                 NumeroStock = SelectedStock.NumeroStock,
                 Certificat = CertificatSaisi,
                 Quantite = QuantiteSaisie,
-                DateReception = DateTime.Now
+                DateReception = DateTime.Now,
             };
 
             await _approService.AddApprovisionnement(nouveauAppro);
-
+            await LoadDataAsync();
             ResetForm();
         }
         catch
