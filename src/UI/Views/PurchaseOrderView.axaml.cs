@@ -13,12 +13,11 @@ namespace UI.Views;
 public partial class PurchaseOrderView : UserControl
 {
     private ApprovisionnementViewModel? _approVM;
-    private CommandeViewModel?          _commandeVM;
-    private FournisseurViewModel?       _fournisseurViewModel;
-    private ProduitViewModel?           _produitViewModel;
-    private ClientViewModel?            _clientViewModel;
-    private ExportViewModel?            _exportViewModel;
-    private bool                        _isInitialized;
+    private CommandeViewModel? _commandeVM;
+    private ClientViewModel? _clientViewModel;
+    private ExportViewModel? _exportViewModel;
+
+    private bool _isInitialized;
 
     public PurchaseOrderView()
     {
@@ -26,40 +25,59 @@ public partial class PurchaseOrderView : UserControl
 
         if (Program.ServiceHost != null)
         {
-            _approVM              = Program.ServiceHost.Services.GetRequiredService<ApprovisionnementViewModel>();
-            _commandeVM           = Program.ServiceHost.Services.GetRequiredService<CommandeViewModel>();
-            _fournisseurViewModel = Program.ServiceHost.Services.GetRequiredService<FournisseurViewModel>();
-            _produitViewModel     = Program.ServiceHost.Services.GetRequiredService<ProduitViewModel>();
-            _clientViewModel      = Program.ServiceHost.Services.GetRequiredService<ClientViewModel>();
-            _exportViewModel      = Program.ServiceHost.Services.GetRequiredService<ExportViewModel>();
-            DataContext            = new { ApproVM = _approVM, CommandeVM = _commandeVM };
-            AttachedToVisualTree  += OnAttachedToVisualTree;
+            _approVM = Program.ServiceHost.Services.GetRequiredService<ApprovisionnementViewModel>();
+            _commandeVM = Program.ServiceHost.Services.GetRequiredService<CommandeViewModel>();
+            _clientViewModel = Program.ServiceHost.Services.GetRequiredService<ClientViewModel>();
+            _exportViewModel = Program.ServiceHost.Services.GetRequiredService<ExportViewModel>();
+
+            DataContext = new { ApproVM = _approVM, CommandeVM = _commandeVM };
+            // AttachedToVisualTree += OnAttachedToVisualTree;
         }
     }
 
-    private async void OnAttachedToVisualTree(object? sender, EventArgs e)
+    protected override async void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
 {
-    if (_isInitialized) return;
+    base.OnAttachedToVisualTree(e);
+
+    if (!_isInitialized)
+    {
+        try
+        {
+            if (_commandeVM != null && _commandeVM.Commandes.Count == 0)
+                await _commandeVM.LoadCommandesCommand.ExecuteAsync(null);
+
+            if (_clientViewModel != null && _clientViewModel.Clients.Count == 0)
+                await _clientViewModel.LoadClients();
+
+            _isInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Init error: {ex.Message}");
+        }
+    }
+
     try
     {
-        await LoadReferenceDataAsync();
-        if (_approVM?.Approvisionnements.Count == 0)
+        if (_approVM != null)
+        {
             await _approVM.LoadDataAsync();
-        if (_commandeVM?.Commandes.Count == 0)
-            await _commandeVM.LoadCommandesCommand.ExecuteAsync(null);
-        PopulateApproDropdowns();
-        PopulateCommandeDropdowns();
-        _isInitialized = true;
+            PopulateApproDropdowns();
+        }
     }
-    catch (Exception ex) { Debug.WriteLine($"PurchaseOrderView initialization error: {ex.Message}"); }
-}
-
-    // ── Appro 
-
-    private async void OnNouvelleReceptionClick(object? sender, RoutedEventArgs e)
+    catch (Exception ex)
     {
-        await EnsureApproReferenceDataAsync();
-        PopulateApproDropdowns();
+        Console.WriteLine($"Appro reload error: {ex.Message}");
+    }
+}
+   
+
+    //Approvisionnement
+
+    private void OnNouvelleReceptionClick(object? sender, RoutedEventArgs e)
+    {
+        _approVM?.ResetForm();
+
         if (this.FindControl<Border>("ApproFormPanel") is { } panel)
             panel.IsVisible = true;
     }
@@ -72,62 +90,90 @@ public partial class PurchaseOrderView : UserControl
 
     private void OnApproSearchChanged(object? sender, TextChangedEventArgs e)
     {
-        if (sender is not TextBox searchBox) return;
-        _approVM?.FilterAppro(searchBox.Text ?? string.Empty);
+        if (sender is not TextBox searchBox || _approVM == null) return;
+        _approVM.SearchQuery = searchBox.Text ?? string.Empty;
     }
 
     private void OnApproCardClick(object? sender, PointerPressedEventArgs e)
     {
-        if (this.FindControl<Border>("ApproFormPanel") is { } panel)
-            panel.IsVisible = true;
+        if (sender is Border border && border.DataContext is Approvisionnement appro)
+            Debug.WriteLine($"Appro sélectionné : {appro.Certificat}");
     }
 
-    private void OnApproActionsClick(object? sender, RoutedEventArgs e) { }
+    private void OnApproActionsClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.DataContext is Approvisionnement appro)
+            Debug.WriteLine($"Actions pour : {appro.Certificat}");
+    }
 
     private async void OnApproSave(object? sender, RoutedEventArgs e)
     {
         if (_approVM == null) return;
 
-        var certificat          = this.FindControl<TextBox>("ApproCertificat")?.Text?.Trim() ?? string.Empty;
+        var certificat = this.FindControl<TextBox>("ApproCertificat")?.Text?.Trim();
+        var quantiteText = this.FindControl<TextBox>("ApproQuantite")?.Text?.Trim();
         var selectedFournisseur = this.FindControl<ComboBox>("ApproRefFournisseurCombo")?.SelectedItem as Fournisseur;
-        var selectedProduit     = this.FindControl<ComboBox>("ApproCodeProduitCombo")?.SelectedItem as Produit;
+        var selectedProduit = this.FindControl<ComboBox>("ApproCodeProduitCombo")?.SelectedItem as Produit;
+        var selectedStock = this.FindControl<ComboBox>("ApproStockCombo")?.SelectedItem as Stock;
 
-        if (string.IsNullOrWhiteSpace(certificat) || selectedFournisseur == null || selectedProduit == null)
+        if (string.IsNullOrWhiteSpace(certificat) ||
+            selectedFournisseur == null ||
+            selectedProduit == null ||
+            selectedStock == null ||
+            !int.TryParse(quantiteText, out int quantite) ||
+            quantite <= 0)
         {
-            ShowError("ApproErrorText", "Veuillez renseigner certificat, fournisseur et produit.");
+            ShowError("ApproErrorText", "Veuillez remplir correctement tous les champs.");
             return;
         }
 
         try
         {
-            await _approVM.AddApprovisionnementAsync(new Approvisionnement
+            _approVM.CertificatSaisi = certificat;
+            _approVM.SelectedFournisseur = selectedFournisseur;
+            _approVM.SelectedProduit = selectedProduit;
+            _approVM.SelectedStock = selectedStock;
+            _approVM.QuantiteSaisie = quantite;
+
+            await _approVM.AddApprovisionnementAsync();
+
+            if (!string.IsNullOrEmpty(_approVM.ErrorMessage))
             {
-                Certificat     = certificat,
-                RefFournisseur = selectedFournisseur.RefFournisseur,
-                CodeProduit    = selectedProduit.CodeProduit
-            });
+                ShowError("ApproErrorText", _approVM.ErrorMessage);
+                return;
+            }
 
             ClearTextBox("ApproCertificat");
+            ClearTextBox("ApproQuantite");
             ResetComboBox("ApproRefFournisseurCombo");
             ResetComboBox("ApproCodeProduitCombo");
+            ResetComboBox("ApproStockCombo");
 
             if (this.FindControl<Border>("ApproFormPanel") is { } panel)
                 panel.IsVisible = false;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Save appro error: {ex.Message}");
-            ShowError("ApproErrorText", "Impossible d'enregistrer la réception.");
+            ShowError("ApproErrorText", ex.Message);
         }
     }
 
-    // ── Commande 
+    private async void OnDeleteApproClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.DataContext is Approvisionnement appro && _approVM != null)
+            await _approVM.DeleteApprovisionnementAsync(appro);
+    }
+
+    // ─── Commandes Export 
 
     private async void OnNouvelleCommandeClick(object? sender, RoutedEventArgs e)
     {
-        await EnsureCommandeReferenceDataAsync();
+        if (_clientViewModel != null && _clientViewModel.Clients.Count == 0)
+            await _clientViewModel.LoadClients();
+
         PopulateCommandeDropdowns();
         _commandeVM?.ResetForm();
+
         if (this.FindControl<Border>("CommandeFormPanel") is { } panel)
             panel.IsVisible = true;
     }
@@ -146,45 +192,46 @@ public partial class PurchaseOrderView : UserControl
 
     private void OnCommandeCardClick(object? sender, PointerPressedEventArgs e)
     {
-        if (this.FindControl<Border>("CommandeFormPanel") is { } panel)
-            panel.IsVisible = true;
+        if (sender is Border border && border.DataContext is Commande commande)
+            Debug.WriteLine($"Commande sélectionnée : {commande.NumeroCommande}");
     }
 
-    private void OnCommandeActionsClick(object? sender, RoutedEventArgs e) { }
+    private void OnCommandeActionsClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.DataContext is Commande commande)
+            Debug.WriteLine($"Actions pour : {commande.NumeroCommande}");
+    }
 
     private async void OnCommandeSave(object? sender, RoutedEventArgs e)
     {
         if (_commandeVM == null) return;
 
         var selectedClient = this.FindControl<ComboBox>("CommandeRefClientCombo")?.SelectedItem as Client;
-        var date           = this.FindControl<DatePicker>("CommandeDate")?.SelectedDate?.Date;
+        var date = this.FindControl<DatePicker>("CommandeDate")?.SelectedDate?.Date;
 
-        if (string.IsNullOrWhiteSpace(_commandeVM.Destination) || selectedClient == null || date == null)
+        if (string.IsNullOrWhiteSpace(_commandeVM.Destination) ||
+            selectedClient == null ||
+            date == null)
         {
-            ShowError("CommandeErrorText", "Veuillez renseigner destination, date et client.");
-            return;
-        }
-
-        if (_exportViewModel == null)
-        {
-            ShowError("CommandeErrorText", "Service export indisponible.");
+            ShowError("CommandeErrorText", "Champs obligatoires manquants.");
             return;
         }
 
         try
         {
+            if (_exportViewModel == null)
+                throw new Exception("ExportViewModel non initialisé");
+
             var newExport = await _exportViewModel.AddExportAsync(new Export { Delai = 0 });
-            _commandeVM.RefClient    = selectedClient.RefClient;
+
+            _commandeVM.RefClient = selectedClient.RefClient;
             _commandeVM.DateCommande = date.Value;
-            _commandeVM.CodeExport   = newExport.NumeroExport;
+            _commandeVM.CodeExport = newExport.NumeroExport;
 
             await _commandeVM.SaveCommandeCommand.ExecuteAsync(null);
 
             if (string.IsNullOrEmpty(_commandeVM.ErrorMessage))
             {
-                ResetComboBox("CommandeRefClientCombo");
-                if (this.FindControl<DatePicker>("CommandeDate") is { } cmdDate)
-                    cmdDate.SelectedDate = null;
                 if (this.FindControl<Border>("CommandeFormPanel") is { } panel)
                     panel.IsVisible = false;
             }
@@ -195,72 +242,48 @@ public partial class PurchaseOrderView : UserControl
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Save commande error: {ex.Message}");
-            ShowError("CommandeErrorText", "Impossible d'enregistrer la commande.");
+            ShowError("CommandeErrorText", ex.Message);
         }
     }
 
+    // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    private void ClearTextBox(string controlName)
+    private void ShowError(string name, string message)
     {
-        if (this.FindControl<TextBox>(controlName) is { } textBox)
-            textBox.Text = string.Empty;
-    }
-
-    private void ResetComboBox(string controlName)
-    {
-        if (this.FindControl<ComboBox>(controlName) is { } comboBox)
-            comboBox.SelectedItem = null;
-    }
-
-    private void ShowError(string textBlockName, string message)
-    {
-        if (this.FindControl<TextBlock>(textBlockName) is { } errorText)
+        if (this.FindControl<TextBlock>(name) is { } tb)
         {
-            errorText.Text      = message;
-            errorText.IsVisible = true;
+            tb.Text = message;
+            tb.IsVisible = true;
         }
     }
 
-    private async Task LoadReferenceDataAsync()
+    private void ClearTextBox(string name)
     {
-        await EnsureApproReferenceDataAsync();
-        await EnsureCommandeReferenceDataAsync();
+        if (this.FindControl<TextBox>(name) is { } tb)
+            tb.Text = string.Empty;
     }
 
-    private async Task EnsureApproReferenceDataAsync()
+    private void ResetComboBox(string name)
     {
-        try
-        {
-            if (_fournisseurViewModel != null && _fournisseurViewModel.Fournisseurs.Count == 0)
-                await _fournisseurViewModel.LoadFournisseur();
-            if (_produitViewModel != null && _produitViewModel.Produits.Count == 0)
-                await _produitViewModel.LoadProduits();
-        }
-        catch (Exception ex) { Debug.WriteLine($"Unable to load appro reference data: {ex.Message}"); }
-    }
-
-    private async Task EnsureCommandeReferenceDataAsync()
-    {
-        try
-        {
-            if (_clientViewModel != null && _clientViewModel.Clients.Count == 0)
-                await _clientViewModel.LoadClients();
-        }
-        catch (Exception ex) { Debug.WriteLine($"Unable to load commande reference data: {ex.Message}"); }
+        if (this.FindControl<ComboBox>(name) is { } cb)
+            cb.SelectedItem = null;
     }
 
     private void PopulateApproDropdowns()
     {
-        if (this.FindControl<ComboBox>("ApproRefFournisseurCombo") is { } approFournisseurCombo)
-            approFournisseurCombo.ItemsSource = _fournisseurViewModel?.Fournisseurs;
-        if (this.FindControl<ComboBox>("ApproCodeProduitCombo") is { } approProduitCombo)
-            approProduitCombo.ItemsSource = _produitViewModel?.Produits;
+        if (this.FindControl<ComboBox>("ApproRefFournisseurCombo") is { } f)
+            f.ItemsSource = _approVM?.Fournisseurs;
+
+        if (this.FindControl<ComboBox>("ApproCodeProduitCombo") is { } p)
+            p.ItemsSource = _approVM?.Produits;
+
+        if (this.FindControl<ComboBox>("ApproStockCombo") is { } s)
+            s.ItemsSource = _approVM?.Stocks;
     }
 
     private void PopulateCommandeDropdowns()
     {
-        if (this.FindControl<ComboBox>("CommandeRefClientCombo") is { } cmdClientCombo)
-            cmdClientCombo.ItemsSource = _clientViewModel?.Clients;
+        if (this.FindControl<ComboBox>("CommandeRefClientCombo") is { } c)
+            c.ItemsSource = _clientViewModel?.Clients;
     }
 }

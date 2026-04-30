@@ -12,20 +12,14 @@ public partial class ProduitViewModel : ViewModelBase
 {
     private readonly ProduitServices _produitService;
 
-    // Collection pour la liste des produits
     public ObservableCollection<Produit> Produits { get; } = new();
 
-    [ObservableProperty]
-    private bool _isLoading;
+    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] private string _errorMessage = string.Empty;
 
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
 
-    // Propriétés du formulaire
     [ObservableProperty] private string _nomProduit = string.Empty;
-    [ObservableProperty] private int _quantite;
-    [ObservableProperty] private DateTime _dateReception = DateTime.Now;
-    [ObservableProperty] private int _numeroStock;
+    [ObservableProperty] private int _prix;
     [ObservableProperty] private Produit? _selectedProduit;
 
     public ProduitViewModel(ProduitServices produitService)
@@ -33,9 +27,9 @@ public partial class ProduitViewModel : ViewModelBase
         _produitService = produitService;
     }
 
-    // Constructeur vide pour le designer XAML si nécessaire
     public ProduitViewModel() { }
 
+   
     [RelayCommand]
     public async Task LoadProduits()
     {
@@ -45,18 +39,16 @@ public partial class ProduitViewModel : ViewModelBase
         {
             IsLoading = true;
             ErrorMessage = string.Empty;
-            
+
             var data = await _produitService.GetAllProduit();
-            
+
             Produits.Clear();
-            foreach (var item in data)
-            {
-                Produits.Add(item);
-            }
+            foreach (var p in data)
+                Produits.Add(p);
         }
         catch (Exception ex)
         {
-            ErrorMessage = "Erreur lors du chargement : " + ex.Message;
+            ErrorMessage = "Erreur chargement produits : " + ex.Message;
         }
         finally
         {
@@ -64,6 +56,7 @@ public partial class ProduitViewModel : ViewModelBase
         }
     }
 
+    
     [RelayCommand]
     public async Task SaveProduit()
     {
@@ -71,10 +64,11 @@ public partial class ProduitViewModel : ViewModelBase
         {
             ErrorMessage = string.Empty;
 
-            // Appel au service (qui contient les validations métier)
-            await _produitService.AddProduit(NomProduit, Quantite, DateReception, NumeroStock);
-            
-            // Rafraîchir la liste et réinitialiser le formulaire
+            await _produitService.AddProduit(
+                NomProduit,
+                Prix
+            );
+
             await LoadProduits();
             ResetForm();
         }
@@ -84,10 +78,11 @@ public partial class ProduitViewModel : ViewModelBase
         }
         catch (Exception)
         {
-            ErrorMessage = "Une erreur inattendue est survenue.";
+            ErrorMessage = "Erreur inattendue.";
         }
     }
 
+    
     [RelayCommand]
     public async Task DeleteProduit(Produit? produit)
     {
@@ -95,7 +90,8 @@ public partial class ProduitViewModel : ViewModelBase
 
         try
         {
-            await _produitService.DeleteProduit(produit);
+            await _produitService.DeleteProduit(produit.CodeProduit);
+
             Produits.Remove(produit);
         }
         catch (Exception ex)
@@ -104,12 +100,11 @@ public partial class ProduitViewModel : ViewModelBase
         }
     }
 
+    
     public void ResetForm()
     {
         NomProduit = string.Empty;
-        Quantite = 0;
-        DateReception = DateTime.Now;
-        NumeroStock = 0;
-        ErrorMessage = string.Empty;
+        Prix = 0;
+        SelectedProduit = null;
     }
 }

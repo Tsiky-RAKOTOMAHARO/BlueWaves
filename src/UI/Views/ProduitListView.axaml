@@ -1,199 +1,164 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:models="clr-namespace:Core.Models;assembly=Core"
-             xmlns:vm="clr-namespace:UI.ViewModels"
+             xmlns:coreModels="clr-namespace:Core.Models;assembly=Core"
              x:Class="UI.Views.ProduitListView"
              x:CompileBindings="False"
-             Tag="Gestion des Produits"
+             Tag="Produits"
              Background="#F8FAFC">
 
     <Grid RowDefinitions="Auto,*" Margin="20">
 
-        <!-- Header -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
             <StackPanel Spacing="4">
-                <TextBlock Text="Catalogue des Produits"
+                <TextBlock Text="Gestion des Produits"
                            FontSize="20" FontWeight="Bold" Foreground="#1E293B"/>
-                <TextBlock Text="Liste des produits enregistrés en stock"
+                <TextBlock Text="Catalogue et référentiel produits"
                            FontSize="13" Foreground="#94A3B8"/>
             </StackPanel>
-            <Button Grid.Column="1"
-                    Click="OuvrirPanneau_Click"
-                    Classes="btn-primary btn-primary-green">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="+ Ajouter un produit" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
         </Grid>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
 
-            <DockPanel Grid.Column="0">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
+                <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
+                    <TextBox x:Name="SearchProduit"
+                             Watermark="Rechercher un produit..."
+                             BorderThickness="0"
+                             Background="Transparent"
+                             VerticalContentAlignment="Center"
+                             TextChanged="OnProduitSearchChanged"/>
+                </Border>
+                <Border Grid.Column="1" Background="Transparent"/>
+                <Button Grid.Column="2"
+                        Content="＋ Nouveau produit"
+                        Classes="btn-primary btn-primary-green"
+                        Click="OuvrirPanneau_Click"/>
+            </Grid>
 
-                <!-- KPI row -->
-                <Grid DockPanel.Dock="Top"
-                      ColumnDefinitions="*,*,*" 
-                      Margin="0,0,0,24">
-                    <Border Grid.Column="0" Classes="kpi">
-                        <StackPanel>
-                            <TextBlock Text="TOTAL PRODUITS" Classes="label"/>
-                            <TextBlock Text="{Binding Produits.Count}"
-                                       FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="1" Classes="kpi">
-                        <StackPanel>
-                            <TextBlock Text="EN STOCK" Classes="label"/>
-                            <TextBlock Text="—"
-                                       FontSize="28" FontWeight="Black" Foreground="#10B981"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="2" Classes="kpi">
-                        <StackPanel>
-                            <TextBlock Text="DERNIÈRE RÉCEPTION" Classes="label"/>
-                            <TextBlock Text="—"
-                                       FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
 
-                <!-- Liste produits -->
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Produits}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="models:Produit">
-                                <Border Classes="contact-card">
-                                    <Grid ColumnDefinitions="2,*,*,*,*,Auto">
+                <DockPanel Grid.Column="0">
 
-                                        <Border Grid.Column="0"
-                                                Background="#3B82F6" CornerRadius="2"/>
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,*,*"
+                          Margin="0,0,0,24">
+                        <Border Grid.Column="0" Classes="kpi">
+                            <StackPanel>
+                                <TextBlock Text="TOTAL PRODUITS" Classes="label"/>
+                                <TextBlock Text="{Binding Produits.Count}"
+                                           FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Classes="kpi">
+                            <StackPanel>
+                                <TextBlock Text="PRIX MOYEN" Classes="label"/>
+                                <TextBlock Text="—"
+                                           FontSize="28" FontWeight="Black" Foreground="#10B981"/>
+                                <TextBlock Text="Ariary MGA" FontSize="11" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="kpi">
+                            <StackPanel>
+                                <TextBlock Text="CATÉGORIES" Classes="label"/>
+                                <TextBlock Text="—"
+                                           FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
 
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="CODE" Classes="label"/>
-                                            <Border Background="#EFF6FF" CornerRadius="4"
-                                                    Padding="6,2" HorizontalAlignment="Left">
-                                                <TextBlock Text="{Binding CodeProduit, StringFormat='{}P-{0}'}"
-                                                           FontSize="11" FontWeight="Bold" Foreground="#3B82F6"/>
-                                            </Border>
-                                        </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Produits}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="coreModels:Produit">
+                                    <Border Classes="order-card">
+                                        <Grid ColumnDefinitions="4,*,*,Auto">
 
-                                        <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding NomProduit}"
-                                                       FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                            <TextBlock Text="{Binding Date_reception, StringFormat='{}{0:dd/MM/yyyy}'}"
-                                                       FontSize="12" Foreground="#64748B"/>
-                                        </StackPanel>
+                                            <Border Grid.Column="0"
+                                                    Background="#10B981" CornerRadius="2"/>
 
-                                        <StackPanel Grid.Column="3" VerticalAlignment="Center">
-                                            <TextBlock Text="N° STOCK" Classes="label"/>
-                                            <TextBlock Text="{Binding NumeroStock}"
-                                                       FontSize="13" Foreground="#64748B"/>
-                                        </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding NomProduit}"
+                                                           FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding CodeProduit, StringFormat='{}#{0}'}"
+                                                           FontSize="12" Foreground="#64748B"/>
+                                            </StackPanel>
 
-                                        <StackPanel Grid.Column="4" VerticalAlignment="Center">
-                                            <TextBlock Text="QUANTITÉ" Classes="label"/>
-                                            <TextBlock Text="{Binding Quantite}"
-                                                       FontSize="13" FontWeight="SemiBold" Foreground="#0F172A"/>
-                                        </StackPanel>
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                <TextBlock Text="PRIX" Classes="label"/>
+                                                <TextBlock Text="{Binding Prix, StringFormat='{}{0:N0} MGA'}"
+                                                           FontSize="13" Foreground="#10B981" FontWeight="Bold"/>
+                                            </StackPanel>
 
-                                        <Button Grid.Column="5"
-                                                Classes="btn-icon"
-                                                Content="⋮"
-                                                Margin="15,0,0,0"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </DockPanel>
+                                            <Button Grid.Column="3"
+                                                    Classes="btn-icon"
+                                                    Content="⋮"
+                                                    Margin="15,0,0,0"
+                                                    DataContext="{Binding}"
+                                                    Click="OnProduitActionsClick"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
 
-            <!-- Panneau slide-in -->
-            <Border Grid.Column="1"
-                    x:Name="PanneauLateral"
-                    IsVisible="False"
-                    Width="320"
-                    Margin="16,0,0,0"
-                    Background="White"
-                    BorderBrush="#E2E8F0"
-                    BorderThickness="1"
-                    CornerRadius="12"
-                    Padding="24">
-                <ScrollViewer>
-                    <StackPanel Spacing="15">
+                <Border Grid.Column="1"
+                        x:Name="PanneauLateral"
+                        IsVisible="False"
+                        Width="380"
+                        Margin="16,0,0,0"
+                        Background="White"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="24">
+                    <ScrollViewer>
+                        <StackPanel Spacing="15">
 
-                        <DockPanel>
-                            <Button DockPanel.Dock="Right"
-                                    Content="✕"
-                                    Classes="btn-icon"
-                                    Click="FermerPanneau_Click"/>
-                            <TextBlock Text="Nouveau Produit"
-                                       FontSize="18" FontWeight="Bold" Foreground="Blue"/>
-                        </DockPanel>
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right"
+                                        Content="✕"
+                                        Classes="btn-icon"
+                                        Click="FermerPanneau_Click"/>
+                                <TextBlock Text="Nouveau Produit"
+                                           FontSize="18" FontWeight="Bold" Foreground="Blue"/>
+                            </DockPanel>
 
-                        <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+                            <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
 
-                        <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
+                            <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Nom du produit" Classes="label"/>
-                            <TextBox Classes="form-input"
-                                     Watermark="ex: Crevettes Tigrées"
-                                     Text="{Binding NomProduit, Mode=TwoWay}"/>
-                        </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Nom du produit" Classes="label"/>
+                                <TextBox Classes="form-input"
+                                         Watermark="Ex: Crevettes entières"
+                                         Text="{Binding NomProduit, Mode=TwoWay}"/>
+                            </StackPanel>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Numéro de stock" Classes="label"/>
-                            <TextBox Classes="form-input"
-                                     Watermark="ex: 1"
-                                     Text="{Binding NumeroStock, Mode=TwoWay}"/>
-                        </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Prix (MGA)" Classes="label"/>
+                                <TextBox Classes="form-input"
+                                         Watermark="Ex: 15000"
+                                         Text="{Binding Prix, Mode=TwoWay}"/>
+                            </StackPanel>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Quantité" Classes="label"/>
-                            <TextBox Classes="form-input"
-                                     Watermark="ex: 500"
-                                     Text="{Binding Quantite, Mode=TwoWay}"/>
-                        </StackPanel>
+                            <TextBlock x:Name="ProduitErrorText"
+                                       Foreground="#DC2626"
+                                       IsVisible="False"
+                                       TextWrapping="Wrap"/>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Text="Date de réception" Classes="label"/>
-                            <CalendarDatePicker SelectedDate="{Binding DateReception, Mode=TwoWay}"
-                                                HorizontalAlignment="Stretch"/>
-                        </StackPanel>
-
-                        <TextBlock Text="{Binding ErrorMessage}"
-                                   Foreground="#DC2626"
-                                   IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                   TextWrapping="Wrap"/>
-
-                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
-                            <Button Grid.Column="0"
-                                    Click="FermerPanneau_Click"
-                                    Content="Annuler"
-                                    Background="#F1F5F9"
-                                    Foreground="#64748B"
-                                    FontWeight="SemiBold"
-                                    CornerRadius="6"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center"
-                                    Padding="0,10"/>
-                            <Button Grid.Column="1"
-                                    Command="{Binding SaveProduitCommand}"
+                            <Button Content="Enregistrer le produit"
                                     Classes="btn-primary btn-primary-green"
                                     HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center"
-                                    Padding="0,10">
-                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                        </Grid>
+                                    Margin="0,10,0,0"
+                                    Command="{Binding SaveProduitCommand}"/>
 
-                    </StackPanel>
-                </ScrollViewer>
-            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
 
+            </Grid>
         </Grid>
     </Grid>
 
@@ -210,7 +175,7 @@
             <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="Margin" Value="0,15,0,10"/>
         </Style>
-        <Style Selector="Border.contact-card">
+        <Style Selector="Border.order-card">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="BorderBrush" Value="#E2E8F0"/>
@@ -225,7 +190,7 @@
                 </Transitions>
             </Setter>
         </Style>
-        <Style Selector="Border.contact-card:pointerover">
+        <Style Selector="Border.order-card:pointerover">
             <Setter Property="Background" Value="#F1F5F9"/>
             <Setter Property="BorderBrush" Value="#CBD5E1"/>
         </Style>
@@ -260,6 +225,15 @@
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.btn-icon:pointerover">
+            <Setter Property="Foreground" Value="#1E293B"/>
+        </Style>
+        <Style Selector="Border.search-shell">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
         </Style>
     </UserControl.Styles>
 

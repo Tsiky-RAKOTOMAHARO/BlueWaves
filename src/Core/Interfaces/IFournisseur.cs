@@ -2,6 +2,7 @@ using Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+
 namespace Core.Interfaces{
     public interface IFournisseurRepository{
         Task<Fournisseur> GetFournisseurByref (int RefFournisseur);

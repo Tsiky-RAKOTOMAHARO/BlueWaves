@@ -1,26 +1,23 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+
+
 namespace Core.Models{
-    public class Produit{
+public class Produit
+{
+    [Key]
+    public int CodeProduit { get; set; }
 
-        [Key]
-        public int CodeProduit {get; set;}
-        public int NumeroStock {get; set;}
+    [Required]
+    [StringLength(150)]
+    public string NomProduit { get; set; }
 
-        [Required]
-        [StringLength(150)]
-        public string NomProduit {get; set;}
-        
-        [Column("QuantiteProduit")] 
-        public int Quantite {get; set;}
-        public DateTime Date_reception {get; set;}
-        public bool Statut {get; set;}
+    [Required]
+    public int Prix { get; set; }
 
-        [ForeignKey(nameof(NumeroStock))]
-        public virtual Stock Stock {get; set;} = null!;
+    public bool Statut { get; set; }
 
-        public virtual ICollection<Approvisionnement> Approvisionnement {get; set;} = new List<Approvisionnement>();
-
-    }
+    public virtual ICollection<Approvisionnement> Approvisionnements { get; set; }
+        = new List<Approvisionnement>();
+}
 }

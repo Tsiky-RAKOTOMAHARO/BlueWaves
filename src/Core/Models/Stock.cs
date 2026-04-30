@@ -9,8 +9,9 @@ namespace Core.Models{
         
         [Required]
         [StringLength(25)]
-        public string Type {get; set;}
+        public string NomStock { get; set; } = string.Empty;
 
-        public virtual ICollection<Produit> Produid {get; set;} = new List<Produit>();
+        public virtual ICollection<Approvisionnement> Approvisionnements { get; set; }
+        = new List<Approvisionnement>();
     }
 }

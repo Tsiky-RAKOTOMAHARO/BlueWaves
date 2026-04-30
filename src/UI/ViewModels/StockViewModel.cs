@@ -8,18 +8,23 @@ namespace UI.ViewModels;
 
 public partial class StockViewModel : ViewModelBase
 {
-    private readonly StockServices   _stockService;
-    private readonly ProduitServices _produitService;
+    private readonly StockServices _stockService;
 
-    public ObservableCollection<Stock>   Stocks         { get; } = new();
+    public ObservableCollection<Stock> Stocks { get; } = new();
     public ObservableCollection<Produit> ProduitsduStock { get; } = new();
 
-    [ObservableProperty] private bool    _isLoading;
-    [ObservableProperty] private string  _nomStock     = string.Empty;
-    [ObservableProperty] private string  _errorMessage = string.Empty;
-    [ObservableProperty] private Stock?  _selectedStock;
+    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] private string _nomStock = string.Empty;
+    [ObservableProperty] private string _errorMessage = string.Empty;
+    [ObservableProperty] private Stock? _selectedStock;
 
     public bool AucunProduit => ProduitsduStock.Count == 0;
+
+    public StockViewModel(StockServices stockService)
+    {
+        _stockService = stockService;
+    }
+
     partial void OnSelectedStockChanged(Stock? value)
     {
         if (value != null)
@@ -28,36 +33,44 @@ public partial class StockViewModel : ViewModelBase
             ProduitsduStock.Clear();
     }
 
-    public StockViewModel(StockServices stockService, ProduitServices produitService)
-    {
-        _stockService   = stockService;
-        _produitService = produitService;
-    }
-
     [RelayCommand]
     public async Task LoadStock()
     {
         if (IsLoading) return;
+
         try
         {
             IsLoading = true;
+
             Stocks.Clear();
             var data = await _stockService.GetAllStock();
+
             foreach (var item in data)
                 Stocks.Add(item);
         }
-        finally { IsLoading = false; }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
-    private async Task LoadProduitsduStock(int numStock)
+    public async Task LoadProduitsduStock(int numStock)
     {
         try
         {
             ProduitsduStock.Clear();
-            var data = await _produitService.GetProduitByNumStock(numStock);
-            foreach (var item in data)
-                ProduitsduStock.Add(item);
-        OnPropertyChanged(nameof(AucunProduit));
+
+            var stock = await _stockService.GetStockByNum(numStock);
+
+            if (stock == null)
+                return;
+
+            foreach (var appro in stock.Approvisionnements)
+            {
+                ProduitsduStock.Add(appro.Produit);
+            }
+
+            OnPropertyChanged(nameof(AucunProduit));
         }
         catch (Exception ex)
         {
@@ -71,6 +84,7 @@ public partial class StockViewModel : ViewModelBase
         try
         {
             ErrorMessage = string.Empty;
+
             await _stockService.AddStock(NomStock);
             await LoadStock();
             ResetForm();
@@ -88,7 +102,7 @@ public partial class StockViewModel : ViewModelBase
             await _stockService.DeleteStock(stock);
             Stocks.Remove(stock);
         }
-        catch (ArgumentNullException ex)
+        catch (Exception ex)
         {
             ErrorMessage = ex.Message;
         }
@@ -96,7 +110,7 @@ public partial class StockViewModel : ViewModelBase
 
     public void ResetForm()
     {
-        NomStock     = string.Empty;
+        NomStock = string.Empty;
         ErrorMessage = string.Empty;
     }
 }

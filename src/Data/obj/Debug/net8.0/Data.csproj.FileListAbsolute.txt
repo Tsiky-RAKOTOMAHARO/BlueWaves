@@ -1,4 +1,5 @@
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/bin/Debug/net8.0/Data.deps.json
+/home/smiley/HERACLES/Project/BlueWaves/src/Data/bin/Debug/net8.0/Data.runtimeconfig.json
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/bin/Debug/net8.0/Data.dll
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/bin/Debug/net8.0/Data.pdb
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/bin/Debug/net8.0/Core.dll
@@ -13,4 +14,5 @@
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/obj/Debug/net8.0/Data.dll
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/obj/Debug/net8.0/refint/Data.dll
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/obj/Debug/net8.0/Data.pdb
+/home/smiley/HERACLES/Project/BlueWaves/src/Data/obj/Debug/net8.0/Data.genruntimeconfig.cache
 /home/smiley/HERACLES/Project/BlueWaves/src/Data/obj/Debug/net8.0/ref/Data.dll

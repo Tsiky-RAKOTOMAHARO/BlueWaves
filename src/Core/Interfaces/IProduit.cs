@@ -4,16 +4,9 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces{
     public interface IProduitRepository{
-        Task<Produit> GetProduitByCode (int CodeProduit);
-
-        Task<IEnumerable<Produit>> GetAllProduit();
-
-        Task<IEnumerable<Produit>> GetProduitByNumStock(int numStock);
-
-        Task AddProduit(Produit produit);
-
-        Task UpdateProduit(Produit produit);
-
-        Task DeleteProduit(Produit produit);
-    }
+    Task<Produit> AddProduit(Produit produit);
+    Task<Produit?> GetProduitByCode(int codeProduit);
+    Task<IEnumerable<Produit>> GetAllProduit();
+    Task DeleteProduit(Produit produit);
+}
 }

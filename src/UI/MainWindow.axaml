@@ -53,7 +53,7 @@
 
                         <Button Click="NavClick" Classes="nav" Tag="Stock">
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <PathIcon Data="{StaticResource CartIcon}" Foreground="White" Width="15" Height="25"/>
+                                <PathIcon Data="{StaticResource BoxIcon}" Foreground="White" Width="15" Height="25"/>
                                 <TextBlock Text="Gestion des Stocks"/>
                             </StackPanel>
                         </Button>

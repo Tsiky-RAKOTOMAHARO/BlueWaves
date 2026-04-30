@@ -3,6 +3,7 @@ using System;
 using Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -19,11 +20,15 @@ namespace Data.Migrations
                 .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
             modelBuilder.Entity("Core.Models.Achat", b =>
                 {
                     b.Property<int>("IdAchat")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdAchat"));
 
                     b.Property<int>("CodeProduit")
                         .HasColumnType("int");
@@ -49,6 +54,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdApp"));
+
                     b.Property<string>("Certificat")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -57,12 +64,23 @@ namespace Data.Migrations
                     b.Property<int>("CodeProduit")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DateReception")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NumeroStock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantite")
+                        .HasColumnType("int");
+
                     b.Property<int>("RefFournisseur")
                         .HasColumnType("int");
 
                     b.HasKey("IdApp");
 
                     b.HasIndex("CodeProduit");
+
+                    b.HasIndex("NumeroStock");
 
                     b.HasIndex("RefFournisseur");
 
@@ -74,6 +92,8 @@ namespace Data.Migrations
                     b.Property<int>("RefClient")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RefClient"));
 
                     b.Property<string>("NomClient")
                         .IsRequired()
@@ -100,6 +120,8 @@ namespace Data.Migrations
                     b.Property<int>("NumeroCommande")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("NumeroCommande"));
 
                     b.Property<int>("CodeExport")
                         .HasColumnType("int");
@@ -130,6 +152,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("NumeroExport"));
+
                     b.Property<int>("Delai")
                         .HasColumnType("int");
 
@@ -143,6 +167,8 @@ namespace Data.Migrations
                     b.Property<int>("RefFournisseur")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RefFournisseur"));
 
                     b.Property<string>("NomFournisseur")
                         .IsRequired()
@@ -170,26 +196,20 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date_reception")
-                        .HasColumnType("datetime(6)");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CodeProduit"));
 
                     b.Property<string>("NomProduit")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<int>("NumeroStock")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantite")
+                    b.Property<int>("Prix")
                         .HasColumnType("int");
 
                     b.Property<bool>("Statut")
                         .HasColumnType("tinyint(1)");
 
                     b.HasKey("CodeProduit");
-
-                    b.HasIndex("NumeroStock");
 
                     b.ToTable("PRODUIT", (string)null);
                 });
@@ -200,7 +220,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("NumeroStock"));
+
+                    b.Property<string>("NomStock")
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
@@ -232,8 +254,14 @@ namespace Data.Migrations
             modelBuilder.Entity("Core.Models.Approvisionnement", b =>
                 {
                     b.HasOne("Core.Models.Produit", "Produit")
-                        .WithMany("Approvisionnement")
+                        .WithMany("Approvisionnements")
                         .HasForeignKey("CodeProduit")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.Stock", "Stock")
+                        .WithMany("Approvisionnements")
+                        .HasForeignKey("NumeroStock")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -246,6 +274,8 @@ namespace Data.Migrations
                     b.Navigation("Fournisseur");
 
                     b.Navigation("Produit");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Core.Models.Commande", b =>
@@ -267,17 +297,6 @@ namespace Data.Migrations
                     b.Navigation("Export");
                 });
 
-            modelBuilder.Entity("Core.Models.Produit", b =>
-                {
-                    b.HasOne("Core.Models.Stock", "Stock")
-                        .WithMany("Produid")
-                        .HasForeignKey("NumeroStock")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Stock");
-                });
-
             modelBuilder.Entity("Core.Models.Client", b =>
                 {
                     b.Navigation("Commande");
@@ -295,12 +314,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Core.Models.Produit", b =>
                 {
-                    b.Navigation("Approvisionnement");
+                    b.Navigation("Approvisionnements");
                 });
 
             modelBuilder.Entity("Core.Models.Stock", b =>
                 {
-                    b.Navigation("Produid");
+                    b.Navigation("Approvisionnements");
                 });
 #pragma warning restore 612, 618
         }

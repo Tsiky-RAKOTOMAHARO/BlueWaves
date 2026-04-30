@@ -22,47 +22,49 @@ class Program
     [STAThread]
     public static async Task Main(string[] args)
     {
-        ServiceHost = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((context, config) =>
-            {
-                config.SetBasePath(Directory.GetCurrentDirectory());
-                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            })
-            .ConfigureServices((context, services) =>
-            {
-                var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
-                var serverVersion = new MySqlServerVersion(new Version(8, 0, 35)); 
+                    ServiceHost = Host.CreateDefaultBuilder()
+                        .ConfigureAppConfiguration((context, config) =>
+                        {
+                            config.SetBasePath(Directory.GetCurrentDirectory());
+                            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                        })
+                        .ConfigureServices((context, services) =>
+                        {
+                            var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
+                            var serverVersion = new MySqlServerVersion(new Version(8, 0, 35)); 
 
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(connectionString, serverVersion));
+                          
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseMySql(connectionString, serverVersion),
+                ServiceLifetime.Transient);
 
+            // Repositories 
+            services.AddTransient<IAchatRepository, AchatRepository>();
+            services.AddTransient<IApprovisionnementRepository, ApprovisionnementRepository>();
+            services.AddTransient<IClientRepository, ClientRepository>();
+            services.AddTransient<ICommandeRepository, CommandeRepository>();
+            services.AddTransient<IExportRepository, ExportRepository>();
+            services.AddTransient<IFournisseurRepository, FournisseurRepository>();
+            services.AddTransient<IProduitRepository, ProduitRepository>();
+            services.AddTransient<IStockRepository, StockRepository>();
 
-                // Repositories
-                services.AddSingleton<IAchatRepository, AchatRepository>();
-                services.AddSingleton<IApprovisionnementRepository, ApprovisionnementRepository>();
-                services.AddSingleton<IClientRepository, ClientRepository>();
-                services.AddSingleton<ICommandeRepository, CommandeRepository>();
-                services.AddSingleton<IExportRepository, ExportRepository>();
-                services.AddSingleton<IFournisseurRepository, FournisseurRepository>();
-                services.AddSingleton<IProduitRepository, ProduitRepository>();
-                services.AddSingleton<IStockRepository, StockRepository>();// Corrigé ici
+            // Services 
+            services.AddTransient<ClientServices>();
+            services.AddTransient<FournisseurServices>();
+            services.AddTransient<ProduitServices>();
+            services.AddTransient<StockServices>();
+            services.AddTransient<CommandeServices>();
+            services.AddTransient<ApprovisionnementServices>();
 
-                // Services
-                services.AddSingleton<ClientServices>();    
-                services.AddSingleton<FournisseurServices>();    
-                services.AddSingleton<ProduitServices>();
-                services.AddSingleton<StockServices>();
-                // services.AddSingleton<CommandeServices();
-
-                // ViewModels
-                services.AddTransient<AchatViewModel>();
-                services.AddTransient<ApprovisionnementViewModel>();
-                services.AddTransient<ClientViewModel>();
-                services.AddTransient<CommandeViewModel>();
-                services.AddTransient<ExportViewModel>();
-                services.AddTransient<FournisseurViewModel>();
-                services.AddTransient<ProduitViewModel>();
-                services.AddTransient<StockViewModel>();
+            // ViewModels 
+            services.AddSingleton<ApprovisionnementViewModel>();
+            services.AddSingleton<CommandeViewModel>();
+            services.AddSingleton<ClientViewModel>();
+            services.AddSingleton<FournisseurViewModel>();
+            services.AddSingleton<ProduitViewModel>();
+            services.AddSingleton<StockViewModel>();
+            services.AddSingleton<ExportViewModel>();
+            services.AddSingleton<AchatViewModel>();
 
                 
             })

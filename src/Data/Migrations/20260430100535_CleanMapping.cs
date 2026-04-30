@@ -68,12 +68,29 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "PRODUIT",
+                columns: table => new
+                {
+                    CodeProduit = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    NomProduit = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Prix = table.Column<int>(type: "int", nullable: false),
+                    Statut = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PRODUIT", x => x.CodeProduit);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "STOCK",
                 columns: table => new
                 {
                     NumeroStock = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Type = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false)
+                    NomStock = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -113,23 +130,36 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "PRODUIT",
+                name: "APPROVISIONNEMENT",
                 columns: table => new
                 {
-                    CodeProduit = table.Column<int>(type: "int", nullable: false)
+                    IdApp = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RefFournisseur = table.Column<int>(type: "int", nullable: false),
+                    CodeProduit = table.Column<int>(type: "int", nullable: false),
                     NumeroStock = table.Column<int>(type: "int", nullable: false),
-                    NomProduit = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Quantite = table.Column<int>(type: "int", nullable: false),
-                    Date_reception = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Statut = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    DateReception = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Certificat = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PRODUIT", x => x.CodeProduit);
+                    table.PrimaryKey("PK_APPROVISIONNEMENT", x => x.IdApp);
                     table.ForeignKey(
-                        name: "FK_PRODUIT_STOCK_NumeroStock",
+                        name: "FK_APPROVISIONNEMENT_FOURNISSEUR_RefFournisseur",
+                        column: x => x.RefFournisseur,
+                        principalTable: "FOURNISSEUR",
+                        principalColumn: "RefFournisseur",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_APPROVISIONNEMENT_PRODUIT_CodeProduit",
+                        column: x => x.CodeProduit,
+                        principalTable: "PRODUIT",
+                        principalColumn: "CodeProduit",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_APPROVISIONNEMENT_STOCK_NumeroStock",
                         column: x => x.NumeroStock,
                         principalTable: "STOCK",
                         principalColumn: "NumeroStock",
@@ -165,35 +195,6 @@ namespace Data.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "APPROVISIONNEMENT",
-                columns: table => new
-                {
-                    IdApp = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RefFournisseur = table.Column<int>(type: "int", nullable: false),
-                    CodeProduit = table.Column<int>(type: "int", nullable: false),
-                    Certificat = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_APPROVISIONNEMENT", x => x.IdApp);
-                    table.ForeignKey(
-                        name: "FK_APPROVISIONNEMENT_FOURNISSEUR_RefFournisseur",
-                        column: x => x.RefFournisseur,
-                        principalTable: "FOURNISSEUR",
-                        principalColumn: "RefFournisseur",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_APPROVISIONNEMENT_PRODUIT_CodeProduit",
-                        column: x => x.CodeProduit,
-                        principalTable: "PRODUIT",
-                        principalColumn: "CodeProduit",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.CreateIndex(
                 name: "IX_ACHAT_CodeProduit",
                 table: "ACHAT",
@@ -210,6 +211,11 @@ namespace Data.Migrations
                 column: "CodeProduit");
 
             migrationBuilder.CreateIndex(
+                name: "IX_APPROVISIONNEMENT_NumeroStock",
+                table: "APPROVISIONNEMENT",
+                column: "NumeroStock");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_APPROVISIONNEMENT_RefFournisseur",
                 table: "APPROVISIONNEMENT",
                 column: "RefFournisseur");
@@ -223,11 +229,6 @@ namespace Data.Migrations
                 name: "IX_COMMANDE_RefClient",
                 table: "COMMANDE",
                 column: "RefClient");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PRODUIT_NumeroStock",
-                table: "PRODUIT",
-                column: "NumeroStock");
         }
 
         /// <inheritdoc />
@@ -249,13 +250,13 @@ namespace Data.Migrations
                 name: "PRODUIT");
 
             migrationBuilder.DropTable(
+                name: "STOCK");
+
+            migrationBuilder.DropTable(
                 name: "CLIENT");
 
             migrationBuilder.DropTable(
                 name: "EXPORT");
-
-            migrationBuilder.DropTable(
-                name: "STOCK");
         }
     }
 }

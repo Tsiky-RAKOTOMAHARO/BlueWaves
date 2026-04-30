@@ -21,172 +21,183 @@
         <!-- Tab control -->
         <TabControl Grid.Row="1" Background="Transparent" Margin="0,-8,0,0">
 
-            <!-- Approvisionnement -->
-            <TabItem Header="Approvisionnement">
-                <Grid RowDefinitions="Auto,*">
 
-                    <!-- Toolbar -->
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
-                        <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
-                            <TextBox x:Name="SearchAppro"
-                                     Watermark="Rechercher un Fournisseur..."
-                                     BorderThickness="0"
-                                     Background="Transparent"
-                                     VerticalContentAlignment="Center"
-                                     TextChanged="OnApproSearchChanged"/>
+             <TabItem Header="Approvisionnement">
+        <Grid RowDefinitions="Auto,*">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
+                <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
+                    <TextBox x:Name="SearchAppro"
+                             Watermark="Rechercher un Fournisseur..."
+                             BorderThickness="0"
+                             Background="Transparent"
+                             VerticalContentAlignment="Center"
+                             TextChanged="OnApproSearchChanged"/>
+                </Border>
+                <Border Grid.Column="1" Background="Transparent"/>
+                <Button Grid.Column="2"
+                        Content="＋ Nouvelle réception"
+                        Classes="btn-primary btn-primary-green"
+                        Click="OnNouvelleReceptionClick"/>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+
+                <DockPanel Grid.Column="0">
+
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,*,*"
+                          Margin="0,0,0,24">
+                        <Border Grid.Column="0" Classes="kpi">
+                            <StackPanel>
+                                <TextBlock Text="TOTAL RÉCEPTIONS" Classes="label"/>
+                                <TextBlock Text="{Binding ApproVM.Approvisionnements.Count}"
+                                           FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
+                            </StackPanel>
                         </Border>
-                        <Border Grid.Column="1" Background="Transparent"/>
-                        <Button Grid.Column="2"
-                                Content="＋ Nouvelle réception"
-                                Classes="btn-primary btn-primary-green"
-                                Click="OnNouvelleReceptionClick"/>
+                        <Border Grid.Column="1" Classes="kpi">
+                            <StackPanel>
+                                <TextBlock Text="VALEUR TOTALE" Classes="label"/>
+                                <TextBlock Text="—"
+                                           FontSize="28" FontWeight="Black" Foreground="#10B981"/>
+                                <TextBlock Text="Ariary MGA" FontSize="11" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="kpi">
+                            <StackPanel>
+                                <TextBlock Text="FOURNISSEURS" Classes="label"/>
+                                <TextBlock Text="—"
+                                           FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
+                            </StackPanel>
+                        </Border>
                     </Grid>
 
-                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ApproVM.FilteredApprovisionnements}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="coreModels:Approvisionnement">
+                                    <Border Classes="order-card" PointerPressed="OnApproCardClick">
+                                        <Grid ColumnDefinitions="4,*,*,*,Auto">
 
-                        <DockPanel Grid.Column="0">
+                                            <Border Grid.Column="0"
+                                                    Background="#10B981" CornerRadius="2"/>
 
-                            <!-- KPI row -->
-                            <Grid DockPanel.Dock="Top"
-                                  ColumnDefinitions="*,*,*"
-                                  Margin="0,0,0,24">
-                                <Border Grid.Column="0" Classes="kpi">
-                                    <StackPanel>
-                                        <TextBlock Text="TOTAL RÉCEPTIONS" Classes="label"/>
-                                        <TextBlock Text="{Binding ApproVM.Approvisionnements.Count}"
-                                                   FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
-                                    </StackPanel>
-                                </Border>
-                                <Border Grid.Column="1" Classes="kpi">
-                                    <StackPanel>
-                                        <TextBlock Text="VALEUR TOTALE" Classes="label"/>
-                                        <TextBlock Text="—"
-                                                   FontSize="28" FontWeight="Black" Foreground="#10B981"/>
-                                        <TextBlock Text="Ariary MGA" FontSize="11" Foreground="#94A3B8"/>
-                                    </StackPanel>
-                                </Border>
-                                <Border Grid.Column="2" Classes="kpi">
-                                    <StackPanel>
-                                        <TextBlock Text="FOURNISSEURS" Classes="label"/>
-                                        <TextBlock Text="—"
-                                                   FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="CERTIFICAT" Classes="label"/>
+                                                <TextBlock Text="{Binding Certificat}"
+                                                           FontSize="13" Foreground="#16A34A" FontWeight="Bold"/>
+                                            </StackPanel>
 
-                            <!-- Liste -->
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                <ItemsControl ItemsSource="{Binding ApproVM.FilteredApprovisionnements}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="coreModels:Approvisionnement">
-                                            <Border Classes="order-card" PointerPressed="OnApproCardClick">
-                                                <Grid ColumnDefinitions="4,*,*,*,Auto">
+                                            <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Fournisseur.NomFournisseur}"
+                                                           FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding RefFournisseur, StringFormat='{}F-{0}'}"
+                                                           FontSize="12" Foreground="#64748B"/>
+                                            </StackPanel>
 
-                                                    <Border Grid.Column="0"
-                                                            Background="#10B981" CornerRadius="2"/>
+                                            <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                                <TextBlock Text="DATE RÉCEPTION" Classes="label"/>
+                                                <TextBlock Text="{Binding DateReception, StringFormat='{}{0:dd/MM/yyyy}'}"
+                                                           FontSize="13" Foreground="#64748B"/>
+                                            </StackPanel>
 
-                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                        <TextBlock Text="CERTIFICAT" Classes="label"/>
-                                                        <TextBlock Text="{Binding Certificat}"
-                                                                   FontSize="13" Foreground="#16A34A" FontWeight="Bold"/>
-                                                    </StackPanel>
+                                            <Button Grid.Column="4"
+                                                    Classes="btn-icon"
+                                                    Content="⋮"
+                                                    Margin="15,0,0,0"
+                                                    Click="OnApproActionsClick"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
 
-                                                    <StackPanel Grid.Column="2" Margin="16,0" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Fournisseur.NomFournisseur}"
-                                                                   FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                                        <TextBlock Text="{Binding RefFournisseur, StringFormat='{}F-{0}'}"
-                                                                   FontSize="12" Foreground="#64748B"/>
-                                                    </StackPanel>
+                <Border Grid.Column="1"
+                        x:Name="ApproFormPanel"
+                        IsVisible="False"
+                        Width="380"
+                        Margin="16,0,0,0"
+                        Background="White"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="24">
+                    <ScrollViewer>
+                        <StackPanel Spacing="15">
 
-                                                    <StackPanel Grid.Column="3" VerticalAlignment="Center">
-                                                        <TextBlock Text="DATE RÉCEPTION" Classes="label"/>
-                                                        <TextBlock Text="{Binding Produit.Date_reception, StringFormat='{}{0:dd/MM/yyyy}'}"
-                                                                   FontSize="13" Foreground="#64748B"/>
-                                                    </StackPanel>
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right"
+                                        Content="✕"
+                                        Classes="btn-icon"
+                                        Click="OnApproFormClose"/>
+                                <TextBlock Text="Nouvelle Réception"
+                                           FontSize="18" FontWeight="Bold" Foreground="Blue"/>
+                            </DockPanel>
 
-                                                    <Button Grid.Column="4"
-                                                            Classes="btn-icon"
-                                                            Content="⋮"
-                                                            Margin="15,0,0,0"
-                                                            Click="OnApproActionsClick"/>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
-                        </DockPanel>
+                            <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
 
-                        <!-- Panneau ajout Appro -->
-                        <Border Grid.Column="1"
-                                x:Name="ApproFormPanel"
-                                IsVisible="False"
-                                Width="380"
-                                Margin="16,0,0,0"
-                                Background="White"
-                                BorderBrush="#E2E8F0"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="24">
-                            <ScrollViewer>
-                                <StackPanel Spacing="15">
+                            <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
 
-                                    <DockPanel>
-                                        <Button DockPanel.Dock="Right"
-                                                Content="✕"
-                                                Classes="btn-icon"
-                                                Click="OnApproFormClose"/>
-                                        <TextBlock Text="Nouvelle Réception"
-                                                   FontSize="18" FontWeight="Bold" Foreground="Blue"/>
-                                    </DockPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Certificat" Classes="label"/>
+                                <TextBox x:Name="ApproCertificat"
+                                         Classes="form-input"
+                                         Watermark="Référence certificat"/>
+                            </StackPanel>
 
-                                    <Border Height="1" Background="#F1F5F9" Margin="0,5"/>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Fournisseur" Classes="label"/>
+                                <ComboBox x:Name="ApproRefFournisseurCombo"
+                                          Classes="form-input"
+                                          HorizontalAlignment="Stretch"
+                                          DisplayMemberBinding="{Binding NomFournisseur}"/>
+                            </StackPanel>
 
-                                    <TextBlock Text="INFORMATIONS GÉNÉRALES" Classes="form-section"/>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Produit" Classes="label"/>
+                                <ComboBox x:Name="ApproCodeProduitCombo"
+                                          Classes="form-input"
+                                          HorizontalAlignment="Stretch"
+                                          DisplayMemberBinding="{Binding NomProduit}"/>
+                            </StackPanel>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Certificat" Classes="label"/>
-                                        <TextBox x:Name="ApproCertificat"
-                                                 Classes="form-input"
-                                                 Watermark="Référence certificat"/>
-                                    </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Stock" Classes="label"/>
+                                <ComboBox x:Name="ApproStockCombo"
+                                          Classes="form-input"
+                                          HorizontalAlignment="Stretch"
+                                          DisplayMemberBinding="{Binding NomStock}"/>
+                            </StackPanel>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Fournisseur" Classes="label"/>
-                                        <ComboBox x:Name="ApproRefFournisseurCombo"
-                                                  Classes="form-input"
-                                                  HorizontalAlignment="Stretch"
-                                                  DisplayMemberBinding="{Binding NomFournisseur}"/>
-                                    </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Quantité" Classes="label"/>
+                                <TextBox x:Name="ApproQuantite"
+                                         Classes="form-input"
+                                         Watermark="Ex: 100"/>
+                            </StackPanel>
 
-                                    <StackPanel Spacing="5">
-                                        <TextBlock Text="Produit" Classes="label"/>
-                                        <ComboBox x:Name="ApproCodeProduitCombo"
-                                                  Classes="form-input"
-                                                  HorizontalAlignment="Stretch"
-                                                  DisplayMemberBinding="{Binding NomProduit}"/>
-                                    </StackPanel>
+                            <TextBlock x:Name="ApproErrorText"
+                                       Foreground="#DC2626"
+                                       IsVisible="False"
+                                       TextWrapping="Wrap"/>
 
-                                    <TextBlock x:Name="ApproErrorText"
-                                               Foreground="#DC2626"
-                                               IsVisible="False"
-                                               TextWrapping="Wrap"/>
+                            <Button Content="Enregistrer la réception"
+                                    Classes="btn-primary btn-primary-green"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0,10,0,0"
+                                    Click="OnApproSave"/>
 
-                                    <Button Content="Enregistrer la réception"
-                                            Classes="btn-primary btn-primary-green"
-                                            HorizontalAlignment="Stretch"
-                                            Margin="0,10,0,0"
-                                            Click="OnApproSave"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
 
-                                </StackPanel>
-                            </ScrollViewer>
-                        </Border>
+            </Grid>
+        </Grid>
+    </TabItem>
 
-                    </Grid>
-                </Grid>
-            </TabItem>
-
-            <!-- Commandes Export -->
+            
             <TabItem Header="Commandes Export">
                 <Grid RowDefinitions="Auto,*">
 
