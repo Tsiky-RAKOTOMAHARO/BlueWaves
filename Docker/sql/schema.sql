@@ -9,28 +9,41 @@ CREATE TABLE FOURNISSEUR(
 
 CREATE TABLE STOCK(
     NumeroStock INT AUTO_INCREMENT PRIMARY KEY,
-    Type VARCHAR(25) NOT NULL
+    NomStock VARCHAR(25) NOT NULL
 );
 
 CREATE TABLE PRODUIT(
     CodeProduit INT AUTO_INCREMENT PRIMARY KEY,
-    NumeroStock INT,
     NomProduit VARCHAR(150),
-    QuantiteProduit INT NOT NULL,
-    Date_reception DATE NOT NULL,
-    Statut BOOLEAN,
-
-    FOREIGN KEY (NumeroStock) REFERENCES STOCK(NumeroStock)
+    Prix INT,
+    Statut BOOLEAN
 );
 
 CREATE TABLE APPROVISIONNEMENT(
     IdApp INT AUTO_INCREMENT PRIMARY KEY,
     RefFournisseur INT,
-    CodeProduit INT, 
+    CodeProduit INT,
+    NumeroStock INT,
+    Quantite INT NOT NULL,
+    DateReception DATE NOT NULL,
     Certificat VARCHAR(150) NOT NULL,
 
     FOREIGN KEY (RefFournisseur) REFERENCES FOURNISSEUR(RefFournisseur),
-    FOREIGN KEY (CodeProduit) REFERENCES PRODUIT(CodeProduit)
+    FOREIGN KEY (CodeProduit) REFERENCES PRODUIT(CodeProduit),
+    FOREIGN KEY (NumeroStock) REFERENCES STOCK(NumeroStock)
+);
+
+CREATE TABLE STOCK_PRODUIT(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    NumeroStock INT NOT NULL,
+    CodeProduit INT NOT NULL,
+    Quantite INT NOT NULL DEFAULT 0,
+    CONSTRAINT FK_StockProduit_Stock
+        FOREIGN KEY (NumeroStock) REFERENCES STOCK(NumeroStock),
+    CONSTRAINT FK_StockProduit_Produit
+        FOREIGN KEY (CodeProduit) REFERENCES PRODUIT(CodeProduit),
+    CONSTRAINT UQ_StockProduit_Stock_Produit UNIQUE (NumeroStock, CodeProduit),
+    CONSTRAINT CHK_StockProduit_Quantite CHECK (Quantite >= 0)
 );
 
 CREATE TABLE CLIENT(
@@ -47,21 +60,27 @@ CREATE TABLE EXPORT(
 
 CREATE TABLE COMMANDE(
     NumeroCommande INT AUTO_INCREMENT PRIMARY KEY,
-    RefClient INT, 
-    NumeroExport INT,
+    RefClient INT NOT NULL, 
+    NumeroExport INT NOT NULL,
     Destination VARCHAR(150) NOT NULL,
-    Date_commande DATE NOT NULL,
+    DateCommande DATE NOT NULL,
 
-    FOREIGN KEY (RefClient) REFERENCES CLIENT(RefClient),
-    FOREIGN KEY (NumeroExport) REFERENCES EXPORT(NumeroExport)
+    CONSTRAINT FK_Commande_Client 
+        FOREIGN KEY (RefClient) REFERENCES CLIENT(RefClient),
+
+    CONSTRAINT FK_Commande_Export 
+        FOREIGN KEY (NumeroExport) REFERENCES EXPORT(NumeroExport)
 );
 
 CREATE TABLE ACHAT(
     IdAchat INT AUTO_INCREMENT PRIMARY KEY,
-    CodeProduit INT, 
-    NumeroCommande INT,
+    CodeProduit INT NOT NULL, 
+    NumeroCommande INT NOT NULL,
     Quantite INT NOT NULL,
 
-    FOREIGN KEY (CodeProduit) REFERENCES PRODUIT(CodeProduit),
-    FOREIGN KEY (NumeroCommande) REFERENCES COMMANDE(NumeroCommande)
+    CONSTRAINT FK_Achat_Produit 
+        FOREIGN KEY (CodeProduit) REFERENCES PRODUIT(CodeProduit),
+
+    CONSTRAINT FK_Achat_Commande 
+        FOREIGN KEY (NumeroCommande) REFERENCES COMMANDE(NumeroCommande)
 );
