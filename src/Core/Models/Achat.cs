@@ -10,6 +10,8 @@ namespace Core.Models{
 
     public int NumeroCommande {get; set;} 
 
+    public int NumeroStock { get; set; } 
+
     public int Quantite {get; set;}
 
     [ForeignKey(nameof(CodeProduit))]
@@ -17,6 +19,9 @@ namespace Core.Models{
 
     [ForeignKey(nameof(NumeroCommande))]
     public virtual Commande Commande {get; set;} = null!;
+
+    [ForeignKey(nameof(NumeroStock))]  
+    public virtual Stock Stock { get; set; } = null!;
 
   }
 }

@@ -65,7 +65,7 @@
                                     <StackPanel>
                                         <TextBlock Text="TOTAL CLIENTS" Classes="label"/>
                                         <TextBlock x:Name="KpiTotalClients"
-                                                   Text="{Binding ClientVm.Clients.Count, Mode=TwoWay}"
+                                                   Text="{Binding ClientVM.Clients.Count, Mode=TwoWay}"
                                                    FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
                                     </StackPanel>
                                 </Border>
@@ -125,10 +125,21 @@
                                                             </StackPanel>
                                                         </StackPanel>
 
-                                                        <Button Grid.Column="4"
-                                                                Classes="btn-icon"
-                                                                Content="⋮"
-                                                                Margin="15,0,0,0"/>
+                                                        <Button Grid.Column="4" 
+                                                            Content="⋮"
+                                                            Width="32" Height="32"
+                                                            Classes="btn-icon"
+                                                            Margin="15,0,0,0"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            Tag="{Binding}">
+                                                        <Button.Flyout>
+                                                            <MenuFlyout>
+                                                                <MenuItem Header="Modifier" Tag="{Binding $parent[Button].Tag}" Click="EditClient_Click"/>
+                                                                <MenuItem Header="Supprimer" Tag="{Binding $parent[Button].Tag}" Click="DeleteClient_Click"/>
+                                                            </MenuFlyout>
+                                                        </Button.Flyout>
+                                                        </Button>
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>
@@ -292,7 +303,7 @@
                                     <StackPanel>
                                         <TextBlock Text="TOTAL FOURNISSEURS" Classes="label"/>
                                         <TextBlock x:Name="KpiTotalFournisseurs"
-                                                   Text="—"
+                                                   Text="{Binding FournisseurVM.Fournisseurs.Count, Mode= TwoWay}"
                                                    FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
                                     </StackPanel>
                                 </Border>
@@ -352,10 +363,21 @@
                                                             </StackPanel>
                                                         </StackPanel>
 
-                                                        <Button Grid.Column="4"
-                                                                Classes="btn-icon"
-                                                                Content="⋮"
-                                                                Margin="15,0,0,0"/>
+                                                        <Button Grid.Column="4" 
+                                                            Content="⋮"
+                                                            Width="32" Height="32"
+                                                            Classes="btn-icon"
+                                                            Margin="15,0,0,0"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            Tag="{Binding}">
+                                                        <Button.Flyout>
+                                                            <MenuFlyout>
+                                                                <MenuItem Header="Modifier" Tag="{Binding $parent[Button].Tag}" Click="EditFournisseur_Click"/>
+                                                                <MenuItem Header="Supprimer" Tag="{Binding $parent[Button].Tag}" Click="DeleteFournisseur_Click"/>
+                                                            </MenuFlyout>
+                                                        </Button.Flyout>
+                                                        </Button>
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>

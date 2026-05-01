@@ -35,8 +35,7 @@ public partial class PurchaseOrderView : UserControl
             _produitViewModel = Program.ServiceHost.Services.GetRequiredService<ProduitViewModel>();
             _stockViewModel = Program.ServiceHost.Services.GetRequiredService<StockViewModel>();
 
-            DataContext = new { ApproVM = _approVM, CommandeVM = _commandeVM };
-            // AttachedToVisualTree += OnAttachedToVisualTree;
+            DataContext = new { ApproVM = _approVM, CommandeVM = _commandeVM, ClientVM = _clientViewModel };
         }
     }
 
@@ -82,6 +81,7 @@ public partial class PurchaseOrderView : UserControl
     public void OnNouvelleReceptionClick(object? sender, RoutedEventArgs e)
     {
         _approVM?.ResetForm();
+        ShowError("ApproErrorText", string.Empty);
 
         if (this.FindControl<Border>("ApproFormPanel") is { } panel)
             panel.IsVisible = true;
@@ -89,6 +89,7 @@ public partial class PurchaseOrderView : UserControl
 
     public void OnApproFormClose(object? sender, RoutedEventArgs e)
     {
+        ShowError("ApproErrorText", string.Empty);
         if (this.FindControl<Border>("ApproFormPanel") is { } panel)
             panel.IsVisible = false;
     }
@@ -169,7 +170,6 @@ public partial class PurchaseOrderView : UserControl
         if (sender is Button btn && btn.DataContext is Approvisionnement appro && _approVM != null)
             await _approVM.DeleteApprovisionnementAsync(appro);
     }
-
   public async void OnCommandeSave(object? sender, RoutedEventArgs e)
 {
     if (_commandeVM == null) return;
@@ -272,7 +272,7 @@ public void ShowError(string name, string message)
     if (this.FindControl<TextBlock>(name) is { } tb)
     {
         tb.Text = message;
-        tb.IsVisible = true;
+        tb.IsVisible = !string.IsNullOrWhiteSpace(message);
     }
 }
 public void ClearTextBox(string name)

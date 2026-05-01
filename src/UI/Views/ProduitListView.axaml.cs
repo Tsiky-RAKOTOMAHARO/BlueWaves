@@ -9,7 +9,7 @@ namespace UI.Views;
 
 public partial class ProduitListView : UserControl
 {
-    private ProduitViewModel? _vm;
+    private ProduitViewModel? _produitVM;
 
     public ProduitListView()
     {
@@ -17,8 +17,8 @@ public partial class ProduitListView : UserControl
 
         if (Program.ServiceHost != null)
         {
-            _vm = Program.ServiceHost.Services.GetRequiredService<ProduitViewModel>();
-            DataContext = _vm;
+            _produitVM = Program.ServiceHost.Services.GetRequiredService<ProduitViewModel>();
+            DataContext = _produitVM;
         }
     }
 
@@ -26,15 +26,30 @@ public partial class ProduitListView : UserControl
     {
         base.OnAttachedToVisualTree(e);
 
-        if (_vm != null && _vm.Produits.Count == 0)
-            await _vm.LoadProduits();
+        if (_produitVM != null && _produitVM.Produits.Count == 0)
+            await _produitVM.LoadProduits();
     }
 
+    private async void DeleteProduit_Click(object? sender, RoutedEventArgs e)
+    {
+    if (sender is MenuItem mi && mi.Tag is Produit produit && _produitVM != null)
+    {
+        await _produitVM.DeleteProduit(produit);
+    }
+    }
+    private void EditProduit_Click(object? sender, RoutedEventArgs e)
+    {
+    if (sender is MenuItem mi && mi.Tag is Produit produit && _produitVM != null)
+    {
+        _produitVM.LoadProduitForEdit(produit);
+        PanneauLateral.IsVisible = true;
+    }
+    }
     private void OuvrirPanneau_Click(object? sender, RoutedEventArgs e)
     {
-        if (_vm == null) return;
+        if (_produitVM == null) return;
 
-        _vm.ResetForm();
+        _produitVM.ResetForm();
         PanneauLateral.IsVisible = true;
     }
 

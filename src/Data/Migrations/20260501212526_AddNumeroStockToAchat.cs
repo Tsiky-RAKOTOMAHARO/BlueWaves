@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class CleanMapping : Migration
+    public partial class AddNumeroStockToAchat : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -106,7 +106,7 @@ namespace Data.Migrations
                     NumeroCommande = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RefClient = table.Column<int>(type: "int", nullable: false),
-                    CodeExport = table.Column<int>(type: "int", nullable: false),
+                    NumeroExport = table.Column<int>(type: "int", nullable: false),
                     DateCommande = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Destination = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -121,8 +121,8 @@ namespace Data.Migrations
                         principalColumn: "RefClient",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_COMMANDE_EXPORT_CodeExport",
-                        column: x => x.CodeExport,
+                        name: "FK_COMMANDE_EXPORT_NumeroExport",
+                        column: x => x.NumeroExport,
                         principalTable: "EXPORT",
                         principalColumn: "NumeroExport",
                         onDelete: ReferentialAction.Cascade);
@@ -168,6 +168,34 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "STOCK_PRODUIT",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    NumeroStock = table.Column<int>(type: "int", nullable: false),
+                    CodeProduit = table.Column<int>(type: "int", nullable: false),
+                    Quantite = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_STOCK_PRODUIT", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_STOCK_PRODUIT_PRODUIT_CodeProduit",
+                        column: x => x.CodeProduit,
+                        principalTable: "PRODUIT",
+                        principalColumn: "CodeProduit",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_STOCK_PRODUIT_STOCK_NumeroStock",
+                        column: x => x.NumeroStock,
+                        principalTable: "STOCK",
+                        principalColumn: "NumeroStock",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ACHAT",
                 columns: table => new
                 {
@@ -175,6 +203,7 @@ namespace Data.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CodeProduit = table.Column<int>(type: "int", nullable: false),
                     NumeroCommande = table.Column<int>(type: "int", nullable: false),
+                    NumeroStock = table.Column<int>(type: "int", nullable: false),
                     Quantite = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -192,6 +221,12 @@ namespace Data.Migrations
                         principalTable: "PRODUIT",
                         principalColumn: "CodeProduit",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ACHAT_STOCK_NumeroStock",
+                        column: x => x.NumeroStock,
+                        principalTable: "STOCK",
+                        principalColumn: "NumeroStock",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -204,6 +239,11 @@ namespace Data.Migrations
                 name: "IX_ACHAT_NumeroCommande",
                 table: "ACHAT",
                 column: "NumeroCommande");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ACHAT_NumeroStock",
+                table: "ACHAT",
+                column: "NumeroStock");
 
             migrationBuilder.CreateIndex(
                 name: "IX_APPROVISIONNEMENT_CodeProduit",
@@ -221,14 +261,24 @@ namespace Data.Migrations
                 column: "RefFournisseur");
 
             migrationBuilder.CreateIndex(
-                name: "IX_COMMANDE_CodeExport",
+                name: "IX_COMMANDE_NumeroExport",
                 table: "COMMANDE",
-                column: "CodeExport");
+                column: "NumeroExport");
 
             migrationBuilder.CreateIndex(
                 name: "IX_COMMANDE_RefClient",
                 table: "COMMANDE",
                 column: "RefClient");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_STOCK_PRODUIT_CodeProduit",
+                table: "STOCK_PRODUIT",
+                column: "CodeProduit");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_STOCK_PRODUIT_NumeroStock",
+                table: "STOCK_PRODUIT",
+                column: "NumeroStock");
         }
 
         /// <inheritdoc />
@@ -239,6 +289,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "APPROVISIONNEMENT");
+
+            migrationBuilder.DropTable(
+                name: "STOCK_PRODUIT");
 
             migrationBuilder.DropTable(
                 name: "COMMANDE");

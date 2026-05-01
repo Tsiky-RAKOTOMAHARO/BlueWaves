@@ -76,11 +76,15 @@ CREATE TABLE ACHAT(
     IdAchat INT AUTO_INCREMENT PRIMARY KEY,
     CodeProduit INT NOT NULL, 
     NumeroCommande INT NOT NULL,
+    NumeroStock INT NOT NULL,
     Quantite INT NOT NULL,
 
     CONSTRAINT FK_Achat_Produit 
         FOREIGN KEY (CodeProduit) REFERENCES PRODUIT(CodeProduit),
 
     CONSTRAINT FK_Achat_Commande 
-        FOREIGN KEY (NumeroCommande) REFERENCES COMMANDE(NumeroCommande)
+        FOREIGN KEY (NumeroCommande) REFERENCES COMMANDE(NumeroCommande),
+
+    CONSTRAINT FK_Achat_Stock                          -- ← à ajouter
+        FOREIGN KEY (NumeroStock) REFERENCES STOCK(NumeroStock)
 );

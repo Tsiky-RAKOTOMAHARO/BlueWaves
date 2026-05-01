@@ -89,12 +89,21 @@
                                                            FontSize="13" Foreground="#10B981" FontWeight="Bold"/>
                                             </StackPanel>
 
-                                            <Button Grid.Column="3"
-                                                    Classes="btn-icon"
-                                                    Content="⋮"
-                                                    Margin="15,0,0,0"
-                                                    DataContext="{Binding}"
-                                                    Click="OnProduitActionsClick"/>
+                                            <Button Grid.Column="4" 
+                                                Content="⋮"
+                                                Width="32" Height="32"
+                                                Classes="btn-icon"
+                                                Margin="15,0,0,0"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                Tag="{Binding}">
+                                            <Button.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Modifier" Tag="{Binding $parent[Button].Tag}" Click="EditProduit_Click"/>
+                                                    <MenuItem Header="Supprimer" Tag="{Binding $parent[Button].Tag}" Click="DeleteProduit_Click"/>
+                                                </MenuFlyout>
+                                            </Button.Flyout>
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

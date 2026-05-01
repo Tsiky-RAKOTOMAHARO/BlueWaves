@@ -36,6 +36,9 @@ namespace Data.Migrations
                     b.Property<int>("NumeroCommande")
                         .HasColumnType("int");
 
+                    b.Property<int>("NumeroStock")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantite")
                         .HasColumnType("int");
 
@@ -44,6 +47,8 @@ namespace Data.Migrations
                     b.HasIndex("CodeProduit");
 
                     b.HasIndex("NumeroCommande");
+
+                    b.HasIndex("NumeroStock");
 
                     b.ToTable("ACHAT", (string)null);
                 });
@@ -123,9 +128,6 @@ namespace Data.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("NumeroCommande"));
 
-                    b.Property<int>("CodeExport")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateCommande")
                         .HasColumnType("datetime(6)");
 
@@ -134,12 +136,15 @@ namespace Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<int>("NumeroExport")
+                        .HasColumnType("int");
+
                     b.Property<int>("RefClient")
                         .HasColumnType("int");
 
                     b.HasKey("NumeroCommande");
 
-                    b.HasIndex("CodeExport");
+                    b.HasIndex("NumeroExport");
 
                     b.HasIndex("RefClient");
 
@@ -232,6 +237,32 @@ namespace Data.Migrations
                     b.ToTable("STOCK", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Models.StockProduit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CodeProduit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumeroStock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantite")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CodeProduit");
+
+                    b.HasIndex("NumeroStock");
+
+                    b.ToTable("STOCK_PRODUIT", (string)null);
+                });
+
             modelBuilder.Entity("Core.Models.Achat", b =>
                 {
                     b.HasOne("Core.Models.Produit", "Produit")
@@ -241,14 +272,22 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Core.Models.Commande", "Commande")
-                        .WithMany()
+                        .WithMany("Achats")
                         .HasForeignKey("NumeroCommande")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("NumeroStock")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Commande");
 
                     b.Navigation("Produit");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Core.Models.Approvisionnement", b =>
@@ -282,7 +321,7 @@ namespace Data.Migrations
                 {
                     b.HasOne("Core.Models.Export", "Export")
                         .WithMany("Commande")
-                        .HasForeignKey("CodeExport")
+                        .HasForeignKey("NumeroExport")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -297,9 +336,33 @@ namespace Data.Migrations
                     b.Navigation("Export");
                 });
 
+            modelBuilder.Entity("Core.Models.StockProduit", b =>
+                {
+                    b.HasOne("Core.Models.Produit", "Produit")
+                        .WithMany()
+                        .HasForeignKey("CodeProduit")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("NumeroStock")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produit");
+
+                    b.Navigation("Stock");
+                });
+
             modelBuilder.Entity("Core.Models.Client", b =>
                 {
                     b.Navigation("Commande");
+                });
+
+            modelBuilder.Entity("Core.Models.Commande", b =>
+                {
+                    b.Navigation("Achats");
                 });
 
             modelBuilder.Entity("Core.Models.Export", b =>

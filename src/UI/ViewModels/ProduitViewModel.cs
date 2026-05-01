@@ -82,6 +82,11 @@ public partial class ProduitViewModel : ViewModelBase
         }
     }
 
+    public void LoadProduitForEdit(Produit produit){
+            SelectedProduit = produit;
+            NomProduit = produit.NomProduit;
+            Prix = produit.Prix;
+        }
     
     [RelayCommand]
     public async Task DeleteProduit(Produit? produit)

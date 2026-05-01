@@ -9,7 +9,10 @@ namespace UI.Views;
 
 public partial class StockInventoryView : UserControl
 {
-    private StockViewModel? _vm;
+    private StockViewModel? _stockVM;
+    private ApprovisionnementViewModel? _approVM;
+    
+
 
     public StockInventoryView()
     {
@@ -17,21 +20,21 @@ public partial class StockInventoryView : UserControl
 
         if (Program.ServiceHost != null)
         {
-            _vm = Program.ServiceHost.Services.GetRequiredService<StockViewModel>();
-            DataContext = _vm;
+            _stockVM = Program.ServiceHost.Services.GetRequiredService<StockViewModel>();
+            DataContext = _stockVM;
         }
     }
 
     protected override async void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        if (_vm != null && _vm.Stocks.Count == 0)
-            await _vm.LoadStockCommand.ExecuteAsync(null);
+        if (_stockVM != null && _stockVM.Stocks.Count == 0)
+            await _stockVM.LoadStockCommand.ExecuteAsync(null);
     }
 
     private void OuvrirPanneau_Click(object? sender, RoutedEventArgs e)
     {
-        _vm?.ResetForm();
+        _stockVM?.ResetForm();
         PanneauDetail.IsVisible  = false;
         PanneauLateral.IsVisible = true;
     }
@@ -41,9 +44,9 @@ public partial class StockInventoryView : UserControl
 
     private async void SaveStock_Click(object? sender, RoutedEventArgs e)
     {
-        if (_vm == null) return;
-        await _vm.SaveStockCommand.ExecuteAsync(null);
-        if (string.IsNullOrEmpty(_vm.ErrorMessage))
+        if (_stockVM == null) return;
+        await _stockVM.SaveStockCommand.ExecuteAsync(null);
+        if (string.IsNullOrEmpty(_stockVM.ErrorMessage))
             PanneauLateral.IsVisible = false;
     }
 
@@ -51,7 +54,7 @@ public partial class StockInventoryView : UserControl
     {
         if (sender is Border border && border.DataContext is Stock stock)
         {
-            if (_vm != null) _vm.SelectedStock = stock;
+            if (_stockVM != null) _stockVM.SelectedStock = stock;
             PanneauLateral.IsVisible = false;
             PanneauDetail.IsVisible  = true;
         }
@@ -60,6 +63,6 @@ public partial class StockInventoryView : UserControl
     private void FermerDetail_Click(object? sender, RoutedEventArgs e)
     {
         PanneauDetail.IsVisible = false;
-        if (_vm != null) _vm.SelectedStock = null;
+        if (_stockVM != null) _stockVM.SelectedStock = null;
     }
 }

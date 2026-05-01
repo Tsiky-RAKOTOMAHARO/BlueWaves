@@ -18,6 +18,7 @@ public partial class AchatViewModel : ViewModelBase
     [ObservableProperty] private int _idAchat;
     [ObservableProperty] private int _codeProduit;
     [ObservableProperty] private int _numeroCommande;
+    [ObservableProperty] private int _numeroStock;
     [ObservableProperty] private int _quantite;
 
     [ObservableProperty] private string _searchQuery = string.Empty;
@@ -65,7 +66,8 @@ public partial class AchatViewModel : ViewModelBase
             : Achats.Where(a =>
                 a.IdAchat.ToString().Contains(query) ||
                 a.NumeroCommande.ToString().Contains(query) ||
-                a.CodeProduit.ToString().Contains(query));
+                a.CodeProduit.ToString().Contains(query) ||
+                a.NumeroStock.ToString().Contains(query));
 
         foreach (var item in result)
             FilteredAchats.Add(item);
@@ -78,16 +80,24 @@ public partial class AchatViewModel : ViewModelBase
         {
             ErrorMessage = string.Empty;
 
-            await _achatService.AddAchat(
-                CodeProduit,
-                NumeroCommande,
-                Quantite
-            );
+            var achat = new Achat
+            {
+                CodeProduit    = CodeProduit,
+                NumeroCommande = NumeroCommande,
+                NumeroStock    = NumeroStock,
+                Quantite       = Quantite
+            };
+
+            await _achatService.AddAchat(achat);
 
             await LoadAchats();
             ResetForm();
         }
         catch (ArgumentException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (InvalidOperationException ex)
         {
             ErrorMessage = ex.Message;
         }
@@ -111,10 +121,11 @@ public partial class AchatViewModel : ViewModelBase
 
     public void ResetForm()
     {
-        IdAchat = 0;
-        CodeProduit = 0;
+        IdAchat        = 0;
+        CodeProduit    = 0;
         NumeroCommande = 0;
-        Quantite = 0;
-        ErrorMessage = string.Empty;
+        NumeroStock    = 0;
+        Quantite       = 0;
+        ErrorMessage   = string.Empty;
     }
 }

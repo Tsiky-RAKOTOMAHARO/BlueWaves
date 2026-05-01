@@ -13,6 +13,7 @@ namespace Data.Context{
         public DbSet<Fournisseur> Fournisseur { get; set; }
         public DbSet<Produit> Produit { get; set; }
         public DbSet<Stock> Stock { get; set; }
+        public DbSet<StockProduit> StockProduits { get; set; }
 
         
         protected override void OnModelCreating(ModelBuilder modelBuilder){
@@ -27,6 +28,7 @@ namespace Data.Context{
             modelBuilder.Entity<Approvisionnement>().ToTable("APPROVISIONNEMENT");
             modelBuilder.Entity<Commande>().ToTable("COMMANDE");
             modelBuilder.Entity<Export>().ToTable("EXPORT");
+            modelBuilder.Entity<StockProduit>().ToTable("STOCK_PRODUIT");
         }
     }
 }

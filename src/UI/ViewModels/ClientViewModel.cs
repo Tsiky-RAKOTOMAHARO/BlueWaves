@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Core.Models;
 using Core.Services;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+
 
 namespace UI.ViewModels
 {
@@ -66,18 +69,39 @@ namespace UI.ViewModels
         }
 
         public async Task SaveClient()
+{
+    try
+    {
+        ErrorMessage = string.Empty;
+
+        if (SelectedClient == null)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                await _clientService.AddClient(NomClient, PrenomClient, Telephone);
-                await LoadClients();
-                ResetForm();
-            }
-            catch (ArgumentException ex)
-            {
-                ErrorMessage = ex.Message;
-            }
+            
+            await _clientService.AddClient(NomClient, PrenomClient, Telephone);
+        }
+        else
+        {
+            
+            SelectedClient.NomClient = NomClient;
+            SelectedClient.PrenomClient = PrenomClient;
+            SelectedClient.Telephone = Telephone;
+            await _clientService.UpdateClient(SelectedClient);
+        }
+
+            await LoadClients();
+            ResetForm();
+        }
+        catch (ArgumentException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        }
+        public void LoadClientForEdit(Client client){
+            SelectedClient = client;
+            NomClient = client.NomClient;
+            PrenomClient = client.PrenomClient;
+            Telephone = client.Telephone;
+            ErrorMessage = string.Empty;
         }
 
         public async Task RemoveClient(Client client)
@@ -86,6 +110,7 @@ namespace UI.ViewModels
             {
                 await _clientService.DeleteClient(client);
                 Clients.Remove(client);
+                await LoadClients();
             }
             catch (ArgumentNullException ex)
             {

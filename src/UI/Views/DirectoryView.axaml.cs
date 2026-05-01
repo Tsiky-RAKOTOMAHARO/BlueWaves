@@ -1,8 +1,12 @@
 using System;
 using System.Diagnostics;
 using Avalonia.Controls;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using UI.ViewModels;
+using Core.Models;
 
 namespace UI.Views;
 
@@ -55,7 +59,21 @@ public partial class DirectoryView : UserControl
         if (string.IsNullOrEmpty(_clientVM.ErrorMessage))
             ClientFormPanel.IsVisible = false;
     }
-
+    private void EditClient_Click(object? sender, RoutedEventArgs e)
+    {
+    if (sender is MenuItem mi && mi.Tag is Client client && _clientVM != null)
+    {
+        _clientVM.LoadClientForEdit(client);
+        ClientFormPanel.IsVisible = true;
+    }
+    }
+    private async void DeleteClient_Click(object? sender, RoutedEventArgs e)
+    {
+    if (sender is MenuItem mi && mi.Tag is Client client && _clientVM != null)
+    {
+        await _clientVM.RemoveClient(client);
+    }
+    }
     // Panneau Fournisseur
 
     private void OpenFournisseurPanel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -74,14 +92,31 @@ public partial class DirectoryView : UserControl
         if (string.IsNullOrEmpty(_fournisseurVM.ErrorMessage))
             FournisseurFormPanel.IsVisible = false;
     }
+     private void EditFournisseur_Click(object? sender, RoutedEventArgs e)
+    {
+    if (sender is MenuItem mi && mi.Tag is Fournisseur fournisseur && _fournisseurVM != null)
+    {
+        _fournisseurVM.LoadFournisseurForEdit(fournisseur);
+        FournisseurFormPanel.IsVisible = true;
+    }
+    }
+    private async void DeleteFournisseur_Click(object? sender, RoutedEventArgs e)
+    {
+    if (sender is MenuItem mi && mi.Tag is Fournisseur fournisseur && _fournisseurVM != null)
+    {
+        await _fournisseurVM.RemoveFournisseur(fournisseur);
+    }
+    }
 
     private void OnClientSearchChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        // _clientVM?.FilterText = SearchClient?.Text ?? string.Empty;
+        // if (sender is not TextBox searchBox || _clientVM == null) return;
+        // _clientVM.SearchQuery = searchBox.Text ?? string.Empty;
     }
 
     private void OnFournisseurSearchChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        // _fournisseurVM?.FilterText = SearchFournisseur?.Text ?? string.Empty;
+        // if (sender is not TextBox searchBox || _fournisseurVM == null) return;
+        // _fournisseurVM.SearchQuery = searchBox.Text ?? string.Empty;
     }
 }

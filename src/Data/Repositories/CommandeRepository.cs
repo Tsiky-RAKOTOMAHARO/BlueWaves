@@ -9,37 +9,60 @@ namespace Data.Repositories
     {
         private readonly AppDbContext _context;
 
-        public CommandeRepository(AppDbContext context){
+        public CommandeRepository(AppDbContext context)
+        {
             _context = context;
         }
 
-
-        public async Task<Commande?> GetCommandeByNum(int num) {
-            return await _context.Commande.FindAsync(num); 
+        public async Task<Commande?> GetCommandeByNumero(int numeroCommande)
+        {
+            return await _context.Commande
+                .Include(c => c.Client)
+                .Include(c => c.Export)
+                .Include(c => c.Achats)
+                    .ThenInclude(a => a.Produit)
+                .FirstOrDefaultAsync(c => c.NumeroCommande == numeroCommande);
         }
 
-        public async Task<IEnumerable<Commande>> GetAllCommande() => await _context.Commande.ToListAsync();
+        public async Task<IEnumerable<Commande>> GetAllCommande()
+        {
+            return await _context.Commande
+                .Include(c => c.Client)
+                .Include(c => c.Export)
+                .ToListAsync();
+        }
 
-        public async Task<IEnumerable<Commande>> GetCommandeByRefClient(int refClient) => await _context.Commande
+        public async Task<IEnumerable<Commande>> GetCommandeByRefClient(int refClient)
+        {
+            return await _context.Commande
                 .Where(c => c.RefClient == refClient)
+                .Include(c => c.Export)
                 .ToListAsync();
+        }
 
-        public async Task<IEnumerable<Commande>> GetCommandeByCodeExport(int codeExport) => await _context.Commande
-                .Where(c => c.CodeExport == codeExport)
+        public async Task<IEnumerable<Commande>> GetCommandeByNumeroExport(int numeroExport)
+        {
+            return await _context.Commande
+                .Where(c => c.NumeroExport == numeroExport) 
+                .Include(c => c.Client)
                 .ToListAsync();
+        }
 
-        public async Task AddCommande(Commande commande){
+        public async Task<Commande> AddCommande(Commande commande)
+        {
             await _context.Commande.AddAsync(commande);
             await _context.SaveChangesAsync();
+            return commande; 
         }
 
-
-        public async Task UpdateCommande(Commande commande){
+        public async Task UpdateCommande(Commande commande)
+        {
             _context.Commande.Update(commande);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteCommande(Commande commande) {
+        public async Task DeleteCommande(Commande commande)
+        {
             _context.Commande.Remove(commande);
             await _context.SaveChangesAsync();
         }

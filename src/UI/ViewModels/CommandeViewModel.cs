@@ -20,10 +20,10 @@ public partial class CommandeViewModel : ViewModelBase
     [ObservableProperty] private string _destination = string.Empty;
     [ObservableProperty] private DateTime _dateCommande = DateTime.Now;
     [ObservableProperty] private int _refClient;
-    [ObservableProperty] private int _codeExport;
+    [ObservableProperty] private int _numeroExport;        
     [ObservableProperty] private string _errorMessage = string.Empty;
     [ObservableProperty] private string? _searchQuery;
-    [ObservableProperty] private Commande? _selectedCommande; 
+    [ObservableProperty] private Commande? _selectedCommande;
 
     public CommandeViewModel(CommandeServices commandeService)
     {
@@ -31,9 +31,7 @@ public partial class CommandeViewModel : ViewModelBase
     }
 
     partial void OnSearchQueryChanged(string? value)
-    {
-        FilterCommandes(value ?? string.Empty);
-    }
+        => FilterCommandes(value ?? string.Empty);
 
     [RelayCommand]
     public async Task LoadCommandes()
@@ -43,7 +41,6 @@ public partial class CommandeViewModel : ViewModelBase
         try
         {
             IsLoading = true;
-
             Commandes.Clear();
             FilteredCommandes.Clear();
 
@@ -86,7 +83,7 @@ public partial class CommandeViewModel : ViewModelBase
                 Destination,
                 DateCommande,
                 RefClient,
-                CodeExport
+                NumeroExport        
             );
 
             await LoadCommandes();
@@ -98,6 +95,7 @@ public partial class CommandeViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
     public async Task DeleteCommande(Commande commande)
     {
         try
@@ -114,10 +112,10 @@ public partial class CommandeViewModel : ViewModelBase
 
     public void ResetForm()
     {
-        Destination = string.Empty;
+        Destination  = string.Empty;
         DateCommande = DateTime.Now;
-        RefClient = 0;
-        CodeExport = 0;
+        RefClient    = 0;
+        NumeroExport = 0;           
         ErrorMessage = string.Empty;
     }
 }

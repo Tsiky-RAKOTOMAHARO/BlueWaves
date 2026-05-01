@@ -1,0 +1,8 @@
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.csproj.AssemblyReference.cache
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/Avalonia/Resources.Inputs.cache
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/Avalonia/resources
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.GeneratedMSBuildEditorConfig.editorconfig
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.AssemblyInfoInputs.cache
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.AssemblyInfo.cs
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.csproj.CoreCompileInputs.cache
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.sourcelink.json

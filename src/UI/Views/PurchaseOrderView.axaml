@@ -29,6 +29,7 @@
                 <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                     <TextBox x:Name="SearchAppro"
                              Watermark="Rechercher un Fournisseur..."
+                             TextChanged="OnApproSearchChanged"
                              BorderThickness="0"
                              Background="Transparent"
                              VerticalContentAlignment="Center"/>
@@ -65,7 +66,7 @@
                         <Border Grid.Column="2" Classes="kpi">
                             <StackPanel>
                                 <TextBlock Text="FOURNISSEURS" Classes="label"/>
-                                <TextBlock Text="—"
+                                <TextBlock Text="{Binding FournisseurVM.Fournisseurs.Count, Mode=TwoWay}"
                                            FontSize="28" FontWeight="Black" Foreground="#3B82F6"/>
                             </StackPanel>
                         </Border>
@@ -76,7 +77,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="coreModels:Approvisionnement">
                                     <Border Classes="order-card" PointerPressed="OnApproCardClick">
-                                        <Grid ColumnDefinitions="4,*,*,*,Auto">
+                                        <Grid ColumnDefinitions="4,*,*,*,*,Auto">
 
                                             <Border Grid.Column="0"
                                                     Background="#10B981" CornerRadius="2"/>
@@ -94,17 +95,30 @@
                                                            FontSize="12" Foreground="#64748B"/>
                                             </StackPanel>
 
-                                            <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                            <StackPanel Grid.Column="3" Margin="16,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Produit.NomProduit}"
+                                                           FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding StockProduit.Quantite, StringFormat='{}F-{0}'}"
+                                                           FontSize="12" Foreground="#64748B"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="4" VerticalAlignment="Center">
                                                 <TextBlock Text="DATE RÉCEPTION" Classes="label"/>
                                                 <TextBlock Text="{Binding DateReception, StringFormat='{}{0:dd/MM/yyyy}'}"
                                                            FontSize="13" Foreground="#64748B"/>
                                             </StackPanel>
 
-                                            <Button Grid.Column="4"
-                                                    Classes="btn-icon"
-                                                    Content="⋮"
-                                                    Margin="15,0,0,0"
-                                                    Click="OnApproActionsClick"/>
+                                            <Button Grid.Column="5"
+                                                Classes="btn-icon"
+                                                Content="⋮"
+                                                Click="OnCommandeActionsClick">
+                                            <Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Modifier"/>
+                                                    <MenuItem Header="Supprimer" Click="OnDeleteApproClick"/>
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                        </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -199,7 +213,7 @@
            <TabItem Header="Commandes Export">
     <Grid RowDefinitions="Auto,*">
 
-        <!-- TOOLBAR (Même style que Appro) -->
+
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
             <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                 <TextBox x:Name="SearchCommande"

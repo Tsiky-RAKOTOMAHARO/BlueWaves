@@ -229,7 +229,7 @@
                     <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding ProduitsduStock}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="models:Produit">
+                                <DataTemplate DataType="models:StockProduit">
                                     <Border Background="#F8FAFC"
                                             CornerRadius="8"
                                             BorderBrush="#E2E8F0"
@@ -238,7 +238,7 @@
                                             Margin="0,0,0,8">
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel>
-                                                <TextBlock Text="{Binding NomProduit}"
+                                                <TextBlock Text="{Binding Produit.NomProduit}"
                                                            FontWeight="SemiBold" FontSize="13" Foreground="#0F172A"/>
                                                 <TextBlock Text="{Binding Quantite, StringFormat='{}Qté : {0}'}"
                                                            FontSize="12" Foreground="#64748B"/>
