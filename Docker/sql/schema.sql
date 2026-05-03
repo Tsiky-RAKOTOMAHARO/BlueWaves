@@ -53,23 +53,17 @@ CREATE TABLE CLIENT(
     Telephone VARCHAR(25) NOT NULL
 );
 
-CREATE TABLE EXPORT(
-    NumeroExport INT AUTO_INCREMENT PRIMARY KEY,
-    Delai INT NOT NULL
-);
+
 
 CREATE TABLE COMMANDE(
     NumeroCommande INT AUTO_INCREMENT PRIMARY KEY,
     RefClient INT NOT NULL, 
-    NumeroExport INT NOT NULL,
     Destination VARCHAR(150) NOT NULL,
     DateCommande DATE NOT NULL,
+    Delai INT NOT NULL DEFAULT '0',
 
     CONSTRAINT FK_Commande_Client 
-        FOREIGN KEY (RefClient) REFERENCES CLIENT(RefClient),
-
-    CONSTRAINT FK_Commande_Export 
-        FOREIGN KEY (NumeroExport) REFERENCES EXPORT(NumeroExport)
+        FOREIGN KEY (RefClient) REFERENCES CLIENT(RefClient)
 );
 
 CREATE TABLE ACHAT(
@@ -85,6 +79,6 @@ CREATE TABLE ACHAT(
     CONSTRAINT FK_Achat_Commande 
         FOREIGN KEY (NumeroCommande) REFERENCES COMMANDE(NumeroCommande),
 
-    CONSTRAINT FK_Achat_Stock                          -- ← à ajouter
+    CONSTRAINT FK_Achat_Stock                          
         FOREIGN KEY (NumeroStock) REFERENCES STOCK(NumeroStock)
 );

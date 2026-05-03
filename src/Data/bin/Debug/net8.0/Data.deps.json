@@ -647,6 +647,7 @@
       "System.Threading.Channels/6.0.0": {},
       "Core/1.0.0": {
         "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
           "System.ComponentModel.Annotations": "5.0.0"
         },
         "runtime": {

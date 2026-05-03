@@ -23,13 +23,14 @@ public class StockProduitRepository : IStockProduitRepository
 
     public async Task<StockProduit?> GetByLocationAndProduct(int numeroStock, int codeProduit)
     {
+        _context.ChangeTracker.Clear(); 
         return await _context.StockProduits
             .FirstOrDefaultAsync(sp => sp.NumeroStock == numeroStock && sp.CodeProduit == codeProduit);
     }
 
     public async Task Update(StockProduit stockProduit)
     {
-        _context.StockProduits.Update(stockProduit);
+        _context.Entry(stockProduit).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
 

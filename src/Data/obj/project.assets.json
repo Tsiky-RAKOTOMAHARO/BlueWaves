@@ -998,6 +998,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
           "System.ComponentModel.Annotations": "5.0.0"
         },
         "compile": {

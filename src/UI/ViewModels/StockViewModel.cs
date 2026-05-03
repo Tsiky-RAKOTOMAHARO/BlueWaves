@@ -38,23 +38,20 @@ public partial class StockViewModel : ViewModelBase
     else
         ProduitsduStock.Clear();
     }
-    public async Task LoadProduitsduStock(int numStock)
+    public async Task LoadProduitsduStock(int numStock){
+    try
     {
-        try
-        {
-            ProduitsduStock.Clear();
-
-            var details = await _stockProduitService.GetAllStockDetails();
-            foreach (var ligne in details.Where(sp => sp.NumeroStock == numStock))
-                ProduitsduStock.Add(ligne);
-
-            OnPropertyChanged(nameof(AucunProduit));
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = ex.Message;
-        }
+        ProduitsduStock.Clear();
+        var details = await _stockProduitService.GetByStock(numStock); 
+        foreach (var ligne in details)
+            ProduitsduStock.Add(ligne);
+        OnPropertyChanged(nameof(AucunProduit));
     }
+    catch (Exception ex)
+    {
+        ErrorMessage = ex.Message;
+    }
+}
     [RelayCommand]
     public async Task LoadStock()
     {

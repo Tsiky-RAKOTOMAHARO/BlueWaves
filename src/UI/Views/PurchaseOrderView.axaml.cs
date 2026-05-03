@@ -15,7 +15,8 @@ public partial class PurchaseOrderView : UserControl
     private ApprovisionnementViewModel? _approVM;
     private CommandeViewModel? _commandeVM;
     private ClientViewModel? _clientViewModel;
-    private ExportViewModel? _exportViewModel;
+
+    private FournisseurViewModel? _fournisseurViewModel;
 
     private ProduitViewModel? _produitViewModel;
     private StockViewModel? _stockViewModel;
@@ -31,11 +32,18 @@ public partial class PurchaseOrderView : UserControl
             _approVM = Program.ServiceHost.Services.GetRequiredService<ApprovisionnementViewModel>();
             _commandeVM = Program.ServiceHost.Services.GetRequiredService<CommandeViewModel>();
             _clientViewModel = Program.ServiceHost.Services.GetRequiredService<ClientViewModel>();
-            _exportViewModel = Program.ServiceHost.Services.GetRequiredService<ExportViewModel>();
+            _fournisseurViewModel = Program.ServiceHost.Services.GetRequiredService<FournisseurViewModel>();
             _produitViewModel = Program.ServiceHost.Services.GetRequiredService<ProduitViewModel>();
             _stockViewModel = Program.ServiceHost.Services.GetRequiredService<StockViewModel>();
 
-            DataContext = new { ApproVM = _approVM, CommandeVM = _commandeVM, ClientVM = _clientViewModel };
+            DataContext = new { 
+                ApproVM = _approVM,
+                CommandeVM = _commandeVM,
+                ClientVM = _clientViewModel,
+                FournisseurVM = _fournisseurViewModel,
+                ProduitVM = _produitViewModel, 
+                StockVM   = _stockViewModel   
+            };
         }
     }
 
@@ -170,16 +178,33 @@ public partial class PurchaseOrderView : UserControl
         if (sender is Button btn && btn.DataContext is Approvisionnement appro && _approVM != null)
             await _approVM.DeleteApprovisionnementAsync(appro);
     }
-  public async void OnCommandeSave(object? sender, RoutedEventArgs e)
+
+    public void PopulateApproDropdowns()
+{
+    if (this.FindControl<ComboBox>("ApproRefFournisseurCombo") is { } f)
+        f.ItemsSource = _approVM?.Fournisseurs;
+
+    if (this.FindControl<ComboBox>("ApproCodeProduitCombo") is { } p)
+        p.ItemsSource = _produitViewModel?.Produits;
+
+    if (this.FindControl<ComboBox>("ApproStockCombo") is { } s)
+        s.ItemsSource = _stockViewModel?.Stocks;
+}
+
+
+    // Commande
+    public async void OnCommandeSave(object? sender, RoutedEventArgs e)
 {
     if (_commandeVM == null) return;
 
     var selectedClient = this.FindControl<ComboBox>("CommandeRefClientCombo")?.SelectedItem as Client;
     var date = this.FindControl<DatePicker>("CommandeDate")?.SelectedDate?.Date;
+    var delaiText = this.FindControl<TextBox>("CommandeDelai")?.Text;
 
     if (string.IsNullOrWhiteSpace(_commandeVM.Destination) ||
         selectedClient == null ||
-        date == null)
+        date == null ||
+        !int.TryParse(delaiText, out int delai) || delai <= 0)
     {
         ShowError("CommandeErrorText", "Champs obligatoires manquants.");
         return;
@@ -187,28 +212,19 @@ public partial class PurchaseOrderView : UserControl
 
     try
     {
-        if (_exportViewModel == null)
-            throw new Exception("ExportViewModel non initialisé");
-
-        
-        var newExport = await _exportViewModel.AddExportAsync(
-            new Export { Delai = 0 }
-        );
-
-        
-        _commandeVM.RefClient = selectedClient.RefClient;
-        _commandeVM.CodeExport = newExport.NumeroExport;
+        _commandeVM.RefClient    = selectedClient.RefClient;
         _commandeVM.DateCommande = date.Value;
+        _commandeVM.Delai        = delai;
 
-        await _commandeVM.SaveCommandeCommand.ExecuteAsync(null);
+        await _commandeVM.ConfirmerCommandeCommand.ExecuteAsync(null);  // ← renommé
 
         if (string.IsNullOrEmpty(_commandeVM.ErrorMessage))
         {
             if (this.FindControl<Border>("CommandeFormPanel") is { } panel)
                 panel.IsVisible = false;
 
-            // ✔ reset UI
             ClearTextBox("CommandeDestination");
+            ClearTextBox("CommandeDelai");
             ResetComboBox("CommandeRefClientCombo");
         }
         else
@@ -221,13 +237,54 @@ public partial class PurchaseOrderView : UserControl
         ShowError("CommandeErrorText", ex.Message);
     }
 }
+
+// Ajoute une ligne au panier
+private void OnAjouterLigneClick(object? sender, RoutedEventArgs e)
+{
+    if (_commandeVM == null) return;
+
+    var selectedProduit = this.FindControl<ComboBox>("AchatProduitCombo")?.SelectedItem as Produit;
+    var selectedStock   = this.FindControl<ComboBox>("AchatStockCombo")?.SelectedItem as Stock;
+    var quantiteText    = this.FindControl<TextBox>("AchatQuantite")?.Text;
+
+    if (selectedProduit == null || selectedStock == null ||
+        !int.TryParse(quantiteText, out int quantite) || quantite <= 0)
+    {
+        ShowError("CommandeErrorText", "Produit, stock et quantité obligatoires.");
+        return;
+    }
+
+    _commandeVM.CodeProduit = selectedProduit.CodeProduit;
+    _commandeVM.NumeroStock = selectedStock.NumeroStock;
+    _commandeVM.Quantite    = quantite;
+
+    _commandeVM.AjouterLigneCommand.Execute(null);
+
+    // Reset champs ligne
+    ResetComboBox("AchatProduitCombo");
+    ResetComboBox("AchatStockCombo");
+    ClearTextBox("AchatQuantite");
+    ShowError("CommandeErrorText", string.Empty);
+}
+
+// Retire une ligne du panier
+private void OnRetirerLigneClick(object? sender, RoutedEventArgs e)
+{
+    if (sender is Button button && button.DataContext is AchatLigne ligne)
+        _commandeVM?.RetirerLigneCommand.Execute(ligne);
+}
+
 private void OnNouvelleCommandeClick(object? sender, RoutedEventArgs e)
 {
     if (this.FindControl<Border>("CommandeFormPanel") is { } panel)
         panel.IsVisible = true;
 
+    PopulateCommandeDropdowns();
+
     ClearTextBox("CommandeDestination");
+    ClearTextBox("CommandeDelai");
     ResetComboBox("CommandeRefClientCombo");
+    _commandeVM?.Lignes.Clear();
     ShowError("CommandeErrorText", string.Empty);
 }
 
@@ -255,7 +312,7 @@ private async void OnCommandeDeleteClick(object? sender, RoutedEventArgs e)
 {
     if (_commandeVM?.SelectedCommande == null) return;
 
-    await _commandeVM.DeleteCommande(_commandeVM.SelectedCommande);
+    await _commandeVM.DeleteCommandeCommand.ExecuteAsync(_commandeVM.SelectedCommande);
 }
 
 private void OnCommandeAnnulerClick(object? sender, RoutedEventArgs e)
@@ -264,8 +321,18 @@ private void OnCommandeAnnulerClick(object? sender, RoutedEventArgs e)
         panel.IsVisible = false;
 
     ClearTextBox("CommandeDestination");
+    ClearTextBox("CommandeDelai");
     ResetComboBox("CommandeRefClientCombo");
+    _commandeVM?.Lignes.Clear();
     ShowError("CommandeErrorText", string.Empty);
+}
+public void PopulateCommandeDropdowns()
+{
+    if (this.FindControl<ComboBox>("AchatProduitCombo") is { } p)
+        p.ItemsSource = _produitViewModel?.Produits;
+
+    if (this.FindControl<ComboBox>("AchatStockCombo") is { } s)
+        s.ItemsSource = _stockViewModel?.Stocks;
 }
 public void ShowError(string name, string message)
 {
@@ -285,15 +352,5 @@ public void ResetComboBox(string name)
     if (this.FindControl<ComboBox>(name) is { } cb)
         cb.SelectedItem = null;
 }
-public void PopulateApproDropdowns()
-{
-    if (this.FindControl<ComboBox>("ApproRefFournisseurCombo") is { } f)
-        f.ItemsSource = _approVM?.Fournisseurs;
 
-    if (this.FindControl<ComboBox>("ApproCodeProduitCombo") is { } p)
-        p.ItemsSource = _produitViewModel?.Produits;
-
-    if (this.FindControl<ComboBox>("ApproStockCombo") is { } s)
-        s.ItemsSource = _stockViewModel?.Stocks;
-}
 }

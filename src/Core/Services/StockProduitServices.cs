@@ -4,47 +4,63 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Models;
 using Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Services
 {
     public class StockProduitServices
     {
-        private readonly IStockProduitRepository _stockProduitRepository;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public StockProduitServices(IStockProduitRepository stockProduitRepository)
+        public StockProduitServices(IServiceScopeFactory scopeFactory)
         {
-            _stockProduitRepository = stockProduitRepository;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<List<StockProduit>> GetAllStockDetails()
         {
-            var items = await _stockProduitRepository.GetAll();
+            using var scope = _scopeFactory.CreateScope();
+            var repo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+            var items = await repo.GetAll();
             return items.ToList();
+        }
+
+        public async Task<List<StockProduit>> GetByStock(int numeroStock)
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var repo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+            var items = await repo.GetAll();
+            return items.Where(sp => sp.NumeroStock == numeroStock).ToList();
         }
 
         public async Task<int> GetQuantiteDisponible(int codeProduit, int numeroStock)
         {
-            var ligne = await _stockProduitRepository.GetByLocationAndProduct(numeroStock, codeProduit);
+            using var scope = _scopeFactory.CreateScope();
+            var repo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+            var ligne = await repo.GetByLocationAndProduct(numeroStock, codeProduit);
             return ligne?.Quantite ?? 0;
         }
 
         public async Task AddOrUpdateStockProduit(int numeroStock, int codeProduit, int quantiteDelta)
         {
-            var ligne = await _stockProduitRepository.GetByLocationAndProduct(numeroStock, codeProduit);
+            using var scope = _scopeFactory.CreateScope();
+            var repo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+
+            var ligne = await repo.GetByLocationAndProduct(numeroStock, codeProduit);
 
             if (ligne == null)
             {
-                await _stockProduitRepository.Add(new StockProduit
+                await repo.Add(new StockProduit
                 {
                     NumeroStock = numeroStock,
                     CodeProduit = codeProduit,
-                    Quantite = quantiteDelta
+                    Quantite    = quantiteDelta
                 });
                 return;
             }
 
             ligne.Quantite += quantiteDelta;
-            await _stockProduitRepository.Update(ligne);
+            await repo.Update(ligne);
         }
 
         public async Task RemoveStockForProduct(int codeProduit, int quantiteDemandee)
@@ -52,7 +68,10 @@ namespace Core.Services
             if (quantiteDemandee <= 0)
                 throw new ArgumentException("La quantité doit être supérieure à 0.");
 
-            var lignesProduit = (await _stockProduitRepository.GetAll())
+            using var scope = _scopeFactory.CreateScope();
+            var repo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+
+            var lignesProduit = (await repo.GetAll())
                 .Where(sp => sp.CodeProduit == codeProduit && sp.Quantite > 0)
                 .OrderBy(sp => sp.NumeroStock)
                 .ToList();
@@ -64,13 +83,12 @@ namespace Core.Services
             var restant = quantiteDemandee;
             foreach (var ligne in lignesProduit)
             {
-                if (restant == 0)
-                    break;
+                if (restant == 0) break;
 
                 var retire = Math.Min(ligne.Quantite, restant);
                 ligne.Quantite -= retire;
-                restant -= retire;
-                await _stockProduitRepository.Update(ligne);
+                restant        -= retire;
+                await repo.Update(ligne);
             }
         }
     }

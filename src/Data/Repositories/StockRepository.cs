@@ -11,9 +11,16 @@ namespace Data.Repositories{
             _context = context;
         }
 
+
         public async Task<Stock?> GetStockByNum(int numStock) => await _context.Stock.FindAsync(numStock);
 
-        public async Task<IEnumerable<Stock>> GetAllStock() => await _context.Stock.ToListAsync();
+        public async Task<IEnumerable<Stock>> GetAllStock(){
+        _context.ChangeTracker.Clear();  
+        return await _context.Stock
+        .Include(s => s.StockProduits)
+            .ThenInclude(sp => sp.Produit)
+        .ToListAsync();
+        }
 
         public async Task AddStock(Stock stock){
             await _context.Stock.AddAsync(stock);

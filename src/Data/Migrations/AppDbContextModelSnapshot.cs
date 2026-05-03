@@ -131,12 +131,15 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateCommande")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("Delai")
+                        .HasColumnType("int");
+
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<int>("NumeroExport")
+                    b.Property<int?>("ExportNumeroExport")
                         .HasColumnType("int");
 
                     b.Property<int>("RefClient")
@@ -144,7 +147,7 @@ namespace Data.Migrations
 
                     b.HasKey("NumeroCommande");
 
-                    b.HasIndex("NumeroExport");
+                    b.HasIndex("ExportNumeroExport");
 
                     b.HasIndex("RefClient");
 
@@ -319,11 +322,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Core.Models.Commande", b =>
                 {
-                    b.HasOne("Core.Models.Export", "Export")
+                    b.HasOne("Core.Models.Export", null)
                         .WithMany("Commande")
-                        .HasForeignKey("NumeroExport")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ExportNumeroExport");
 
                     b.HasOne("Core.Models.Client", "Client")
                         .WithMany("Commande")
@@ -332,8 +333,6 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
-
-                    b.Navigation("Export");
                 });
 
             modelBuilder.Entity("Core.Models.StockProduit", b =>

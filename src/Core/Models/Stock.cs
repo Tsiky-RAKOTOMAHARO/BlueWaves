@@ -13,5 +13,8 @@ namespace Core.Models{
 
         public virtual ICollection<Approvisionnement> Approvisionnements { get; set; }
         = new List<Approvisionnement>();
+
+        public virtual ICollection<StockProduit> StockProduits { get; set; }  // ← à ajouter
+            = new List<StockProduit>();
     }
 }

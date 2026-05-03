@@ -3,39 +3,61 @@ using System.Threading.Tasks;
 using Core.Models;
 using Core.Interfaces;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Services
 {
     public class AchatServices
     {
-        private readonly IAchatRepository _achatRepo;
-        private readonly IStockProduitRepository _stockProduitRepo;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public AchatServices(IAchatRepository achatRepo,
-            IStockProduitRepository stockProduitRepo)
+        public AchatServices(IServiceScopeFactory scopeFactory)
         {
-            _achatRepo = achatRepo;
-            _stockProduitRepo = stockProduitRepo;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<IEnumerable<Achat>> GetAllAchat()
-            => await _achatRepo.GetAllAchat();
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            return await achatRepo.GetAllAchat();
+        }
 
         public async Task<Achat?> GetAchatById(int idAchat)
-            => await _achatRepo.GetAchatById(idAchat);
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            return await achatRepo.GetAchatById(idAchat);
+        }
 
         public async Task<IEnumerable<Achat>> GetByProduit(int codeProduit)
-            => await _achatRepo.GetAchatByCodeProduit(codeProduit);
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            return await achatRepo.GetAchatByCodeProduit(codeProduit);
+        }
 
         public async Task<IEnumerable<Achat>> GetByStock(int numeroStock)
-            => await _achatRepo.GetAchatByStock(numeroStock);
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            return await achatRepo.GetAchatByStock(numeroStock);
+        }
 
         public async Task<IEnumerable<Achat>> GetByCommande(int numeroCommande)
-            => await _achatRepo.GetAchatByNumeroCommande(numeroCommande);
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            return await achatRepo.GetAchatByNumeroCommande(numeroCommande);
+        }
 
         public async Task AddAchat(Achat achat)
         {
-            var ligne = await _stockProduitRepo.GetByLocationAndProduct(
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            var stockRepo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+
+            var ligne = await stockRepo.GetByLocationAndProduct(
                 achat.NumeroStock, achat.CodeProduit);
 
             if (ligne == null)
@@ -45,14 +67,18 @@ namespace Core.Services
                 throw new InvalidOperationException("Stock insuffisant pour cet achat.");
 
             ligne.Quantite -= achat.Quantite;
-            await _stockProduitRepo.Update(ligne);
+            await stockRepo.Update(ligne);
 
-            await _achatRepo.AddAchat(achat);
+            await achatRepo.AddAchat(achat);
         }
 
         public async Task UpdateAchat(Achat achat)
         {
-            var ancienAchat = await _achatRepo.GetAchatById(achat.IdAchat);
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            var stockRepo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+
+            var ancienAchat = await achatRepo.GetAchatById(achat.IdAchat);
             if (ancienAchat == null)
                 throw new InvalidOperationException("Achat introuvable.");
 
@@ -60,7 +86,7 @@ namespace Core.Services
 
             if (delta != 0)
             {
-                var ligne = await _stockProduitRepo.GetByLocationAndProduct(
+                var ligne = await stockRepo.GetByLocationAndProduct(
                     achat.NumeroStock, achat.CodeProduit);
 
                 if (ligne == null)
@@ -70,24 +96,28 @@ namespace Core.Services
                     throw new InvalidOperationException("Stock insuffisant pour augmenter l'achat.");
 
                 ligne.Quantite -= delta;
-                await _stockProduitRepo.Update(ligne);
+                await stockRepo.Update(ligne);
             }
 
-            await _achatRepo.UpdateAchat(achat);
+            await achatRepo.UpdateAchat(achat);
         }
 
         public async Task DeleteAchat(Achat achat)
         {
-            var ligne = await _stockProduitRepo.GetByLocationAndProduct(
+            using var scope = _scopeFactory.CreateScope();
+            var achatRepo = scope.ServiceProvider.GetRequiredService<IAchatRepository>();
+            var stockRepo = scope.ServiceProvider.GetRequiredService<IStockProduitRepository>();
+
+            var ligne = await stockRepo.GetByLocationAndProduct(
                 achat.NumeroStock, achat.CodeProduit);
 
             if (ligne != null)
             {
                 ligne.Quantite += achat.Quantite;
-                await _stockProduitRepo.Update(ligne);
+                await stockRepo.Update(ligne);
             }
 
-            await _achatRepo.DeleteAchat(achat);
+            await achatRepo.DeleteAchat(achat);
         }
     }
 }

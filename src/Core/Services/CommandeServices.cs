@@ -24,9 +24,7 @@ namespace Core.Services
         }
 
         public async Task<IEnumerable<Commande>> GetAllCommande()
-        {
-            return await _commandeRepository.GetAllCommande();
-        }
+            => await _commandeRepository.GetAllCommande();
 
         public async Task<IEnumerable<Commande>> GetCommandeByRefClient(int refClient)
         {
@@ -36,15 +34,7 @@ namespace Core.Services
             return await _commandeRepository.GetCommandeByRefClient(refClient);
         }
 
-        public async Task<IEnumerable<Commande>> GetCommandeByNumeroExport(int numeroExport)
-        {
-            if (numeroExport <= 0)
-                throw new ArgumentException("Export invalide.");
-
-            return await _commandeRepository.GetCommandeByNumeroExport(numeroExport);
-        }
-
-        public async Task<Commande> AddCommande(string destination, DateTime dateCommande, int refClient, int numeroExport)
+        public async Task<Commande> AddCommande(string destination, DateTime dateCommande, int delai, int refClient)
         {
             if (string.IsNullOrWhiteSpace(destination))
                 throw new ArgumentException("Destination obligatoire.");
@@ -52,15 +42,15 @@ namespace Core.Services
             if (refClient <= 0)
                 throw new ArgumentException("Client invalide.");
 
-            if (numeroExport <= 0)
-                throw new ArgumentException("Export invalide.");
+            if (delai <= 0)
+                throw new ArgumentException("Délai invalide.");
 
             var commande = new Commande
             {
-                Destination = destination.Trim(),
+                Destination  = destination.Trim(),
                 DateCommande = dateCommande,
-                RefClient = refClient,
-                NumeroExport = numeroExport
+                Delai        = delai,
+                RefClient    = refClient
             };
 
             return await _commandeRepository.AddCommande(commande);
@@ -77,8 +67,8 @@ namespace Core.Services
             if (commande.RefClient <= 0)
                 throw new ArgumentException("Client invalide.");
 
-            if (commande.NumeroExport <= 0)
-                throw new ArgumentException("Export invalide.");
+            if (commande.Delai <= 0)
+                throw new ArgumentException("Délai invalide.");
 
             await _commandeRepository.UpdateCommande(commande);
         }

@@ -9,7 +9,6 @@ namespace Data.Context{
         public DbSet<Approvisionnement> Approvisionnement { get; set; }
         public DbSet<Client> Client { get; set; }
         public DbSet<Commande> Commande { get; set; }
-        public DbSet<Export> Export { get; set; }
         public DbSet<Fournisseur> Fournisseur { get; set; }
         public DbSet<Produit> Produit { get; set; }
         public DbSet<Stock> Stock { get; set; }
@@ -27,7 +26,6 @@ namespace Data.Context{
             modelBuilder.Entity<Achat>().ToTable("ACHAT");
             modelBuilder.Entity<Approvisionnement>().ToTable("APPROVISIONNEMENT");
             modelBuilder.Entity<Commande>().ToTable("COMMANDE");
-            modelBuilder.Entity<Export>().ToTable("EXPORT");
             modelBuilder.Entity<StockProduit>().ToTable("STOCK_PRODUIT");
         }
     }
