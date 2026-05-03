@@ -6,6 +6,9 @@
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.AssemblyInfo.cs
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.csproj.CoreCompileInputs.cache
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.sourcelink.json
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/Avalonia/UI.dll
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/Avalonia/UI.pdb
+/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/refint/Avalonia/UI.dll
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/bin/Debug/net8.0/appsettings.json
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/bin/Debug/net8.0/UI
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/bin/Debug/net8.0/UI.deps.json
@@ -185,9 +188,6 @@
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/bin/Debug/net8.0/Data.dll
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/bin/Debug/net8.0/Core.pdb
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/bin/Debug/net8.0/Data.pdb
-/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/Avalonia/UI.dll
-/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/Avalonia/UI.pdb
-/home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/refint/Avalonia/UI.dll
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.csproj.Up2Date
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/UI.genruntimeconfig.cache
 /home/smiley/HERACLES/Project/BlueWaves/src/UI/obj/Debug/net8.0/ref/UI.dll

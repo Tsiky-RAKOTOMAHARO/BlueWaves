@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Core.Models;
@@ -9,62 +8,54 @@ namespace UI.Views;
 
 public partial class ProduitListView : UserControl
 {
-    private ProduitViewModel? _produitVM;
+    public ProduitViewModel ProduitVM { get; }
 
     public ProduitListView()
     {
-        InitializeComponent();
+        var services = Program.ServiceHost!.Services;
+        ProduitVM = services.GetRequiredService<ProduitViewModel>();
 
-        if (Program.ServiceHost != null)
-        {
-            _produitVM = Program.ServiceHost.Services.GetRequiredService<ProduitViewModel>();
-            DataContext = _produitVM;
-        }
+        DataContext = this;
+        InitializeComponent();
     }
 
     protected override async void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-
-        if (_produitVM != null && _produitVM.Produits.Count == 0)
-            await _produitVM.LoadProduits();
-    }
-
-    private async void DeleteProduit_Click(object? sender, RoutedEventArgs e)
-    {
-    if (sender is MenuItem mi && mi.Tag is Produit produit && _produitVM != null)
-    {
-        await _produitVM.DeleteProduit(produit);
-    }
-    }
-    private void EditProduit_Click(object? sender, RoutedEventArgs e)
-    {
-    if (sender is MenuItem mi && mi.Tag is Produit produit && _produitVM != null)
-    {
-        _produitVM.LoadProduitForEdit(produit);
-        PanneauLateral.IsVisible = true;
-    }
-    }
-    private void OuvrirPanneau_Click(object? sender, RoutedEventArgs e)
-    {
-        if (_produitVM == null) return;
-
-        _produitVM.ResetForm();
-        PanneauLateral.IsVisible = true;
-    }
-
-    private void FermerPanneau_Click(object? sender, RoutedEventArgs e)
-    {
-        PanneauLateral.IsVisible = false;
-    }
-
-    private void OnProduitSearchChanged(object? sender, TextChangedEventArgs e)
-    {
+        await ProduitVM.LoadProduits();
     }
 
     private void OnProduitActionsClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.DataContext is Produit produit)
-            Debug.WriteLine($"Actions pour : {produit.NomProduit}");
+        if (sender is Button btn)
+        {
+            btn.ContextMenu?.Open(btn);
+        }
+    }
+
+    private void OnEditProduitClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: Produit p })
+        {
+            ProduitVM.LoadProduitForEdit(p);
+        }
+    }
+
+    private void OnDeleteProduitClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: Produit p })
+        {
+            ProduitVM.SupprimerCommand.Execute(p);
+        }
+    }
+
+    private void OnNouveauProduitClick(object? sender, RoutedEventArgs e)
+    {
+        ProduitVM.NouveauProduitCommand.Execute(null);
+    }
+
+    private void OnFermerFormulaireClick(object? sender, RoutedEventArgs e)
+    {
+        ProduitVM.FermerFormulaireCommand.Execute(null);
     }
 }

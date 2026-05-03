@@ -6,6 +6,7 @@ using Core.Models;
 using Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
 
 namespace UI.ViewModels;
 
@@ -13,78 +14,71 @@ public partial class CommandeViewModel : ViewModelBase
 {
     private readonly CommandeServices _commandeService;
     private readonly AchatServices    _achatService;
-
-    public ObservableCollection<Commande>   Commandes        { get; } = new();
+    private readonly ClientServices   _clientService;
+    private readonly ProduitServices  _produitService;
+    private readonly StockServices    _stockService;
+   
+    public ObservableCollection<Commande>   Commandes         { get; } = new();
     public ObservableCollection<Commande>   FilteredCommandes { get; } = new();
-    public ObservableCollection<AchatLigne> Lignes           { get; } = new();
-    
+    public ObservableCollection<AchatLigne> Lignes            { get; } = new();
 
-    [ObservableProperty] private bool     _isLoading;
+    
+    public ObservableCollection<Client>  Clients  { get; } = new();
+    public ObservableCollection<Produit> Produits { get; } = new();
+    public ObservableCollection<Stock>   Stocks   { get; } = new();
+
+   
+    [ObservableProperty] private bool    _isLoading;
+    [ObservableProperty] private bool    _isFormVisible;       
+    [ObservableProperty] private string  _errorMessage = string.Empty;
+    [ObservableProperty] private string? _searchQuery;
+
+
     [ObservableProperty] private string   _destination  = string.Empty;
     [ObservableProperty] private DateTime _dateCommande = DateTime.Now;
     [ObservableProperty] private int      _delai;
-    [ObservableProperty] private int      _refClient;
+    [ObservableProperty] private Client?  _selectedClient;     
 
-    [ObservableProperty] private int _codeProduit;
-    [ObservableProperty] private int _numeroStock;
-    [ObservableProperty] private int _quantite;
+  
+    [ObservableProperty] private Produit? _selectedProduit;    
+    [ObservableProperty] private int      _quantite;
 
-    [ObservableProperty] private string?   _searchQuery;
-    [ObservableProperty] private string    _errorMessage = string.Empty;
     [ObservableProperty] private Commande? _selectedCommande;
+    [ObservableProperty] private Stock?   _selectedStock;
 
-    public CommandeViewModel(CommandeServices commandeService, AchatServices achatService)
+    public CommandeViewModel(
+        CommandeServices commandeService,
+        AchatServices    achatService,
+        ClientServices   clientService,
+        ProduitServices  produitService,
+        StockServices    stockService)
     {
         _commandeService = commandeService;
         _achatService    = achatService;
+        _clientService   = clientService;
+        _produitService  = produitService;
+        _stockService    = stockService;
     }
 
-    partial void OnSearchQueryChanged(string? value)
-        => FilterCommandes(value ?? string.Empty);
 
     [RelayCommand]
-    public async Task LoadCommandes()
+    private void NouvelleCommande()
     {
-        if (IsLoading) return;
-
-        try
-        {
-            IsLoading = true;
-            Commandes.Clear();
-            FilteredCommandes.Clear();
-
-            var data = await _commandeService.GetAllCommande();
-
-            foreach (var item in data)
-            {
-                Commandes.Add(item);
-                FilteredCommandes.Add(item);
-            }
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    public void FilterCommandes(string query)
-    {
-        FilteredCommandes.Clear();
-
-        var results = string.IsNullOrWhiteSpace(query)
-            ? Commandes
-            : Commandes.Where(c =>
-                (c.Destination != null && c.Destination.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
-                c.NumeroCommande.ToString().Contains(query));
-
-        foreach (var item in results)
-            FilteredCommandes.Add(item);
+        ResetForm();
+        IsFormVisible = true;
     }
 
     [RelayCommand]
-    public void AjouterLigne()
+    private void FermerFormulaire()
     {
-        if (CodeProduit <= 0 || NumeroStock <= 0 || Quantite <= 0)
+        ResetForm();
+        IsFormVisible = false;
+    }
+
+    [RelayCommand]
+    private void AjouterLigne()
+    {
+        if (SelectedProduit is null || SelectedStock is null || Quantite <= 0)
         {
             ErrorMessage = "Produit, stock et quantité obligatoires.";
             return;
@@ -92,24 +86,32 @@ public partial class CommandeViewModel : ViewModelBase
 
         Lignes.Add(new AchatLigne
         {
-            CodeProduit = CodeProduit,
-            NumeroStock = NumeroStock,
+            CodeProduit = SelectedProduit.CodeProduit,
+            NumeroStock = SelectedStock.NumeroStock,
             Quantite    = Quantite
         });
 
-        CodeProduit = 0;
-        NumeroStock = 0;
-        Quantite    = 0;
-        ErrorMessage = string.Empty;
+        SelectedProduit = null;
+        SelectedStock   = null;
+        Quantite        = 0;
+        ErrorMessage    = string.Empty;
     }
 
     [RelayCommand]
-    public void RetirerLigne(AchatLigne ligne)
+    private void RetirerLigne(AchatLigne ligne)
         => Lignes.Remove(ligne);
 
     [RelayCommand]
-    public async Task ConfirmerCommande()
+    private async Task ConfirmerCommande()
     {
+        if (string.IsNullOrWhiteSpace(Destination) ||
+            SelectedClient is null ||
+            Delai <= 0)
+        {
+            ErrorMessage = "Veuillez remplir correctement tous les champs.";
+            return;
+        }
+
         if (!Lignes.Any())
         {
             ErrorMessage = "Ajoutez au moins une ligne.";
@@ -121,7 +123,7 @@ public partial class CommandeViewModel : ViewModelBase
             ErrorMessage = string.Empty;
 
             var commande = await _commandeService.AddCommande(
-                Destination, DateCommande, Delai, RefClient);
+                Destination, DateCommande, Delai, SelectedClient.RefClient);
 
             foreach (var ligne in Lignes)
             {
@@ -134,21 +136,51 @@ public partial class CommandeViewModel : ViewModelBase
                 });
             }
 
-            await LoadCommandes();
+            await LoadDataAsync();
             ResetForm();
+            IsFormVisible = false;
         }
-        catch (ArgumentException ex)
+        catch (ArgumentException ex)        { ErrorMessage = ex.Message; }
+        catch (InvalidOperationException ex) { ErrorMessage = ex.Message; }
+    }
+
+    [RelayCommand]
+    private async Task UpdateCommande()
+    {
+        if (SelectedCommande is null)
         {
-            ErrorMessage = ex.Message;
+            ErrorMessage = "Aucune commande sélectionnée.";
+            return;
         }
-        catch (InvalidOperationException ex)
+
+        if (string.IsNullOrWhiteSpace(Destination) || SelectedClient is null || Delai <= 0)
+        {
+            ErrorMessage = "Veuillez remplir correctement tous les champs.";
+            return;
+        }
+
+        try
+        {
+            SelectedCommande.Destination  = Destination;
+            SelectedCommande.DateCommande = DateCommande;
+            SelectedCommande.Delai        = Delai;
+            SelectedCommande.RefClient    = SelectedClient.RefClient;
+
+            await _commandeService.UpdateCommande(SelectedCommande);
+            await LoadDataAsync();
+
+            ResetForm();
+            IsFormVisible    = false;
+            SelectedCommande = null;
+        }
+        catch (Exception ex)
         {
             ErrorMessage = ex.Message;
         }
     }
 
     [RelayCommand]
-    public async Task DeleteCommande(Commande commande)
+    private async Task DeleteCommande(Commande commande)
     {
         try
         {
@@ -162,13 +194,78 @@ public partial class CommandeViewModel : ViewModelBase
         }
     }
 
-    public void ResetForm()
+
+    public async Task LoadDataAsync()
     {
-        Destination  = string.Empty;
-        DateCommande = DateTime.Now;
-        Delai        = 0;
-        RefClient    = 0;
+        if (IsLoading) return;
+        try
+        {
+            IsLoading    = true;
+            ErrorMessage = string.Empty;
+
+            var commandes = await _commandeService.GetAllCommande();
+            var clients   = await _clientService.GetAllClient();
+            var produits  = await _produitService.GetAllProduit();
+            var stocks    = await _stockService.GetAllStock();
+
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Commandes.Clear();
+                FilteredCommandes.Clear();
+                foreach (var c in commandes)
+                {
+                    Commandes.Add(c);
+                    FilteredCommandes.Add(c);
+                }
+
+                Clients.Clear();
+                foreach (var c in clients)  Clients.Add(c);
+
+                Produits.Clear();
+                foreach (var p in produits) Produits.Add(p);
+
+                Stocks.Clear();
+                foreach (var s in stocks)   Stocks.Add(s);
+            });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Erreur de chargement des données.";
+            Debug.WriteLine(ex);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+
+    private void ResetForm()
+    {
+        Destination     = string.Empty;
+        DateCommande    = DateTime.Now;
+        Delai           = 0;
+        SelectedClient  = null;
+        SelectedProduit = null;
+        SelectedStock   = null;
+        Quantite        = 0;
         Lignes.Clear();
-        ErrorMessage = string.Empty;
+        ErrorMessage    = string.Empty;
+    }
+
+    partial void OnSearchQueryChanged(string? value)
+        => FilterCommandes(value ?? string.Empty);
+
+    private void FilterCommandes(string query)
+    {
+        var results = string.IsNullOrWhiteSpace(query)
+            ? Commandes
+            : Commandes.Where(c =>
+                (c.Destination?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                c.NumeroCommande.ToString().Contains(query));
+
+        FilteredCommandes.Clear();
+        foreach (var item in results)
+            FilteredCommandes.Add(item);
     }
 }

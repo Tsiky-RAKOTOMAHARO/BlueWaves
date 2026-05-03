@@ -21,50 +21,51 @@ public partial class StockInventoryView : UserControl
             DataContext = _stockVM;
         }
     }
-    protected override async void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e){
-    
-    base.OnAttachedToVisualTree(e);
-    if (_stockVM != null)
-        await _stockVM.LoadStockCommand.ExecuteAsync(null);
+
+    protected override async void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        if (_stockVM != null)
+            await _stockVM.LoadStockCommand.ExecuteAsync(null);
     }
-      private async void SaveStock_Click(object? sender, RoutedEventArgs e)
+
+    private async void SaveStock_Click(object? sender, RoutedEventArgs e)
     {
         if (_stockVM == null) return;
+
         await _stockVM.SaveStockCommand.ExecuteAsync(null);
+
         if (string.IsNullOrEmpty(_stockVM.ErrorMessage))
-            PanneauLateral.IsVisible = false;
+            _stockVM.IsFormVisible = false;
     }
 
     private void OuvrirPanneau_Click(object? sender, RoutedEventArgs e)
     {
-        _stockVM?.ResetForm();
-        PanneauDetail.IsVisible  = false;
-        PanneauLateral.IsVisible = true;
+        if (_stockVM == null) return;
+
+        _stockVM.OpenForm();
     }
 
     private void FermerPanneau_Click(object? sender, RoutedEventArgs e)
-        => PanneauLateral.IsVisible = false;
-
-    private async void OnStockSelected_Click(object? sender, PointerPressedEventArgs e)
-{
-    if (sender is Border border && border.DataContext is Stock stock)
     {
-        if (_stockVM != null)
-        {
-            await _stockVM.LoadStockCommand.ExecuteAsync(null);
+        if (_stockVM == null) return;
 
-            _stockVM.SelectedStock = _stockVM.Stocks
-                .FirstOrDefault(s => s.NumeroStock == stock.NumeroStock);
-        }
-
-        PanneauLateral.IsVisible = false;
-        PanneauDetail.IsVisible  = true;
+        _stockVM.CloseForm();
     }
-}
+
+    private void OnStockSelected_Click(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Border border && border.DataContext is Stock stock && _stockVM != null)
+        {
+            _stockVM.LoadStockForView(stock);
+        }
+    }
 
     private void FermerDetail_Click(object? sender, RoutedEventArgs e)
     {
-        PanneauDetail.IsVisible = false;
-        if (_stockVM != null) _stockVM.SelectedStock = null;
+        if (_stockVM == null) return;
+
+        _stockVM.CloseDetail();
     }
 }

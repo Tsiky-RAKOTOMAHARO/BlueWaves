@@ -22,17 +22,17 @@
             <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
                 <Border Grid.Column="0" Classes="search-shell" Width="350" HorizontalAlignment="Left">
                     <TextBox x:Name="SearchProduit"
+                             Text="{Binding ProduitVM.SearchQuery, Mode=TwoWay}"
                              Watermark="Rechercher un produit..."
                              BorderThickness="0"
                              Background="Transparent"
-                             VerticalContentAlignment="Center"
-                             TextChanged="OnProduitSearchChanged"/>
+                             VerticalContentAlignment="Center"/>
                 </Border>
                 <Border Grid.Column="1" Background="Transparent"/>
                 <Button Grid.Column="2"
                         Content="＋ Nouveau produit"
                         Classes="btn-primary btn-primary-green"
-                        Click="OuvrirPanneau_Click"/>
+                        Click="OnNouveauProduitClick"/>
             </Grid>
 
             <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
@@ -45,7 +45,7 @@
                         <Border Grid.Column="0" Classes="kpi">
                             <StackPanel>
                                 <TextBlock Text="TOTAL PRODUITS" Classes="label"/>
-                                <TextBlock Text="{Binding Produits.Count}"
+                                <TextBlock Text="{Binding ProduitVM.Produits.Count}"
                                            FontSize="28" FontWeight="Black" Foreground="#0F172A"/>
                             </StackPanel>
                         </Border>
@@ -67,7 +67,7 @@
                     </Grid>
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Produits}">
+                        <ItemsControl ItemsSource="{Binding ProduitVM.FilteredProduits}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="coreModels:Produit">
                                     <Border Classes="order-card">
@@ -90,19 +90,19 @@
                                             </StackPanel>
 
                                             <Button Grid.Column="4" 
-                                                Content="⋮"
-                                                Width="32" Height="32"
-                                                Classes="btn-icon"
-                                                Margin="15,0,0,0"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Center"
-                                                Tag="{Binding}">
-                                            <Button.Flyout>
-                                                <MenuFlyout>
-                                                    <MenuItem Header="Modifier" Tag="{Binding $parent[Button].Tag}" Click="EditProduit_Click"/>
-                                                    <MenuItem Header="Supprimer" Tag="{Binding $parent[Button].Tag}" Click="DeleteProduit_Click"/>
-                                                </MenuFlyout>
-                                            </Button.Flyout>
+                                                    Content="⋮"
+                                                    Width="32" Height="32"
+                                                    Classes="btn-icon"
+                                                    Margin="15,0,0,0"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Center"
+                                                    Click="OnProduitActionsClick">
+                                                <Button.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Modifier" Click="OnEditProduitClick"/>
+                                                        <MenuItem Header="Supprimer" Click="OnDeleteProduitClick"/>
+                                                    </ContextMenu>
+                                                </Button.ContextMenu>
                                             </Button>
                                         </Grid>
                                     </Border>
@@ -114,7 +114,7 @@
 
                 <Border Grid.Column="1"
                         x:Name="PanneauLateral"
-                        IsVisible="False"
+                        IsVisible="{Binding ProduitVM.IsFormVisible}"
                         Width="380"
                         Margin="16,0,0,0"
                         Background="White"
@@ -129,7 +129,7 @@
                                 <Button DockPanel.Dock="Right"
                                         Content="✕"
                                         Classes="btn-icon"
-                                        Click="FermerPanneau_Click"/>
+                                        Click="OnFermerFormulaireClick"/>
                                 <TextBlock Text="Nouveau Produit"
                                            FontSize="18" FontWeight="Bold" Foreground="Blue"/>
                             </DockPanel>
@@ -142,26 +142,26 @@
                                 <TextBlock Text="Nom du produit" Classes="label"/>
                                 <TextBox Classes="form-input"
                                          Watermark="Ex: Crevettes entières"
-                                         Text="{Binding NomProduit, Mode=TwoWay}"/>
+                                         Text="{Binding ProduitVM.NomProduit, Mode=TwoWay}"/>
                             </StackPanel>
 
                             <StackPanel Spacing="5">
                                 <TextBlock Text="Prix (MGA)" Classes="label"/>
                                 <TextBox Classes="form-input"
                                          Watermark="Ex: 15000"
-                                         Text="{Binding Prix, Mode=TwoWay}"/>
+                                         Text="{Binding ProduitVM.Prix, Mode=TwoWay}"/>
                             </StackPanel>
 
                             <TextBlock x:Name="ProduitErrorText"
                                        Foreground="#DC2626"
-                                       IsVisible="False"
+                                       Text="{Binding ProduitVM.ErrorMessage}"
                                        TextWrapping="Wrap"/>
 
                             <Button Content="Enregistrer le produit"
                                     Classes="btn-primary btn-primary-green"
                                     HorizontalAlignment="Stretch"
                                     Margin="0,10,0,0"
-                                    Command="{Binding SaveProduitCommand}"/>
+                                    Command="{Binding ProduitVM.SauvegarderCommand}"/>
 
                         </StackPanel>
                     </ScrollViewer>

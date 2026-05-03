@@ -2,129 +2,98 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Core.Models;
 using Core.Services;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 
 namespace UI.ViewModels;
 
 public partial class ApprovisionnementViewModel : ViewModelBase
 {
     private readonly ApprovisionnementServices _approService;
-    private readonly ProduitServices _produitService;
-    private readonly FournisseurServices _fournisseurService;
-    private readonly StockServices _stockService;
+    private readonly ProduitServices           _produitService;
+    private readonly FournisseurServices       _fournisseurService;
+    private readonly StockServices             _stockService;
 
-    public ObservableCollection<Approvisionnement> Approvisionnements { get; } = new();
+    public ObservableCollection<Approvisionnement> Approvisionnements         { get; } = new();
     public ObservableCollection<Approvisionnement> FilteredApprovisionnements { get; } = new();
-    public ObservableCollection<Produit> Produits { get; } = new();
-    public ObservableCollection<Fournisseur> Fournisseurs { get; } = new();
-    public ObservableCollection<Stock> Stocks { get; } = new();
+    public ObservableCollection<Produit>           Produits                   { get; } = new();
+    public ObservableCollection<Fournisseur>       Fournisseurs               { get; } = new();
+    public ObservableCollection<Stock>             Stocks                     { get; } = new();
 
-    [ObservableProperty] private bool isLoading;
-    [ObservableProperty] private string? searchQuery;
-    [ObservableProperty] private string errorMessage = string.Empty;
+    // ── État UI ───────────────────────────────────────────────
+    [ObservableProperty] private bool    _isLoading;
+    [ObservableProperty] private bool    _isFormVisible;      // ← AJOUT : remplace panel.IsVisible dans le View
+    [ObservableProperty] private string  _errorMessage = string.Empty;
+    [ObservableProperty] private string? _searchQuery;
 
-    [ObservableProperty] private Produit? selectedProduit;
-    [ObservableProperty] private Fournisseur? selectedFournisseur;
-    [ObservableProperty] private Stock? selectedStock;
-    [ObservableProperty] private int quantiteSaisie;
-    [ObservableProperty] private string certificatSaisi = string.Empty;
+    // ── Champs du formulaire ──────────────────────────────────
+    [ObservableProperty] private string?      _certificatSaisi = string.Empty;
+    [ObservableProperty] private int          _quantiteSaisie;
+    [ObservableProperty] private Fournisseur? _selectedFournisseur;
+    [ObservableProperty] private Produit?     _selectedProduit;
+    [ObservableProperty] private Stock?       _selectedStock;
 
     public ApprovisionnementViewModel(
         ApprovisionnementServices approService,
-        ProduitServices produitService,
-        FournisseurServices fournisseurService,
-        StockServices stockService)
+        ProduitServices           produitService,
+        FournisseurServices       fournisseurService,
+        StockServices             stockService)
     {
-        _approService = approService;
-        _produitService = produitService;
+        _approService       = approService;
+        _produitService     = produitService;
         _fournisseurService = fournisseurService;
-        _stockService = stockService;
+        _stockService       = stockService;
     }
 
-       public async Task LoadDataAsync()
-{
-    if (IsLoading) return;
+    // ── Commandes (remplacent tous les handlers du View) ──────
 
-    try
+    [RelayCommand]
+    private void NouvelleReception()
     {
-        IsLoading = true;
-        ErrorMessage = string.Empty;
+        ResetForm();
+        IsFormVisible = true;
+    }
 
-        var appros = await _approService.GetAllApprovisionnement();
-        var prods = await _produitService.GetAllProduit();
-        var fours = await _fournisseurService.GetAllFournisseur();
-        var stocksData = await _stockService.GetAllStock();
+    [RelayCommand]
+    private void FermerFormulaire()
+    {
+        ResetForm();
+        IsFormVisible = false;
+    }
 
-        Console.WriteLine($"Appros count: {appros.Count()}");
-        foreach (var a in appros)
-            Console.WriteLine($"Certificat: {a.Certificat} | Fournisseur: {a.Fournisseur?.NomFournisseur ?? "NULL"}");
-
-        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+    [RelayCommand]                              // ← était public async Task appelé depuis View
+    private async Task Sauvegarder()
+    {
+        if (string.IsNullOrWhiteSpace(CertificatSaisi) ||
+            SelectedFournisseur is null ||
+            SelectedProduit     is null ||
+            SelectedStock       is null ||
+            QuantiteSaisie <= 0)
         {
-            Approvisionnements.Clear();
-            FilteredApprovisionnements.Clear();
-            foreach (var item in appros)
-            {
-                Approvisionnements.Add(item);
-                FilteredApprovisionnements.Add(item);
-            }
+            ErrorMessage = "Veuillez remplir correctement tous les champs.";
+            return;
+        }
 
-            Produits.Clear();
-            foreach (var p in prods) Produits.Add(p);
-
-            Fournisseurs.Clear();
-            foreach (var f in fours) Fournisseurs.Add(f);
-
-            Stocks.Clear();
-            foreach (var s in stocksData) Stocks.Add(s);
-        });
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"ERREUR LoadDataAsync: {ex.Message}");
-        Console.WriteLine(ex.StackTrace);
-        ErrorMessage = "Erreur de chargement des données.";
-    }
-    finally
-    {
-        IsLoading = false;
-    }
-} 
-   
-    public async Task AddApprovisionnementAsync()
-    {
         try
         {
-            if (SelectedProduit == null || SelectedFournisseur == null || SelectedStock == null)
+            var appro = new Approvisionnement
             {
-                ErrorMessage = "Champs obligatoires";
-                return;
-            }
-
-            if (QuantiteSaisie <= 0)
-            {
-                ErrorMessage = "Quantité invalide";
-                return;
-            }
-
-            var nouveauAppro = new Approvisionnement
-            {
-                CodeProduit = SelectedProduit.CodeProduit,
+                CodeProduit    = SelectedProduit.CodeProduit,
                 RefFournisseur = SelectedFournisseur.RefFournisseur,
-                NumeroStock = SelectedStock.NumeroStock,
-                Certificat = CertificatSaisi,
-                Quantite = QuantiteSaisie,
-                DateReception = DateTime.Now,
+                NumeroStock    = SelectedStock.NumeroStock,
+                Certificat     = CertificatSaisi,
+                Quantite       = QuantiteSaisie,
+                DateReception  = DateTime.Now,
             };
 
-            await _approService.AddApprovisionnement(nouveauAppro);
+            await _approService.AddApprovisionnement(appro);
             await LoadDataAsync();
+
             ResetForm();
+            IsFormVisible = false;
         }
         catch
         {
@@ -132,43 +101,14 @@ public partial class ApprovisionnementViewModel : ViewModelBase
         }
     }
 
-    public void ResetForm()
+    [RelayCommand]
+    private async Task Supprimer(Approvisionnement appro)
     {
-        SelectedProduit = null;
-        SelectedFournisseur = null;
-        SelectedStock = null;
-        QuantiteSaisie = 0;
-        CertificatSaisi = string.Empty;
-        ErrorMessage = string.Empty;
-    }
-
-    partial void OnSearchQueryChanged(string? value)
-    {
-        FilteredApprovisionnements.Clear();
-
-        var query = value ?? "";
-
-        var results = string.IsNullOrWhiteSpace(query)
-            ? Approvisionnements
-            : Approvisionnements.Where(a =>
-                (a.Certificat?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                (a.Fournisseur?.NomFournisseur?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false)
-            );
-
-        foreach (var item in results)
-            FilteredApprovisionnements.Add(item);
-    }
-
-    public async Task DeleteApprovisionnementAsync(Approvisionnement approvisionnement)
-    {
-        if (approvisionnement == null) return;
-
+        if (appro is null) return;
         try
         {
             IsLoading = true;
-
-            await _approService.DeleteApprovisionnement(approvisionnement);
-
+            await _approService.DeleteApprovisionnement(appro);
             await LoadDataAsync();
         }
         catch
@@ -179,5 +119,77 @@ public partial class ApprovisionnementViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    // ── Chargement ────────────────────────────────────────────
+
+    public async Task LoadDataAsync()
+    {
+        if (IsLoading) return;
+        try
+        {
+            IsLoading    = true;
+            ErrorMessage = string.Empty;
+
+            var appros  = await _approService.GetAllApprovisionnement();
+            var prods   = await _produitService.GetAllProduit();
+            var fours   = await _fournisseurService.GetAllFournisseur();
+            var stocks  = await _stockService.GetAllStock();
+
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Approvisionnements.Clear();
+                FilteredApprovisionnements.Clear();
+                foreach (var a in appros)
+                {
+                    Approvisionnements.Add(a);
+                    FilteredApprovisionnements.Add(a);
+                }
+
+                Produits.Clear();
+                foreach (var p in prods)   Produits.Add(p);
+
+                Fournisseurs.Clear();
+                foreach (var f in fours)   Fournisseurs.Add(f);
+
+                Stocks.Clear();
+                foreach (var s in stocks)  Stocks.Add(s);
+            });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Erreur de chargement des données.";
+            Debug.WriteLine(ex);         // ← Debug.WriteLine au lieu de Console, retiré en release
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    // ── Helpers privés ────────────────────────────────────────
+
+    private void ResetForm()
+    {
+        CertificatSaisi     = string.Empty;
+        QuantiteSaisie      = 0;
+        SelectedFournisseur = null;
+        SelectedProduit     = null;
+        SelectedStock       = null;
+        ErrorMessage        = string.Empty;
+    }
+
+    partial void OnSearchQueryChanged(string? value)
+    {
+        var query   = value ?? string.Empty;
+        var results = string.IsNullOrWhiteSpace(query)
+            ? Approvisionnements
+            : Approvisionnements.Where(a =>
+                (a.Certificat?.Contains(query, StringComparison.OrdinalIgnoreCase)               ?? false) ||
+                (a.Fournisseur?.NomFournisseur?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false));
+
+        FilteredApprovisionnements.Clear();
+        foreach (var item in results)
+            FilteredApprovisionnements.Add(item);
     }
 }

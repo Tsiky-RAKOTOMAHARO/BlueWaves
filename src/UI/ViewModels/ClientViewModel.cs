@@ -1,132 +1,177 @@
+using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Core.Models;
 using Core.Services;
-using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Avalonia.Threading;
 
+namespace UI.ViewModels;
 
-namespace UI.ViewModels
+public partial class ClientViewModel : ViewModelBase
 {
-    public class ClientViewModel : INotifyPropertyChanged
+    private readonly ClientServices _clientService;
+
+    public ObservableCollection<Client> Clients         { get; } = new();
+    public ObservableCollection<Client> FilteredClients { get; } = new();
+
+    [ObservableProperty] private bool    _isLoading;
+    [ObservableProperty] private bool    _isFormVisible;
+    [ObservableProperty] private string  _errorMessage = string.Empty;
+    [ObservableProperty] private string? _searchQuery;
+
+    [ObservableProperty] private string  _nomClient    = string.Empty;
+    [ObservableProperty] private string  _prenomClient = string.Empty;
+    [ObservableProperty] private string  _telephone    = string.Empty;
+    [ObservableProperty] private Client? _selectedClient;
+
+    public ClientViewModel(ClientServices clientService)
     {
-        private readonly ClientServices _clientService;
-        private ObservableCollection<Client> _clients = new ObservableCollection<Client>();
-        private Client? _selectedClient;
-        private string _nomClient    = string.Empty;
-        private string _prenomClient = string.Empty;
-        private string _telephone    = string.Empty;
-        private string _errorMessage = string.Empty;
+        _clientService = clientService;
+    }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public ObservableCollection<Client> Clients
-        {
-            get => _clients;
-            set { _clients = value; OnPropertyChanged(); }
-        }
-
-        public Client? SelectedClient
-        {
-            get => _selectedClient;
-            set { _selectedClient = value; OnPropertyChanged(); }
-        }
-
-        public string NomClient
-        {
-            get => _nomClient;
-            set { _nomClient = value; OnPropertyChanged(); }
-        }
-
-        public string PrenomClient
-        {
-            get => _prenomClient;
-            set { _prenomClient = value; OnPropertyChanged(); }
-        }
-
-        public string Telephone
-        {
-            get => _telephone;
-            set { _telephone = value; OnPropertyChanged(); }
-        }
-
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); }
-        }
-
-        public ClientViewModel(ClientServices clientService)
-        {
-            _clientService = clientService;
-        }
-
-        public async Task LoadClients()
-        {
-            var data = await _clientService.GetAllClient();
-            Clients  = new ObservableCollection<Client>(data);
-        }
-
-        public async Task SaveClient()
-{
-    try
+    [RelayCommand]
+    private void NouveauClient()
     {
-        ErrorMessage = string.Empty;
+        ResetForm();
+        IsFormVisible = true;
+    }
 
-        if (SelectedClient == null)
+    [RelayCommand]
+    private void FermerFormulaire()
+    {
+        ResetForm();
+        IsFormVisible = false;
+    }
+
+    [RelayCommand]
+    private async Task Sauvegarder()
+    {
+        if (string.IsNullOrWhiteSpace(NomClient))
         {
-            
-            await _clientService.AddClient(NomClient, PrenomClient, Telephone);
-        }
-        else
-        {
-            
-            SelectedClient.NomClient = NomClient;
-            SelectedClient.PrenomClient = PrenomClient;
-            SelectedClient.Telephone = Telephone;
-            await _clientService.UpdateClient(SelectedClient);
+            ErrorMessage = "Le nom du client est obligatoire.";
+            return;
         }
 
-            await LoadClients();
+        try
+        {
+            ErrorMessage = string.Empty;
+
+            if (SelectedClient is null)
+                await _clientService.AddClient(NomClient, PrenomClient, Telephone);
+            else
+            {
+                SelectedClient.NomClient    = NomClient;
+                SelectedClient.PrenomClient = PrenomClient;
+                SelectedClient.Telephone    = Telephone;
+                await _clientService.UpdateClient(SelectedClient);
+            }
+
+            await LoadDataAsync();
             ResetForm();
+            IsFormVisible = false;
         }
         catch (ArgumentException ex)
         {
             ErrorMessage = ex.Message;
         }
-        }
-        public void LoadClientForEdit(Client client){
-            SelectedClient = client;
-            NomClient = client.NomClient;
-            PrenomClient = client.PrenomClient;
-            Telephone = client.Telephone;
-            ErrorMessage = string.Empty;
-        }
-
-        public async Task RemoveClient(Client client)
+        catch (Exception ex)
         {
-            try
-            {
-                await _clientService.DeleteClient(client);
-                Clients.Remove(client);
-                await LoadClients();
-            }
-            catch (ArgumentNullException ex)
-            {
-                ErrorMessage = ex.Message;
-            }
+            ErrorMessage = ex.Message;
         }
+    }
 
-        public void ResetForm()
+    [RelayCommand]
+    private async Task Supprimer(Client? client)
+    {
+        if (client is null) return;
+        try
         {
-            NomClient    = string.Empty;
-            PrenomClient = string.Empty;
-            Telephone    = string.Empty;
+            IsLoading    = true;
             ErrorMessage = string.Empty;
-        }
 
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            await _clientService.DeleteClient(client);
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.InnerException?.Message.Contains("foreign key constraint fails") == true ||
+                           ex.Message.Contains("foreign key")
+                ? "Impossible de supprimer ce client car il possède un historique de commandes."
+                : "Erreur lors de la suppression : " + ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public void LoadClientForEdit(Client client)
+    {
+        SelectedClient = client;
+        NomClient      = client.NomClient;
+        PrenomClient   = client.PrenomClient;
+        Telephone      = client.Telephone;
+        ErrorMessage   = string.Empty;
+        IsFormVisible  = true;
+    }
+
+    public async Task LoadDataAsync()
+    {
+        if (IsLoading) return;
+        try
+        {
+            IsLoading    = true;
+            ErrorMessage = string.Empty;
+
+            var data = await _clientService.GetAllClient();
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Clients.Clear();
+                FilteredClients.Clear();
+                foreach (var c in data)
+                {
+                    Clients.Add(c);
+                    FilteredClients.Add(c);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Erreur de chargement.";
+            Debug.WriteLine(ex);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void ResetForm()
+    {
+        SelectedClient = null;
+        NomClient      = string.Empty;
+        PrenomClient   = string.Empty;
+        Telephone      = string.Empty;
+        ErrorMessage   = string.Empty;
+    }
+
+    partial void OnSearchQueryChanged(string? value)
+    {
+        var query   = value ?? string.Empty;
+        var results = string.IsNullOrWhiteSpace(query)
+            ? Clients
+            : Clients.Where(c =>
+                (c.NomClient?.Contains(query,    StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (c.PrenomClient?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (c.Telephone?.Contains(query,    StringComparison.OrdinalIgnoreCase) ?? false));
+
+        FilteredClients.Clear();
+        foreach (var item in results)
+            FilteredClients.Add(item);
     }
 }
